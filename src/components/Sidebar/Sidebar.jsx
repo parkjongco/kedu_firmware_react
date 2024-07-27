@@ -1,27 +1,81 @@
-import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faList, faUser, faHome, faCalendar, faImagePortrait, faRightFromBracket, faEnvelope, faBarsStaggered, faFileInvoice, faMessage, faHardDrive } from '@fortawesome/free-solid-svg-icons';
+import { useState } from 'react';
 import styles from './Sidebar.module.css';
 
-const Sidebar = () => {
-  return (
-    <nav className={styles.sidebar}>
-      <div className={styles.user}>
-        사용자 출력 부분
-      </div>
-      <div className={styles.menu}>
-        <ul>
-          <li><a href="#공지사항">&#128203; 공지사항</a></li>
-          <li><a href="#게시판">&#128204; 게시판</a></li>
-          <li><a href="#일정">&#128467; 일정</a></li>
-          <li><a href="#메일함">&#128231; 메일함</a></li>
-          <li><a href="#전자결재">&#128221; 전자결재</a></li>
-          <li><a href="#메신저">&#128172; 메신저</a></li>
-          <li><a href="#파일관리">&#128193; 파일관리</a></li>
-          <li><a href="#마이페이지">&#128193; 마이페이지</a></li>
-          <li><a href="#로그인">&#128274; 로그인 / 로그아웃</a></li>
-        </ul>
-      </div>
-    </nav>
-  );
-};
+export default function SideBar({ profile_src = "", username, useremail }) {
+    const [toggle, setToggle] = useState(false);
 
-export default Sidebar;
+    return (
+        <div className={styles.sidebar} style={!toggle ? { width: "50px" } : {}}>
+            <div className={styles.sidebar_container} style={!toggle ? { alignItems: "center" } : {}} >
+                <div className={styles.icon} onClick={() => setToggle(!toggle)}>
+                    <FontAwesomeIcon icon={faList} />
+                </div>
+                <div className={styles.company_name}>
+                    {toggle && <h1>이름</h1>}
+                </div>
+                <div className={styles.user_info} style={!toggle ? { paddingLeft: "0px" } : {}}>
+                    {
+                        profile_src === "" &&
+                        <div className={styles.user_img_box} style={!toggle ? { width: "21px", height: "21px" } : {}}>
+                            <FontAwesomeIcon icon={faUser} className={styles.user_img} style={!toggle ? { width: "18px" } : {}} />
+                        </div>
+                    }
+                    {
+                        profile_src !== "" &&
+                        <img src={profile_src} className={styles.user_img_box} style={!toggle ? { width: "21px", height: "21px" } : {}} />
+                    }
+                    {toggle &&
+                        <>
+                            <h1>{username}</h1>
+                            <p>{useremail}</p>
+                        </>
+                    }
+                </div>
+                <div className={styles.side_group} style={!toggle ? { paddingLeft: "0px" } : {}}>
+                    <div className={styles.side_list}>
+                        <div className={styles.list_item}>
+                            <FontAwesomeIcon icon={faHome} />
+                            {toggle && <a href="http://localhost:3000/" className={styles.link}>홈</a>}
+                        </div>
+                        <div className={styles.list_item}>
+                            <FontAwesomeIcon icon={faEnvelope} />
+                            {toggle && <a href="메일" className={styles.link}>메일</a>}
+                        </div>
+                        <div className={styles.list_item}>
+                            <FontAwesomeIcon icon={faBarsStaggered} />
+                            {toggle && <a href="http://localhost:3000/Notice" className={styles.link}>게시판</a>}
+                        </div>
+                        <div className={styles.list_item}>
+                            <FontAwesomeIcon icon={faCalendar} />
+                            {toggle && <a href="캘린더" className={styles.link}>캘린더</a>}
+                        </div>
+                        <div className={styles.list_item}>
+                            <FontAwesomeIcon icon={faFileInvoice} />
+                            {toggle && <a href="전자결제" className={styles.link}>전자결제</a>}
+                        </div>
+                        <div className={styles.list_item}>
+                            <FontAwesomeIcon icon={faMessage} />
+                            {toggle && <a href="메신저" className={styles.link}>메신저</a>}
+                        </div>
+                        <div className={styles.list_item}>
+                            <FontAwesomeIcon icon={faHardDrive} />
+                            {toggle && <a href="자료실" className={styles.link}>자료실</a>}
+                        </div>
+                    </div>
+                    <div>
+                        <div className={styles.list_item}>
+                            <FontAwesomeIcon icon={faImagePortrait} />
+                            {toggle && <a href="자료실" className={styles.link}>자료실</a>}
+                        </div>
+                        <div className={styles.list_item}>
+                            <FontAwesomeIcon icon={faRightFromBracket} />
+                            {toggle && <a href="로그아웃" className={styles.link}>로그아웃</a>}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
