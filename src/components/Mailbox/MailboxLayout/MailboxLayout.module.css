@@ -1,0 +1,34 @@
+/* src/components/MailboxLayout.module.css */
+.mailboxLayout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 6px;
+    flex-direction: column;
+} 
+
+.mailboxBody{
+    display: flex;
+}
+
+.contentArea {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.mailListActions {
+    width: 100%;
+    padding: 15px;
+    background-color: #FFF0F5;
+    flex-shrink: 0;
+}
+
+
+.mailArea {
+    display: flex;
+    flex-grow: 1;
+   
+}

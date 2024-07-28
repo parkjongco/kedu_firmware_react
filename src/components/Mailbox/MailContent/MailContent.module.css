@@ -1,0 +1,58 @@
+
+.mailContainer{
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    border-left: 1px solid #ccc;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.mail {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    height: 900px;
+    flex-shrink: 0;
+    margin-bottom: 20px; /* 메일 간의 간격 설정 */
+    border-bottom: 1px solid #ccc; /* 각 메일의 구분을 위한 하단 경계선 */
+}
+
+.mail h2 {
+    margin: 0; /* 기본 마진 제거 */
+    padding: 0; /* 기본 패딩 제거 */
+    align-self: flex-start; /* 좌측 정렬 */
+}
+
+
+
+.contentHeader{
+    display: flex;
+    margin-bottom: 10px; /* 헤더와 내용 간의 간격 설정 */
+}
+
+.contentInfo{
+    flex:1;
+    font-size: 12px;
+    display: flex;
+    align-self: flex-end;
+}
+
+.contentButtons{
+    flex: 1;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.contentButtons button {
+    margin-right: 10px;
+}
+
+.mailContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1; /* 나머지 공간을 채움 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+}

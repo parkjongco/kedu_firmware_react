@@ -1,0 +1,21 @@
+/* src/components/MailListActions.module.css */
+.mailListActions {
+    display: flex;
+    align-items: center;
+}
+
+.mailListActions input {
+    width: 170px;
+    
+    margin-right: 10px;
+
+}
+
+.mailListActions button{
+    border-color: aliceblue;
+}
+
+.refreshButton{
+    margin-right: 10px;
+}
+

@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import App from './App';
 import { NoticeIndex, NoticeEdit, NoticeDetail } from './pages/Notice_jongho';
+import Mailbox from './components/Mailbox/Mailbox';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -16,6 +17,7 @@ root.render(
         <Route path="/Notice" element={<NoticeIndex/>} />
         <Route path="/Notice/Edit" element={<NoticeEdit/>} />
         <Route path="/Notice/Detail" element={<NoticeDetail/>} />
+        <Route path="/mailbox/*" element={<Mailbox/>}/>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

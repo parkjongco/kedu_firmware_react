@@ -1,0 +1,37 @@
+.mailItem {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+
+.mailInfo{
+    display: flex;
+}
+
+.mailSender{
+    flex:1;
+}
+
+.mailSender span{
+    display: flex;
+    justify-content: flex-start;
+}
+
+.mailDate{
+    flex:1;
+}
+
+.mailDate{
+    display: flex;
+    justify-content: flex-end;
+}
+
+
+.mailSubject{
+    display: flex;
+    margin-top: 6px;
+}
+
+
