@@ -6,7 +6,7 @@ const MailListActions = () => {
 
     return (
         <div className={styles.mailListActions}>
-            <input type="text" placeholder="메일검색" />
+            <input type="text" className={styles.searchInput} placeholder="메일검색" autoComplete="off" maxLength="100" />
             
             <button className={styles.refreshButton}>새로고침</button>
             <button className={styles.actionButtons} onClick={()=>{navi('compose')}}>메일쓰기</button>

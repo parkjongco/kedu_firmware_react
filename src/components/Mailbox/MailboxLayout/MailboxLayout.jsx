@@ -1,5 +1,6 @@
 import Header from '../../Header/Header';
-import SideBar from '../../Jongho/SideBar';
+import SideBar from '../../Sidebar/Sidebar';
+
 import CreateMail from '../CreateMail/CreateMail';
 import MailContent from '../MailContent/MailContent';
 import MailList from '../MailList/MailList';
@@ -17,7 +18,7 @@ const MailboxLayout = () => {
             
             <div className={styles.mailboxBody}> {/* Body */}
                 <div className={styles.side}>
-                    <SideBar/>    
+                    <SideBar/> 
                 </div>
                 <div className={styles.contentArea}>
                     <Routes>
