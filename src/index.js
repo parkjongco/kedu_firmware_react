@@ -13,9 +13,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/Notice" element={<NoticeIndex/>} />
-        <Route path="/Notice/Edit" element={<NoticeEdit/>} />
-        <Route path="/Notice/Detail" element={<NoticeDetail/>} />
+        <Route path="/Notice/*" element={<NoticeIndex/>} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
