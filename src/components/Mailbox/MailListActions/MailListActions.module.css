@@ -1,0 +1,56 @@
+/* src/components/MailListActions.module.css */
+.mailListActions {
+    display: flex;
+    align-items: center;
+}
+
+.searchInput{
+    width: 170px;
+    /* border-radius: 10px; */
+    border:solid 1px #ccc;
+    box-sizing: border-box;
+    margin-right: 10px;
+    padding: 6px 0 6px 15px;
+    line-height: 20px;
+
+    font-size: 14px;
+    font-weight: bold;
+    color:#1e1e23;
+    
+}
+
+.searchInput:focus {
+    border-color: #007BFF; 
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); 
+    outline: none; 
+}
+
+.mailListActions button {
+    border: solid 1px #ccc;
+    padding: 6px 14px;
+    color: #1e1e23;
+    background-color: #ffffff; 
+     /* 부드러운 전환 효과를 주기위한 코드 */
+    transition: border-color 0.3s, background-color 0.3s, color 0.3s, font-weight 0.3s;
+    cursor: pointer; 
+}
+
+.mailListActions button:hover {
+    background-color: #e0e0e0; 
+    border-color: #b0b0b0;
+}
+
+.mailListActions button:focus,
+.mailListActions button:active {
+    border-color: #3db8ff;
+    background-color: #ffffff;
+    font-weight: bold;
+    color: #3db8ff;
+    outline: none;
+}
+
+.refreshButton {
+    margin-right: 10px;
+}
+
+
