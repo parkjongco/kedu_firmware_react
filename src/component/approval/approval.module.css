@@ -1,0 +1,19 @@
+.listGroup {
+    max-height: 200px; /* 원하는 최대 높이를 설정 */
+    overflow-y: auto;  /* 수직 스크롤바를 추가 */
+    margin: 5px;
+}
+.listItem{
+    height: 50px;
+    width: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.listDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
