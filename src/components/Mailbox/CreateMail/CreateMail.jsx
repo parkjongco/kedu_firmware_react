@@ -24,18 +24,23 @@ const CreateMail = () => {
     // async -> await 키워드를 사용하기위하여 필요
     // -> 에러 핸들링을 간단하게 하기위함
 
+    console.log(to);
+    console.log(subject);
+    console.log(message);
+
     // FormData 객체에 폼데이터를 추가하고 서버로 전송
     const formData = new FormData();
     formData.append('to', to);
     formData.append('subject', subject);
     formData.append('message', message);
-    attachments.forEach((file, index) => {
-      formData.append(`attachment${index}`, file);
+    attachments.forEach((file) => {
+      formData.append(`attachments`, file);
     });
-
+    console.log("파일 처리 확인 중")
     try {
       //await : axios.post가 처리될때까지 기다린 후 response 변수에 할당(디버깅 목적)
-      const response = await axios.post(`http://192.168.1.36/files`, formData);        
+      console.log("보냅니다!!");
+      const response = await axios.post(`http://192.168.1.36/mail`, formData);        
       alert('메일이 성공적으로 전송되었습니다.');
     } catch (error) {
       console.error('메일 전송 오류:', error);
