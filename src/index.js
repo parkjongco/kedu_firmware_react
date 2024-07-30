@@ -15,6 +15,7 @@ root.render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/Notice/*" element={<NoticeIndex/>} />
+        <Route path="/mailbox/*" element={<Mailbox/>}/>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
