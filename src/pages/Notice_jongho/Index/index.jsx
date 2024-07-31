@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 import React, { useState } from 'react';
 import styles from './index.module.css';
 import SideBar from '../../../components/Jongho/SideBar';
@@ -9,34 +7,13 @@ import List from '../List/List';
 import NoticeEdit from '../Edit/Edit';
 import NoticeDetail from '../Detail/Detail';
 
-const NoticeIndex = () => {
-    const [selectedCategory, setSelectedCategory] = useState({});
-=======
-=======
-import React, { useState } from 'react';
->>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
-import styles from './index.module.css';
-import SideBar from '../../../components/Jongho/SideBar';
-import NoticeCategoryComponent from '../../../config/NoticeCategory';
-import { Link, Route, Routes } from 'react-router-dom';
-import List from '../List/List';
-import NoticeEdit from '../Edit/Edit';
-import NoticeDetail from '../Detail/Detail';
 
 const NoticeIndex = () => {
-<<<<<<< HEAD
->>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
-=======
     const [selectedCategory, setSelectedCategory] = useState({});
->>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 
     return (
         <div className={styles.container}>
             <div className={styles.sub_container}>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
                 {SideBar("https://image.utoimage.com/preview/cp872722/2022/12/202212008462_500.jpg", "박종호", "fjqm212@gmail.com")}
                 <div className={styles.category}>
                     <div className={styles.category_content}>
@@ -57,26 +34,12 @@ const NoticeIndex = () => {
                         <Route path='Detail' element={<NoticeDetail />} /> 
                     </Routes>
                 </div>
-<<<<<<< HEAD
-            </div>
-        </div>
-    );
-};
-
-export default NoticeIndex;
-=======
                 { SideBar("https://image.utoimage.com/preview/cp872722/2022/12/202212008462_500.jpg", "박종호", "fjqm212@gmail.com") }
                 <div className={styles.category}></div>
                 <div className={styles.content}></div>
-=======
->>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
             </div>
         </div>
     );
 };
 
 export default NoticeIndex;
-<<<<<<< HEAD
->>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
-=======
->>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
