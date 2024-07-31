@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from 'react';
 import styles from './index.module.css';
 import SideBar from '../../../components/Jongho/SideBar';
@@ -9,10 +10,16 @@ import NoticeDetail from '../Detail/Detail';
 
 const NoticeIndex = () => {
     const [selectedCategory, setSelectedCategory] = useState({});
+=======
+import styles from './index.module.css';
+import SideBar from '../../../components/Jongho/SideBar';
+const NoticeIndex = () => {
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
 
     return (
         <div className={styles.container}>
             <div className={styles.sub_container}>
+<<<<<<< HEAD
                 {SideBar("https://image.utoimage.com/preview/cp872722/2022/12/202212008462_500.jpg", "박종호", "fjqm212@gmail.com")}
                 <div className={styles.category}>
                     <div className={styles.category_content}>
@@ -39,3 +46,14 @@ const NoticeIndex = () => {
 };
 
 export default NoticeIndex;
+=======
+                { SideBar("https://image.utoimage.com/preview/cp872722/2022/12/202212008462_500.jpg", "박종호", "fjqm212@gmail.com") }
+                <div className={styles.category}></div>
+                <div className={styles.content}></div>
+            </div>
+        </div>
+    )
+}
+
+export default NoticeIndex;
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf

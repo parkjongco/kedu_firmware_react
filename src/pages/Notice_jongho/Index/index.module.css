@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* src/components/List/List.module.css */
 
 .container {
@@ -29,10 +30,41 @@
     justify-content: center;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
     box-sizing: border-box; /* 전체 크기를 포함하도록 설정 */
+=======
+
+
+.container {
+    width : 100vw;
+    height : 100vh;
+    display : flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sub_container {
+    width : calc(100% - 100px);
+    height : calc(100% - 100px);
+    display : flex;
+    gap : 10px;
+}
+
+.sidebar {
+    width : 180px;
+    display : flex;
+    flex-shrink: 0;
+    height : 100%;
+    background-color: #85d2ff;
+    border : 0.5px solid #D9D9D9;
+    border-radius: 10px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 2px 4px rgb(0, 0, 0, 0.25);
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
 }
 
 .category {
     background-color: white;
+<<<<<<< HEAD
     border: 0.5px solid #D9D9D9;
     border-radius: 10px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
@@ -40,10 +72,20 @@
     flex-shrink: 0;
     height: 100%;
     box-sizing: border-box; /* 전체 크기를 포함하도록 설정 */
+=======
+    border : 0.5px solid #D9D9D9;
+    border-radius: 10px;
+    box-shadow: 0px 2px 4px rgb(0, 0, 0, 0.25);
+
+    width : 200px;
+    flex-shrink: 0;
+    height : 100%;
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
 }
 
 .content {
     background-color: white;
+<<<<<<< HEAD
     border: 0.5px solid #D9D9D9;
     border-radius: 10px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
@@ -59,15 +101,39 @@
     display: flex;
     flex-direction: column;
     box-sizing: border-box; 
+=======
+    border : 0.5px solid #D9D9D9;
+    border-radius: 10px;
+    box-shadow: 0px 2px 4px rgb(0, 0, 0, 0.25);
+
+    width: 100%;
+    flex-shrink: 1;
+    height : 100%;
+}
+
+.sidebar_container {
+    width : calc(100% - 20px);
+    height : calc(100% - 20px);
+    display: flex;
+    flex-direction: column;
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
 }
 
 .icon {
     width: min-content;
+<<<<<<< HEAD
     padding: 5px 6px;
     background-color: #55a2cf;
     color: white;
     border-radius: 5px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+=======
+    padding : 5px 6px;
+    background-color: #55a2cf;
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px rgb(0, 0, 0, 0.25);
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
 }
 
 .icon:hover {
@@ -76,17 +142,30 @@
 
 .company_name {
     margin-top: 20px;
+<<<<<<< HEAD
     color: white;
+=======
+    color : white;
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
     width: 100%;
     text-align: center;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
 .company_name h1 {
     font-size: x-large;
 }
 
+<<<<<<< HEAD
 .user_info * {
     color: white;
+=======
+.user_info *{
+    color : white;
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
     padding: 0;
     margin: 0;
 }
@@ -99,7 +178,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+<<<<<<< HEAD
     box-sizing: border-box; /* 전체 크기를 포함하도록 설정 */
+=======
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
 }
 
 .user_img_box .user_img {
@@ -113,7 +195,11 @@
     color: #55a2cf;
 }
 
+<<<<<<< HEAD
 .user_info {
+=======
+.user_info { 
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
     padding-left: 10px;
 }
 
@@ -121,7 +207,10 @@
     padding-top: 5px;
     font-size: large;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
 .user_info > p {
     font-size: small;
 }
@@ -141,6 +230,7 @@
 
 .list_item {
     height: auto;
+<<<<<<< HEAD
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -148,13 +238,25 @@
     font-weight: 800;
     gap: 10px;
     padding: 10px 0;
+=======
+    display : flex;
+    flex-direction: row;
+    align-items: center;
+    color : white;
+    font-weight: 800;
+    gap: 10px;
+    padding : 10px 0;
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
 }
 
 .list_item > h3 {
     margin: 0;
     padding: 0;
 }
+<<<<<<< HEAD
 
 .category_content h1 {
     text-align: center;
 }
+=======
+>>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
