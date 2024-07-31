@@ -14,10 +14,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import App from './App';
 import { NoticeIndex, NoticeEdit, NoticeDetail } from './pages/Notice_jongho';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import Mailbox from './components/Mailbox/Mailbox';
 >>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 =======
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+import Mailbox from './components/Mailbox/Mailbox';
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -38,10 +42,15 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
+<<<<<<< HEAD
         <Route path="/Notice" element={<NoticeIndex/>} />
         <Route path="/Notice/Edit" element={<NoticeEdit/>} />
         <Route path="/Notice/Detail" element={<NoticeDetail/>} />
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+        <Route path="/Notice/*" element={<NoticeIndex/>} />
+        <Route path="/mailbox/*" element={<Mailbox/>}/>
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

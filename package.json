@@ -29,9 +29,13 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@toast-ui/editor": "^3.2.2",
 =======
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+    "@toast-ui/editor": "^3.2.2",
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
     "axios": "^1.7.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

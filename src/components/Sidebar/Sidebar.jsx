@@ -2,9 +2,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faList, faUser, faHome, faCalendar, faImagePortrait, faRightFromBracket, faEnvelope, faBarsStaggered, faFileInvoice, faMessage, faHardDrive } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Link } from 'react-router-dom';
 =======
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+import { Link } from 'react-router-dom';
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 import styles from './Sidebar.module.css';
 
 export default function SideBar({ profile_src = "", username, useremail }) {
@@ -46,10 +50,14 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faEnvelope} />
 <<<<<<< HEAD
+<<<<<<< HEAD
                             {toggle && <a href="http://localhost:3000/mailbox" className={styles.link}>메일</a>}
 =======
                             {toggle && <a href="메일" className={styles.link}>메일</a>}
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+                            {toggle && <a href="http://localhost:3000/mailbox" className={styles.link}>메일</a>}
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faBarsStaggered} />

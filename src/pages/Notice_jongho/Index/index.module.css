@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 /* src/components/List/List.module.css */
 
 .container {
@@ -32,38 +33,49 @@
     box-sizing: border-box; /* 전체 크기를 포함하도록 설정 */
 =======
 
+=======
+/* src/components/List/List.module.css */
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 
 .container {
-    width : 100vw;
-    height : 100vh;
-    display : flex;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box; /* 전체 크기를 포함하도록 설정 */
 }
 
 .sub_container {
-    width : calc(100% - 100px);
-    height : calc(100% - 100px);
-    display : flex;
-    gap : 10px;
+    width: calc(100% - 100px);
+    height: calc(100% - 100px);
+    display: flex;
+    gap: 10px;
+    box-sizing: border-box; /* 전체 크기를 포함하도록 설정 */
 }
 
 .sidebar {
-    width : 180px;
-    display : flex;
+    width: 180px;
+    display: flex;
     flex-shrink: 0;
-    height : 100%;
+    height: 100%;
     background-color: #85d2ff;
-    border : 0.5px solid #D9D9D9;
+    border: 0.5px solid #D9D9D9;
     border-radius: 10px;
     align-items: center;
     justify-content: center;
+<<<<<<< HEAD
     box-shadow: 0px 2px 4px rgb(0, 0, 0, 0.25);
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box; /* 전체 크기를 포함하도록 설정 */
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 }
 
 .category {
     background-color: white;
+<<<<<<< HEAD
 <<<<<<< HEAD
     border: 0.5px solid #D9D9D9;
     border-radius: 10px;
@@ -74,17 +86,25 @@
     box-sizing: border-box; /* 전체 크기를 포함하도록 설정 */
 =======
     border : 0.5px solid #D9D9D9;
+=======
+    border: 0.5px solid #D9D9D9;
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
     border-radius: 10px;
-    box-shadow: 0px 2px 4px rgb(0, 0, 0, 0.25);
-
-    width : 200px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+    width: 200px;
     flex-shrink: 0;
+<<<<<<< HEAD
     height : 100%;
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+    height: 100%;
+    box-sizing: border-box; /* 전체 크기를 포함하도록 설정 */
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 }
 
 .content {
     background-color: white;
+<<<<<<< HEAD
 <<<<<<< HEAD
     border: 0.5px solid #D9D9D9;
     border-radius: 10px;
@@ -103,24 +123,32 @@
     box-sizing: border-box; 
 =======
     border : 0.5px solid #D9D9D9;
+=======
+    border: 0.5px solid #D9D9D9;
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
     border-radius: 10px;
-    box-shadow: 0px 2px 4px rgb(0, 0, 0, 0.25);
-
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
     width: 100%;
     flex-shrink: 1;
-    height : 100%;
+    height: 100%;
+    box-sizing: border-box; 
 }
 
 .sidebar_container {
-    width : calc(100% - 20px);
-    height : calc(100% - 20px);
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
     display: flex;
     flex-direction: column;
+<<<<<<< HEAD
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+    box-sizing: border-box; 
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 }
 
 .icon {
     width: min-content;
+<<<<<<< HEAD
 <<<<<<< HEAD
     padding: 5px 6px;
     background-color: #55a2cf;
@@ -134,6 +162,13 @@
     border-radius: 5px;
     box-shadow: 0px 2px 4px rgb(0, 0, 0, 0.25);
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+    padding: 5px 6px;
+    background-color: #55a2cf;
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 }
 
 .icon:hover {
@@ -143,22 +178,30 @@
 .company_name {
     margin-top: 20px;
 <<<<<<< HEAD
+<<<<<<< HEAD
     color: white;
 =======
     color : white;
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+    color: white;
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
     width: 100%;
     text-align: center;
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 .company_name h1 {
     font-size: x-large;
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 .user_info * {
     color: white;
@@ -166,6 +209,10 @@
 .user_info *{
     color : white;
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+.user_info * {
+    color: white;
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
     padding: 0;
     margin: 0;
 }
@@ -179,9 +226,13 @@
     align-items: center;
     justify-content: center;
 <<<<<<< HEAD
+<<<<<<< HEAD
     box-sizing: border-box; /* 전체 크기를 포함하도록 설정 */
 =======
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+    box-sizing: border-box; /* 전체 크기를 포함하도록 설정 */
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 }
 
 .user_img_box .user_img {
@@ -196,10 +247,14 @@
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 .user_info {
 =======
 .user_info { 
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+.user_info {
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
     padding-left: 10px;
 }
 
@@ -208,9 +263,13 @@
     font-size: large;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 .user_info > p {
     font-size: small;
 }
@@ -231,6 +290,7 @@
 .list_item {
     height: auto;
 <<<<<<< HEAD
+<<<<<<< HEAD
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -240,13 +300,20 @@
     padding: 10px 0;
 =======
     display : flex;
+=======
+    display: flex;
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
     flex-direction: row;
     align-items: center;
-    color : white;
+    color: white;
     font-weight: 800;
     gap: 10px;
+<<<<<<< HEAD
     padding : 10px 0;
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+    padding: 10px 0;
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 }
 
 .list_item > h3 {
@@ -254,9 +321,15 @@
     padding: 0;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
 
 .category_content h1 {
     text-align: center;
 }
+<<<<<<< HEAD
 =======
 >>>>>>> a574bd1c6534669858ef6abc79f40da945378dbf
+=======
+>>>>>>> 9f815757b006796e7c8873034f5308ce52bf2f2d
