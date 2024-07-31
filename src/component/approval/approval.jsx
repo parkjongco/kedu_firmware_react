@@ -7,27 +7,40 @@ import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import styles from '../approval/approval.module.css';
 import axios from 'axios';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 
-function Example() {
+function Approval() {
     const [show, setShow] = useState(false);
     const [listA, setListA] = useState([
-        { text: 'Cras justo odio', disabled: false },
-        { text: 'Dapibus ac facilisis in', disabled: false },
-        { text: 'Morbi leo risus', disabled: false },
-        { text: 'Porta ac consectetur ac', disabled: false },
-        { text: 'Vestibulum at eros', disabled: false }
+        { text: 'Cras justo odio' },
+        { text: 'Dapibus ac facilisis in' },
+        { text: 'Morbi leo risus'},
+        { text: 'Porta ac consectetur ac'},
+        { text: 'Vestibulum at eros'}
     ]);
     const [listB, setListB] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-
+    
+    //결재 코드 받을 useState
+    const [approvalData, setApprovalData] = useState({"approval_title": '', "approval_type_seq": 0, "approval_contents":'', "approval_approver_seq": []});
+    const [approvalTypeSeq, setApprovalTypeSeq] = useState('');
     const handleClose = () => {
-        listB.forEach((item) => {
-            axios.post('http://192.168.1.43:80/approval', {
-                "data": item
+        approvalData.approval_type_seq = approvalTypeSeq;
+        console.log(approvalData);
+        const parsedData = JSON.stringify(approvalData);
+        axios.post('http://192.168.1.43/approval', 
+            {
+                "data":parsedData,
+                "contentType": 'application/json'
             })
-            .then(response => console.log('Success:', response))
-            .catch(error => console.error('Error:', error));
-        });
+            .then(response => {
+                console.log('Response:', response);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
         setShow(false);
     };
 
@@ -36,10 +49,20 @@ function Example() {
     const handleItemClick = (index) => {
         if (!filteredListA[index].disabled) {
             const selectedItem = filteredListA[index];
+            
+            // 결재자 정보를 approval_approver_seq에 추가
+            setApprovalData(prevData => ({
+                ...prevData,
+                approval_approver_seq: [...prevData.approval_approver_seq, selectedItem]
+            }));
+    
+            // 기존의 listB와 listA 상태 업데이트
             setListB([...listB, selectedItem]);
-            setListA(listA.map(item => item.text === selectedItem.text ? { ...item, disabled: true } : item));
+            setListA(listA.map(item => item.text === selectedItem.text ? { ...item.text, disabled: true } : item));
         }
     };
+    
+    
 
     const handleItemRemove = (index) => {
         const item = listB[index];
@@ -51,8 +74,34 @@ function Example() {
         setSearchTerm(e.target.value);
     };
 
-    const filteredListA = listA.filter(item => item.text.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredListA = listA.filter(item => item.text && item.text.toLowerCase().includes(searchTerm.toLowerCase()));
 
+    const selectedData = (e) => {
+        const data = e.target.text;
+        if (data.includes("001")) {
+            setApprovalTypeSeq('001')
+        } else if (data.includes("002")) {
+            setApprovalTypeSeq('002')
+        } else if (data.includes("003")) {
+            setApprovalTypeSeq('003')
+        } else if (data.includes("004")) {
+            setApprovalTypeSeq('004')
+        } else if (data.includes("005")) {
+            setApprovalTypeSeq('005')
+        } else if (data.includes("006")) {
+            setApprovalTypeSeq('006')
+        }
+    }
+
+    const hadleApprovalTitleChange = (e)=>{
+       const {name, value} = e.target;
+       setApprovalData(prev=>({...prev, [name]: value}))
+    }
+
+    const handleApprovalContentChange = (e) =>{
+        const{name, value} = e.target;
+        setApprovalData(prev=>({...prev,[name]: value}));
+    }
     return (
         <>
             <Button variant="primary" onClick={handleShow}>
@@ -64,15 +113,25 @@ function Example() {
                     <Modal.Title>전자 결재</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <InputGroup type="text" className='mb-3' name="approval_title">
-                        <Form.Control
-                            placeholder="제목을 입력하세요"
-                            aria-label="Example text with button addon"
-                            aria-describedby="basic-addon1"
-                        />
+                    <InputGroup className="mb-3">
+                        <DropdownButton
+                            variant="outline-secondary"
+                            title="결재 구분"
+                            id="input-group-dropdown-1"
+                        >
+                            <Dropdown.Item onClick={selectedData}>[001][서류 결재]</Dropdown.Item>
+                            <Dropdown.Item href="#">[002][보고서 결재]</Dropdown.Item>
+                            <Dropdown.Item href="#">[003][문서 결재]</Dropdown.Item>
+                            <Dropdown.Divider />
+                            <Dropdown.Item href="#">[004][예산 책정]</Dropdown.Item>
+                            <Dropdown.Item href="#">[005][예산 결재]</Dropdown.Item>
+                            <Dropdown.Divider />
+                            <Dropdown.Item href="#">[006][휴가 신청]</Dropdown.Item>
+                        </DropdownButton>
+                        <Form.Control name="approval_title" aria-label="Text input with dropdown button" onChange={hadleApprovalTitleChange} value={approvalData.approval_Title}/>
                     </InputGroup>
-                    <InputGroup name="approval_content">
-                        <Form.Control as="textarea" aria-label="With textarea" placeholder="내용을 입력하세요" />
+                    <InputGroup name="approval_content" >
+                        <Form.Control name="approval_contents" as="textarea" aria-label="With textarea" placeholder="내용을 입력하세요" onChange={handleApprovalContentChange} value={approvalData.approval_contents}/>
                     </InputGroup>
                     <hr></hr>
                     <Form.Group controlId="formFileMultiple" className="mb-3">
@@ -108,7 +167,7 @@ function Example() {
                                 <ListGroup.Item className={styles.listItem}
                                     key={index}
                                     onClick={() => handleItemRemove(index)}
-                                    style={{ cursor: 'pointer' }} 
+                                    style={{ cursor: 'pointer' }}
                                     name="testName"
                                 >
                                     {item.text}
@@ -130,4 +189,4 @@ function Example() {
     );
 }
 
-export default Example;
+export default Approval;
