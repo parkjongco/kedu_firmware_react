@@ -5,18 +5,26 @@ import { useMailStore } from './../../store/store';
 
 const MailListActions = () => {
     const navi = useNavigate();
-    const { selectedMailSeq, handleGetAll } = useMailStore();
+    const { setSelectedMailContent, selectedMailSeq, setSelectedMailSeq, handleGetAll } = useMailStore();
 
-    const handleDeleteSelectedMail = () => {
+    //현재 선택되어있는 메일함 전체 삭제
+    const handleDeleteSelectedMailBox = () => {
         if (!selectedMailSeq) {
-            alert("선택된 메일이 없습니다.");
-            console.log("선택된 메일이 없습니다.");
+            alert("선택된 메일함이 없습니다.");
+            console.log("선택된 메일함이 없습니다.");
             return;
         }
         console.log("현재 선택된 메일 Seq: " + selectedMailSeq);
-        axios.delete(`http://192.168.1.36/mail/${selectedMailSeq}`).then(() => {
+        axios.delete(`http://192.168.1.36/mailbox/${selectedMailSeq}`).then(() => {
           handleGetAll();
-        });
+        }).then(() => {
+            axios.get(`http://192.168.1.36/mail`, {
+              params: { seq: selectedMailSeq }
+            }).then((resp) => {
+              setSelectedMailContent(resp.data);
+              setSelectedMailSeq(null);
+            })
+          })
       };
     
     const handleComposeMail = () => {
@@ -30,8 +38,8 @@ const MailListActions = () => {
             
             <button className={styles.refreshButton} onClick={handleGetAll}>새로고침</button>
             <button className={styles.actionButtons} onClick={handleComposeMail}>메일쓰기</button>
-            <button className={styles.actionButtons} onClick={handleDeleteSelectedMail}>삭제</button>
-            <button className={styles.actionButtons}>이동</button>
+            <button className={styles.actionButtons} onClick={handleDeleteSelectedMailBox}>삭제</button>
+            {/* <button className={styles.actionButtons}>이동</button> */}
         </div>
     );
 };
