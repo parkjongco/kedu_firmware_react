@@ -10,7 +10,7 @@ export const List = (category) => {
     const [data, setData] = useState([]);
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
-    const [sortOrder, setSortOrder] = useState('default'); 
+    const [sortOrder, setSortOrder] = useState('default');
     const itemsPerPage = 10; // 페이지당 아이템 수 정의
 
     useEffect(() => {
@@ -34,7 +34,7 @@ export const List = (category) => {
                     return dateB - dateA;
                 case 'default':
                 default:
-                    return a.board_seq - b.board_seq; 
+                    return a.board_seq - b.board_seq;
             }
         });
     };
@@ -56,6 +56,16 @@ export const List = (category) => {
     const handleToggleSort = (order) => {
         setSortOrder(order);
         setCurrentPage(1);
+    };
+
+    const handleDelete = (seq) => {
+        axios.delete(`http://localhost:80/board/${seq}`)
+            .then(response => {
+                setData(data.filter(item => item.board_seq !== seq));
+            })
+            .catch(error => {
+                console.error('Error deleting data:', error);
+            });
     };
 
     return (
@@ -96,6 +106,7 @@ export const List = (category) => {
                             <th>글쓴이</th>
                             <th>작성일자</th>
                             <th>조회수</th>
+                            <th>액션</th> {/* 액션 컬럼 추가 */}
                         </tr>
                     </thead>
                     <tbody>
@@ -105,6 +116,14 @@ export const List = (category) => {
                                 <td>{e.writer}</td>
                                 <td>{new Date(e.board_write_date).toLocaleString()}</td> {/* Format date */}
                                 <td>{e.board_view_count}</td>
+                                <td>
+                                    <button onClick={(event) => {
+                                        event.stopPropagation(); // Prevent row click event
+                                        handleDelete(e.board_seq);
+                                    }}>
+                                        삭제
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

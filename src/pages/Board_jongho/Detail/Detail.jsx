@@ -1,28 +1,51 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './Detail.module.css';
 
 const Detail = () => {
+    const navigate = useNavigate();
     const [board, setBoard] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [updatedTitle, setUpdatedTitle] = useState('');
+    const [updatedContents, setUpdatedContents] = useState('');
     const location = useLocation();
 
-    const seq = location.pathname.substring(location.pathname.lastIndexOf("/") + 1, location.pathname.length);
+    const seq = location.pathname.split('/').pop();
 
-    // React 컴포넌트에서 요청 URL 확인
     useEffect(() => {
-        console.log(`Fetching data for seq: ${seq}`); // seq 값 확인
         axios.get(`http://localhost:80/board/detail/${seq}`)
             .then(resp => {
-                console.log('Data fetched successfully:', resp.data); // 데이터 확인
                 setBoard(resp.data);
+                setUpdatedTitle(resp.data.board_title);
+                setUpdatedContents(resp.data.board_contents);
             })
             .catch(error => {
-                console.error('Error fetching data:', error); // 에러 확인
+                console.error('Error fetching data:', error);
             });
-
-            
     }, [seq]);
+
+    const handleUpdate = (e) => {
+        e.preventDefault();
+
+        const updatedData = {
+            board_title: updatedTitle,
+            board_contents: updatedContents,
+        };
+
+        axios.put(`http://localhost:80/board/${seq}`, updatedData)
+            .then(resp => {
+                setBoard(resp.data);
+                setIsEditing(false);
+            })
+            .catch(error => {
+                console.error('Error updating data:', error);
+            });
+    };
+
+    const toggleEditMode = () => {
+        setIsEditing(prev => !prev);
+    };
 
     if (!board) {
         return <div>Loading...</div>;
@@ -31,14 +54,48 @@ const Detail = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <div className={styles.title}><strong>제목:</strong>{board.board_title}</div>
+                {isEditing ? (
+                    <input
+                        type="text"
+                        value={updatedTitle}
+                        onChange={(e) => setUpdatedTitle(e.target.value)}
+                    />
+                ) : (
+                    <div className={styles.title}>{board.board_title}</div>
+                )}
             </div>
-            <div className={styles.content}>
+            <div className={styles.body}>
                 <div><strong>글쓴이:</strong> {board.writer}</div>
                 <div><strong>작성일자:</strong> {new Date(board.board_write_date).toLocaleString()}</div>
                 <div><strong>조회수:</strong> {board.board_view_count}</div>
-                <div dangerouslySetInnerHTML={{ __html : board.board_contents}}></div>
             </div>
+            <div className={styles.content}>
+                {isEditing ? (
+                    <form onSubmit={handleUpdate}>
+                        <div>
+                            <label>
+                                내용:
+                                <textarea
+                                    value={updatedContents}
+                                    onChange={(e) => setUpdatedContents(e.target.value)}
+                                />
+                            </label>
+                        </div>
+                        <div className={`${styles.buttonContainer} ${styles.editContainer}`}>
+                            <button type="submit" className={styles.button}>Update</button>
+                            <button type="button" onClick={toggleEditMode} className={styles.button}>Cancel</button>
+                        </div>
+                    </form>
+                ) : (
+                    <div
+                        dangerouslySetInnerHTML={{ __html: board.board_contents }}
+                    />
+                )}
+            </div>
+            {!isEditing && (
+                    <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
+            )}
+                <button onClick={() => navigate("/Board")} className={styles.button}>뒤로가기</button>
         </div>
     );
 };
