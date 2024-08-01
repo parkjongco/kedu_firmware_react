@@ -5,6 +5,10 @@
     border-bottom: 1px solid #ccc;
 }
 
+.mailItem:hover {
+    background-color: #e0e0e0; 
+    border-color: #b0b0b0;
+}
 
 .mailInfo{
     display: flex;

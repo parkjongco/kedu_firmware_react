@@ -35,9 +35,9 @@ const NoticeCategoryComponent = ({ onCategoryClick } ) => {
             ))}
         </div>
     );
-    useEffect(()=> {
-        onCategoryClick(NoticeCategory[0])
-    });
+    // useEffect(()=> {
+    //     onCategoryClick(NoticeCategory[0])
+    // });
 };
 
 export default NoticeCategoryComponent;
