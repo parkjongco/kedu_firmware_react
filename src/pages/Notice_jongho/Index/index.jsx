@@ -7,6 +7,7 @@ import List from '../List/List';
 import NoticeEdit from '../Edit/Edit';
 import NoticeDetail from '../Detail/Detail';
 
+
 const NoticeIndex = () => {
     const [selectedCategory, setSelectedCategory] = useState({});
 
@@ -33,6 +34,9 @@ const NoticeIndex = () => {
                         <Route path='Detail' element={<NoticeDetail />} /> 
                     </Routes>
                 </div>
+                { SideBar("https://image.utoimage.com/preview/cp872722/2022/12/202212008462_500.jpg", "박종호", "fjqm212@gmail.com") }
+                <div className={styles.category}></div>
+                <div className={styles.content}></div>
             </div>
         </div>
     );
