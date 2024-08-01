@@ -1,69 +1,61 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './List.module.css';
 import { Link } from 'react-router-dom';
-
-const dummy = [
-    { "num": 1, "title": "게시물 제목 1", "writer": "홍길동", "reg_date": "2024-07-29", "view_cnt": 120 },
-    { "num": 2, "title": "게시물 제목 2", "writer": "김철수", "reg_date": "2024-07-28", "view_cnt": 98 },
-    { "num": 3, "title": "게시물 제목 3", "writer": "이영희", "reg_date": "2024-07-27", "view_cnt": 76 },
-    { "num": 4, "title": "게시물 제목 4", "writer": "박종호", "reg_date": "2024-07-26", "view_cnt": 150 },
-    { "num": 5, "title": "게시물 제목 5", "writer": "최영수", "reg_date": "2024-07-25", "view_cnt": 87 },
-    { "num": 6, "title": "게시물 제목 6", "writer": "강민정", "reg_date": "2024-07-24", "view_cnt": 92 },
-    { "num": 7, "title": "게시물 제목 7", "writer": "윤지호", "reg_date": "2024-07-23", "view_cnt": 110 },
-    { "num": 8, "title": "게시물 제목 8", "writer": "정희진", "reg_date": "2024-07-22", "view_cnt": 65 },
-    { "num": 9, "title": "게시물 제목 9", "writer": "오준영", "reg_date": "2024-07-21", "view_cnt": 130 },
-    { "num": 10, "title": "게시물 제목 10", "writer": "한예슬", "reg_date": "2024-07-20", "view_cnt": 75 },
-    { "num": 11, "title": "게시물 제목 11", "writer": "한예슬", "reg_date": "2024-07-20", "view_cnt": 75 },
-    { "num": 12, "title": "게시물 제목 12", "writer": "한예슬", "reg_date": "2024-07-20", "view_cnt": 75 },
-    { "num": 13, "title": "게시물 제목 13", "writer": "한예슬", "reg_date": "2024-07-20", "view_cnt": 75 },
-    { "num": 15, "title": "게시물 제목 15", "writer": "한예슬", "reg_date": "2024-07-20", "view_cnt": 75 }
-];
+import axios from 'axios';
 
 export const List = (category) => {
-    const navigate = useNavigate();
     const name = category.category.name;
     const code = category.category.code;
-
-    // Pagination state
+    const [data, setData] = useState([]);
+    const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
-    const [sortOrder, setSortOrder] = useState('latest'); // 'latest', 'viewCount'
-    const itemsPerPage = 10;
+    const [sortOrder, setSortOrder] = useState('default'); 
+    const itemsPerPage = 10; // 페이지당 아이템 수 정의
 
-    // Calculate the indices for the current page's items
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    useEffect(() => {
+        axios.get(`http://localhost:80/board`).then(resp => {
+            setData(resp.data);
+        }).catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }, []);
 
-    // Sorting the items based on the sortOrder
+    // Sorting the data based on the sortOrder
     const sortedData = () => {
-        switch (sortOrder) {
-            case 'viewCount':
-                return [...dummy].sort((a, b) => b.view_cnt - a.view_cnt);
-            case 'latest':
-            default:
-                return [...dummy].sort((a, b) => new Date(b.reg_date) - new Date(a.reg_date));
-        }
+        return [...data].sort((a, b) => {
+            const dateA = new Date(a.board_write_date);
+            const dateB = new Date(b.board_write_date);
+
+            switch (sortOrder) {
+                case 'viewCount':
+                    return b.board_view_count - a.board_view_count;
+                case 'latest':
+                    return dateB - dateA;
+                case 'default':
+                default:
+                    return a.board_seq - b.board_seq; 
+            }
+        });
     };
 
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = sortedData().slice(indexOfFirstItem, indexOfLastItem);
 
-    // Calculate the total number of pages
-    const totalPages = Math.ceil(dummy.length / itemsPerPage);
+    const totalPages = Math.ceil(data.length / itemsPerPage);
 
-    // Handle page change
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
 
-    // Handle row click
-    const handleRowClick = (id) => {
-        navigate(`/Notice/Detail`);
+    const handleRowClick = (seq) => {
+        navigate(`/Board/Detail/${seq}`);
     };
 
-    // Toggle sort order
     const handleToggleSort = (order) => {
         setSortOrder(order);
-        setCurrentPage(1); // Reset to first page
+        setCurrentPage(1);
     };
 
     return (
@@ -71,11 +63,16 @@ export const List = (category) => {
             <div className={styles.category_header}>
                 <div className={styles.headerLeft}>
                     <h2>{name}</h2>
-                    <p>{code}</p>
                 </div>
                 <div className={styles.header_Right}>
                     <Link id={styles.write} to="Edit">등록하기</Link>
                     <div className={styles.sortButtons}>
+                        <button 
+                            className={sortOrder === 'default' ? styles.active : ''} 
+                            onClick={() => handleToggleSort('default')}
+                        >
+                            기본순
+                        </button>
                         <button 
                             className={sortOrder === 'latest' ? styles.active : ''} 
                             onClick={() => handleToggleSort('latest')}
@@ -95,7 +92,6 @@ export const List = (category) => {
                 <table>
                     <thead>
                         <tr>
-                            <th>번호</th>
                             <th>제목</th>
                             <th>글쓴이</th>
                             <th>작성일자</th>
@@ -103,13 +99,12 @@ export const List = (category) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentItems.map((v) => (
-                            <tr key={v.num} onClick={() => handleRowClick(v.num)} className={styles.row}>
-                                <td>{v.num}</td>
-                                <td>{v.title}</td>
-                                <td>{v.writer}</td>
-                                <td>{v.reg_date}</td>
-                                <td>{v.view_cnt}</td>
+                        {currentItems.map((e) => (
+                            <tr key={e.board_seq} onClick={() => handleRowClick(e.board_seq)} className={styles.row}>
+                                <td>{e.board_title}</td>
+                                <td>{e.writer}</td>
+                                <td>{new Date(e.board_write_date).toLocaleString()}</td> {/* Format date */}
+                                <td>{e.board_view_count}</td>
                             </tr>
                         ))}
                     </tbody>

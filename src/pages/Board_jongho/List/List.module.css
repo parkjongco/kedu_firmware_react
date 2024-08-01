@@ -1,10 +1,8 @@
 /* 전체 레이아웃 스타일 */
 .container {
     width: calc(100% - 40px); /* 좌우 여백을 줄여서 전체 너비 사용 */
-    margin: 20px auto; /* 중앙 정렬 및 여백 조정 */
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     background-color: #fff;
 }
 
@@ -12,7 +10,6 @@
     display: flex;
     justify-content: space-between; /* 제목과 버튼들을 양 끝으로 배치 */
     align-items: center;
-    padding-bottom: 15px;
     border-bottom: 2px solid #f0f0f0;
     margin-bottom: 20px;
 }
@@ -80,7 +77,17 @@
     color: #fff;
     border-color: #007bff;
 }
+.pagination button.active {
+    background-color: #007bff; 
+    color: #fff; 
+    border-color: #007bff; 
+}
 
+.sortButtons button.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
 .content {
     width: 100%;
 }
@@ -91,7 +98,7 @@
 }
 
 .content th, .content td {
-    padding: 12px 15px;
+    padding: 8px 15px;
     border-bottom: 1px solid #e0e0e0;
 }
 
@@ -121,13 +128,13 @@
 
 .pagination {
     display: flex;
-    justify-content: center; /* 버튼들을 중앙에 정렬 */
+    justify-content: center; 
     margin-top: 20px;
 }
 
 .pagination button {
     padding: 8px 12px;
-    margin: 0 5px; /* 버튼 사이의 간격 조절 */
+    margin: 0 5px; 
     border: 1px solid #007bff;
     border-radius: 5px;
     background-color: #fff;

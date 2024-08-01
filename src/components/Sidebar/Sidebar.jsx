@@ -46,7 +46,7 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faBarsStaggered} />
-                            {toggle && <a href="http://localhost:3000/Notice" className={styles.link}>게시판</a>}
+                            {toggle && <a href="http://localhost:3000/Board" className={styles.link}>게시판</a>}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faCalendar} />
