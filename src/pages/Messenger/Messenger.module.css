@@ -1,0 +1,49 @@
+.messengerContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* 화면 전체 높이를 사용 */
+}
+
+.mainContent {
+    display: flex;
+    flex: 1;
+}
+
+.messengerBody {
+    display: flex;
+    flex: 1;
+    padding: 20px;
+    box-sizing: border-box; /* Padding 포함하여 크기 계산 */
+}
+
+.messengerSidebar, .messengerMain, .messengerChat {
+    flex: 1;
+    margin-right: 20px;
+    border: 1px solid black;
+    box-sizing: border-box; /* Padding 및 border 포함하여 크기 계산 */
+}
+
+.messengerSidebar ul, .messengerMain ul, .messengerChat ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0; /* 기본 margin 제거 */
+    height: 100%; /* ul 요소가 부모 높이를 차지하도록 설정 */
+    overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
+}
+
+.messengerChat {
+    display: flex;
+    flex-direction: column;
+    margin-right: 0; /* 마지막 요소이므로 margin-right 제거 */
+}
+
+.messengerChat ul {
+    flex: 1; /* ul 요소가 남은 공간을 차지하도록 설정 */
+}
+
+.messengerChat input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    box-sizing: border-box; /* Padding 포함하여 크기 계산 */
+}
