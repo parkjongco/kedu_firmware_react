@@ -16,9 +16,39 @@ const MailList = () => {
   // const [selectedMailContent, setSelectedMailContent] = useState(null); // 선택된 메일 내용
   // const [selectedMailSeq, setSelectedMailSeq] = useState(null);
 
-  const { mails, handleGetAll, setSelectedMailContent, setSelectedMailSeq } = useMailStore();
+  const { mails, handleGetAll, setSelectedMailContent, setSelectedMailSeq, handleGetPage } = useMailStore();
 
 
+  // 추가된 부분: 현재 페이지 상태
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
+  const mailsPerPage = 10; // 페이지당 메일 수
+  const [currentMails, setCurrentMails] = useState([]);
+  const [totalPages, setTotalPages] = useState(0); // 추가된 부분: 전체 페이지 수 상태 관리
+
+  // 추가된 부분: 페이지 번호 변경 시 메일 목록 업데이트
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // useEffect(()=>{
+  //   console.log("useEffect 호출됨");
+  //   handleGetAll();
+  // }, []); //빈 배열을 전달하면 컴포넌트가 처음 마운트될 때 한번만 실행 됌
+
+  useEffect(() => {
+    console.log("useEffect 호출됨");
+    handleGetPage(currentPage, mailsPerPage); // 수정된 부분: 페이지 및 항목 수를 전달
+  }, [currentPage]); // currentPage 변경 시마다 호출
+  
+  useEffect(() => {
+    console.log("mails 상태 업데이트 감지:", mails);
+    if (Array.isArray(mails.mails)) {
+      setCurrentMails(mails.mails);
+      setTotalPages(Math.ceil(mails.total / mailsPerPage));
+      console.log("currentMails 설정됨:", mails.mails);
+      console.log("Total pages:", Math.ceil(mails.total / mailsPerPage));
+    }
+  }, [mails]);
   
 
   const handleMailClick = (mailSeq) => {
@@ -38,29 +68,37 @@ const MailList = () => {
 
   
 
-  useEffect(()=>{
-    console.log("useEffect 호출됨");
-    handleGetAll();
-  }, []); //빈 배열을 전달하면 컴포넌트가 처음 마운트될 때 한번만 실행 됌
+  
 
-
-    return (
-      <div className={styles.mailContainer}>
-        <div className={styles.sortButtons}>
-          <select>
-            <option value="date">날짜순</option>
-            <option value="sender">보낸사람순</option>
-            <option value="subject">제목순</option>
-          </select>
-        </div>
-        <div className={styles.mailList}> {/*해당부분 CSS 추가 적용 필요해보임 */}
-        {mails.map((mail) => (
-          <MailItem key={mail.mail_seq} mail={mail} onClick={handleMailClick}/>
-        ))}
-
-        </div>
+  
+  return (
+    <div className={styles.mailContainer}>
+      <div className={styles.sortButtons}>
+        <select>
+          <option value="date">날짜순</option>
+          <option value="sender">보낸사람순</option>
+          <option value="subject">제목순</option>
+        </select>
       </div>
-    )
+      <div className={styles.mailList}>
+        {currentMails.map((mail) => (
+          <MailItem key={mail.mail_seq} mail={mail} onClick={() => handleMailClick(mail.mail_seq)}/>
+        ))}
+      </div>
+
+      <div className={styles.pagination}>
+        {[...Array(totalPages)].map((_, i) => (
+          <button 
+            key={i + 1} 
+            onClick={() => handlePageChange(i + 1)}
+            className={i + 1 === currentPage ? styles.active : ''}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
   }
 
   export default MailList;

@@ -19,6 +19,13 @@ export const useMailStore = create((set)=>({
           set({ mails: resp.data });
         
         });
-      }
+      },
+
+    handleGetPage: (page = 1, size = 10) => {
+    console.log(`페이지 ${page}의 메일을 ${size}개 불러옵니다`);
+    axios.get(`http://192.168.1.36/mail`, { params: { page, size } }).then((resp) => {
+      set({ mails: resp.data });
+    });
+  },
 
 }));
