@@ -5,7 +5,7 @@ import styles from './Admin.module.css';
 
 axios.defaults.withCredentials = true; // 세션 쿠키 포함
 
-const Admin = () => {
+const Admin = (host) => {
   const [form, setForm] = useState({
     department: '',
     unitCode: '',
@@ -29,7 +29,9 @@ const Admin = () => {
 
   // 부서 목록을 가져오는 useEffect
   useEffect(() => {
+
     axios.get('http://192.168.1.11/admin/departments', {
+
       headers: {
         'Content-Type': 'application/json',
       }
@@ -51,7 +53,9 @@ const Admin = () => {
   // 부서 선택 시 유닛 코드를 가져와 input 필드에 표시하고 unit_seq도 가져오기
   useEffect(() => {
     if (form.department) {
-      axios.get(`http://192.168.1.11/admin/departments/${form.department}/units`, {
+
+      axios.get(`http://192.168.1.10/admin/departments/${form.department}/units`, {
+
         headers: {
           'Content-Type': 'application/json',
         }
@@ -76,7 +80,9 @@ const Admin = () => {
 
   // 직급 목록을 가져오는 useEffect
   useEffect(() => {
-    axios.get('http://192.168.1.11/ranks', {
+
+    axios.get('http://192.168.1.10/ranks', {
+
       headers: {
         'Content-Type': 'application/json',
       }
@@ -124,7 +130,9 @@ const Admin = () => {
       return;
     }
 
-    axios.post('http://192.168.1.11/users', {
+
+    axios.post('http://192.168.1.10/users', {
+
       users_code: form.employeeCode,
       users_name: form.users_name,
       users_password: form.tempPassword,
@@ -165,24 +173,32 @@ const Admin = () => {
 
     // department_title, unit_title, rank_title을 가져오기 위해 추가 요청
     axios.all([
-      axios.get(`http://192.168.1.11/admin/departments/${form.department}`, {
+
+      axios.get(`http://192.168.1.10/admin/departments/${form.department}`, {
+
         headers: {
           'Content-Type': 'application/json',
         }
       }),
-      axios.get(`http://192.168.1.11/admin/units/${unitSeq}`, {
+
+      axios.get(`http://192.168.1.10/admin/units/${unitSeq}`, {
+
         headers: {
           'Content-Type': 'application/json',
         }
       }),
-      axios.get(`http://192.168.1.11/ranks/${form.rank_seq}`, {
+
+      axios.get(`http://192.168.1.10/ranks/${form.rank_seq}`, {
+
         headers: {
           'Content-Type': 'application/json',
         }
       })
     ])
     .then(axios.spread((departmentResponse, unitResponse, rankResponse) => {
-      return axios.post('http://192.168.1.11/employees/register', {
+
+      return axios.post('http://192.168.1.10/employees/register', {
+
         user_seq: userSeq,
         users_name: form.users_name,
         department_seq: parseInt(form.department),
