@@ -8,6 +8,7 @@ import App from './App';
 import { BoardIndex, BoardEdit, BoardDetail } from './pages/Board_jongho';
 import Mailbox from './components/Mailbox/Mailbox';
 import Messenger from './pages/Messenger/Messenger'; // Messenger 컴포넌트 import
+import Login from './components/LoginIk/Login';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -18,6 +19,7 @@ root.render(
         <Route path="/Board/*" element={<BoardIndex />} />
         <Route path="/mailbox/*" element={<Mailbox />} />
         <Route path="/messenger" element={<Messenger />} /> {/* Messenger 경로 추가 */}
+        <Route path="/users/login" element={<Login />}/>
       </Routes>
     </BrowserRouter>
 )
