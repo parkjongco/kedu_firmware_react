@@ -5,22 +5,21 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import App from './App';
-import { NoticeIndex, NoticeEdit, NoticeDetail } from './pages/Notice_jongho';
+import { BoardIndex, BoardEdit, BoardDetail } from './pages/Board_jongho';
 import Mailbox from './components/Mailbox/Mailbox';
+import Messenger from './pages/Messenger/Messenger'; // Messenger 컴포넌트 import
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  // <React.StrictMode> //useEffect 두번 호출되서 지워둠
+
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/Notice/*" element={<NoticeIndex/>} />
-        <Route path="/mailbox/*" element={<Mailbox/>}/>
+        <Route path="/Board/*" element={<BoardIndex />} />
+        <Route path="/mailbox/*" element={<Mailbox />} />
+        <Route path="/messenger" element={<Messenger />} /> {/* Messenger 경로 추가 */}
       </Routes>
     </BrowserRouter>
-  // </React.StrictMode>
-);
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+)
+
 reportWebVitals();

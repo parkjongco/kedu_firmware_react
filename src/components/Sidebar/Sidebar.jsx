@@ -46,7 +46,7 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faBarsStaggered} />
-                            {toggle && <a href="http://localhost:3000/Notice" className={styles.link}>게시판</a>}
+                            {toggle && <a href="http://localhost:3000/Board" className={styles.link}>게시판</a>}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faCalendar} />
@@ -58,7 +58,7 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faMessage} />
-                            {toggle && <a href="메신저" className={styles.link}>메신저</a>}
+                            {toggle && <a href="http://192.168.1.11:3000/Messenger" className={styles.link}>메신저</a>}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faHardDrive} />

@@ -1,8 +1,0 @@
-.container {
-    width: calc(100% - 40px); /* 좌우 여백을 줄여서 전체 너비 사용 */
-    margin: 20px auto; /* 중앙 정렬 및 여백 조정 */
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-}

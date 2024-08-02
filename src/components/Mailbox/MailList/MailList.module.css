@@ -22,7 +22,7 @@
     margin: 16px 6px 6px 0; /* 위, 오른쪽, 아래, 왼쪽 */
 }
 
-/* 추가된 부분: 페이지네이션 스타일 */
+/* 페이지네이션 스타일 */
 .pagination {
     display: flex;
     justify-content: center;
