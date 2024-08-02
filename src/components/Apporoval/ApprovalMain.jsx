@@ -1,8 +1,6 @@
 import Header from "../Header/Header";
 import SideBar from "../Sidebar/Sidebar";
-import ApprovalModal from "./ApprovalModal/ApprovalModal";
 import ApprovalMainContents from "./ApprovalMainContent/ApprovalMainContents";
-import MainContent from "../MainContent/MainContent";
 
 const Approval = () => {
     return (

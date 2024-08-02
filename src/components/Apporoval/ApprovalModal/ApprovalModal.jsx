@@ -1,3 +1,4 @@
+// ApprovalModal.js
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
@@ -9,9 +10,11 @@ import styles from '../ApprovalModal/ApprovalModal.module.css';
 import axios from 'axios';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import ApprovalTemplateModal from './ApprovalTemplateModal'; // 새롭게 추가된 컴포넌트 임포트
 
 function ApprovalModal() {
     const [show, setShow] = useState(false);
+    const [showSecondModal, setShowSecondModal] = useState(false);
     const [listA, setListA] = useState([
         { text: 'Cras justo odio', disabled: false },
         { text: 'Dapibus ac facilisis in', disabled: false },
@@ -62,10 +65,8 @@ function ApprovalModal() {
         setShow(false);
     };
 
-    const handleShow = () => {
-        axios.get(``)
-        setShow(true);
-    }
+    const handleShow = () => setShow(true);
+
     const handleItemClick = (index) => {
         if (!filteredListA[index].disabled) {
             const selectedItem = filteredListA[index];
@@ -200,7 +201,7 @@ function ApprovalModal() {
                 전자결재
             </Button>
 
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={show} onHide={handleClose} backdrop="static">
                 <Modal.Header closeButton>
                     <Modal.Title>전자 결재</Modal.Title>
                 </Modal.Header>
@@ -220,13 +221,13 @@ function ApprovalModal() {
                             <Dropdown.Divider />
                             <Dropdown.Item onClick={() => handleCategorySelect('[006][휴가 신청]')}>[006][휴가 신청]</Dropdown.Item>
                         </DropdownButton>
-                        <Form.Control name="approval_title" aria-label="Text input with dropdown button" onChange={handleApprovalTitleChange} value={approvalData.approval_title}/>
+                        <Form.Control name="approval_title" aria-label="Text input with dropdown button" onChange={handleApprovalTitleChange} value={approvalData.approval_title} />
                     </InputGroup>
                     <div className={styles.categoryContent}>
                         {renderCategoryContent()}
                     </div>
                     <InputGroup>
-                        <Form.Control name="approval_contents" as="textarea" aria-label="With textarea" placeholder="내용을 입력하세요" onChange={handleApprovalContentChange} value={approvalData.approval_contents}/>
+                        <Form.Control name="approval_contents" as="textarea" aria-label="With textarea" placeholder="내용을 입력하세요" onChange={handleApprovalContentChange} value={approvalData.approval_contents} />
                     </InputGroup>
 
                     <h5 className="m-2"> 결재권자 추가</h5>
@@ -244,6 +245,10 @@ function ApprovalModal() {
                                 {key.replace('template_', '템플릿 ')}
                             </Dropdown.Item>
                         ))}
+                        <hr></hr>
+                        <Dropdown.Item onClick={() => setShowSecondModal(true)}>
+                            템플릿 추가
+                        </Dropdown.Item>
                     </DropdownButton>
 
                     <InputGroup className="mb-3">
@@ -291,6 +296,12 @@ function ApprovalModal() {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            <ApprovalTemplateModal 
+                show={showSecondModal} 
+                onHide={() => setShowSecondModal(false)} 
+                listA ={listA}
+            />
         </>
     );
 }
