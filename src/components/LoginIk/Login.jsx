@@ -24,7 +24,7 @@ const Login = ({ setIsMypage }) => {
 
   const handleLogin = () => {
     console.log("로그인 시도 중:", auth);
-    axios.post(`http://192.168.1.172/auth`, auth)
+    axios.post(`http://192.168.1.10/auth`, auth)
       .then((resp) => {
         console.log("서버 응답:", resp.data);
         const { users_code, users_is_admin } = resp.data;
@@ -45,11 +45,11 @@ const Login = ({ setIsMypage }) => {
   };
 
   const handleLogout = () => {
-    axios.post(`http://192.168.1.172/auth/logout`)  // POST로 변경
+    axios.post(`http://192.168.1.10/auth/logout`)
       .then(() => {
         console.log("로그아웃 성공");
         sessionStorage.removeItem("loginID");
-        sessionStorage.removeItem("isAdmin");  // 추가: 관리자 여부도 세션에서 제거
+        sessionStorage.removeItem("isAdmin");
         setLoginID('');
         setAuth({ users_code: '', users_password: '' });
         setIsAdmin(false);
@@ -61,12 +61,12 @@ const Login = ({ setIsMypage }) => {
         alert("로그아웃 실패");
       });
   };
-  
+
   const handleMemberout = () => {
     if (!window.confirm("정말 탈퇴하시겠습니까?")) {
       return;
     }
-    axios.delete(`http://192.168.1.172/users`)
+    axios.delete(`http://192.168.1.10/users`)
       .then(() => {
         console.log("회원 탈퇴 성공");
         sessionStorage.removeItem("loginID");
@@ -90,6 +90,11 @@ const Login = ({ setIsMypage }) => {
     navigate("/admin");
   };
 
+  // New function to handle external navigation
+  const handleGoToHome = () => {
+    window.location.href = "http://192.168.1.10:3000/"; // Directly navigate to the main homepage
+  };
+
   return (
     <div className={styles.loginContainer}>
       <div className={styles.title}>Firmware</div>
@@ -111,6 +116,7 @@ const Login = ({ setIsMypage }) => {
                   <button className={styles.actionButton} onClick={handleDeleteUser}>사원 제명</button>
                 </>
               )}
+              <button className={styles.actionButton} onClick={handleGoToHome}>메인 페이지로 이동</button> {/* New button */}
             </div>
           </>
         ) : (

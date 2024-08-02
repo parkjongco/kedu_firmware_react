@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './Detail.module.css';
 
-const Detail = () => {
+const Detail = (host) => {
     const navigate = useNavigate();
     const [board, setBoard] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -14,7 +14,7 @@ const Detail = () => {
     const seq = location.pathname.split('/').pop();
 
     useEffect(() => {
-        axios.get(`http://localhost:80/board/detail/${seq}`)
+        axios.get(`${host}/board/detail/${seq}`)
             .then(resp => {
                 setBoard(resp.data);
                 setUpdatedTitle(resp.data.board_title);
@@ -31,7 +31,7 @@ const Detail = () => {
             board_contents: updatedContents,
         };
 
-        axios.put(`http://localhost:80/board/${seq}`, updatedData)
+        axios.put(`${host}/board/${seq}`, updatedData)
             .then(resp => {
                 setBoard(resp.data);
                 setIsEditing(false);
