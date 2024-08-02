@@ -26,8 +26,6 @@ const Detail = () => {
     }, [seq]);
 
     const handleUpdate = (e) => {
-        e.preventDefault();
-
         const updatedData = {
             board_title: updatedTitle,
             board_contents: updatedContents,
@@ -59,10 +57,24 @@ const Detail = () => {
                         type="text"
                         value={updatedTitle}
                         onChange={(e) => setUpdatedTitle(e.target.value)}
+                        className={styles.titleInput}
                     />
                 ) : (
                     <div className={styles.title}>{board.board_title}</div>
                 )}
+                <div>
+                    {!isEditing ? (
+                        <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
+                    ) : (
+                        <div className={styles.button_container}>
+                            <form onSubmit={handleUpdate} className={styles.editForm}>
+                                <button type="submit" className={styles.button}>수정완료</button>
+                                <button type="button" onClick={toggleEditMode} className={styles.button}>취소하기</button>
+                            </form>
+                        </div>
+                    )}
+                    <button onClick={() => navigate("/Board")} className={styles.button}>뒤로가기</button>
+                </div>
             </div>
             <div className={styles.body}>
                 <div><strong>글쓴이:</strong> {board.writer}</div>
@@ -71,19 +83,18 @@ const Detail = () => {
             </div>
             <div className={styles.content}>
                 {isEditing ? (
-                    <form onSubmit={handleUpdate}>
+                    <form onSubmit={handleUpdate} className={styles.editForm}>
                         <div>
                             <label>
                                 내용:
-                                <textarea
-                                    value={updatedContents}
-                                    onChange={(e) => setUpdatedContents(e.target.value)}
-                                />
+                                <div
+                                    contentEditable
+                                    className={styles.contentEditable}
+                                    onInput={(e) => setUpdatedContents(e.currentTarget.textContent)}
+                                >
+                                    {updatedContents}
+                                </div>
                             </label>
-                        </div>
-                        <div className={`${styles.buttonContainer} ${styles.editContainer}`}>
-                            <button type="submit" className={styles.button}>Update</button>
-                            <button type="button" onClick={toggleEditMode} className={styles.button}>Cancel</button>
                         </div>
                     </form>
                 ) : (
@@ -92,10 +103,6 @@ const Detail = () => {
                     />
                 )}
             </div>
-            {!isEditing && (
-                    <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
-            )}
-                <button onClick={() => navigate("/Board")} className={styles.button}>뒤로가기</button>
         </div>
     );
 };
