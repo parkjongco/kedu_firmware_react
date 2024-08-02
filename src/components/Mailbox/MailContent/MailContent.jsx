@@ -46,7 +46,8 @@ useEffect(() => {
   }
 }, [selectedMailSeq]); // selectedMailSeq가 변경될 때마다 실행
 
-if (!selectedMailContent || selectedMailContent.length === 0) { //selectedMailContent가 없을 때(새로고침이 이루어졌을때가 될 것이다.)
+// 데이터가 없을 때 예외 처리
+if (!selectedMailContent || !Array.isArray(selectedMailContent.mails) || selectedMailContent.mails.length === 0) {
   return <div className={styles.mailContainer}>메일을 선택해 주세요</div>;
 }
 
@@ -54,7 +55,7 @@ if (!selectedMailContent || selectedMailContent.length === 0) { //selectedMailCo
     return (
       <div className={styles.mailContainer}>
 
-      {selectedMailContent.map((mail,index) => (
+      {selectedMailContent.mails.map((mail,index) => (
         <div key={index} className={styles.mail}>
         <h2>{mail.mail_title}</h2> {/* 메일제목 */}
             <div className={styles.contentHeader}>
@@ -62,7 +63,7 @@ if (!selectedMailContent || selectedMailContent.length === 0) { //selectedMailCo
               
               <div className={styles.contentButtons}>
               <button onClick={() => handleReply(mail.mail_seq)}>회신</button>
-              {index !== selectedMailContent.length - 1 && ( //가장 오래전 메일(목록에 표시되는메일)은 content영역에서 삭제 불가(action 컴포넌트의 삭제에서 삭제해야함)
+              {index !== selectedMailContent.mails.length - 1 && ( //가장 오래전 메일(목록에 표시되는메일)은 content영역에서 삭제 불가(action 컴포넌트의 삭제에서 삭제해야함)
                 <button onClick={() => handleDeleteSelectedMail(mail.mail_seq)}>삭제</button>
               )} 
               </div>

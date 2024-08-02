@@ -6,26 +6,16 @@ import { useMailStore } from '../../store/store';
 
 const MailList = () => {
 
-  // const mails = [
-  //   { id: 1, sender: '작성자1', subject: '메일제목1', date: '작성 날짜1' },
-  //   { id: 2, sender: '작성자2', subject: '메일제목2', date: '작성 날짜2' },
-  //   // 해당 부분은 zustand사용하여 store로 이동하여야한다.(하드코딩 상태)
-  // ];
-
-  // const [mails, setMails] = useState([]);
-  // const [selectedMailContent, setSelectedMailContent] = useState(null); // 선택된 메일 내용
-  // const [selectedMailSeq, setSelectedMailSeq] = useState(null);
-
   const { mails, handleGetAll, setSelectedMailContent, setSelectedMailSeq, handleGetPage } = useMailStore();
 
 
-  // 추가된 부분: 현재 페이지 상태
+  // 현재 페이지 상태
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
   const mailsPerPage = 10; // 페이지당 메일 수
   const [currentMails, setCurrentMails] = useState([]);
-  const [totalPages, setTotalPages] = useState(0); // 추가된 부분: 전체 페이지 수 상태 관리
+  const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수 상태 관리
 
-  // 추가된 부분: 페이지 번호 변경 시 메일 목록 업데이트
+  // 페이지 번호 변경 시 메일 목록 업데이트
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -37,7 +27,7 @@ const MailList = () => {
 
   useEffect(() => {
     console.log("useEffect 호출됨");
-    handleGetPage(currentPage, mailsPerPage); // 수정된 부분: 페이지 및 항목 수를 전달
+    handleGetPage(currentPage, mailsPerPage); // 페이지 및 항목 수를 전달
   }, [currentPage]); // currentPage 변경 시마다 호출
   
   useEffect(() => {
