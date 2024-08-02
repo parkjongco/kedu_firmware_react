@@ -1,0 +1,156 @@
+/* 전체 레이아웃 스타일 */
+.container {
+    width: calc(100% - 40px); /* 좌우 여백을 줄여서 전체 너비 사용 */
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.category_header {
+    display: flex;
+    justify-content: space-between; /* 제목과 버튼들을 양 끝으로 배치 */
+    align-items: center;
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 20px;
+}
+
+.header_Left {
+    display: flex;
+    align-items: center;
+}
+
+.header_Left h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-right: 10px;
+}
+
+.header_Left p {
+    font-size: 1rem;
+    color: #666;
+}
+
+.header_Right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#write {
+    color: #007bff;
+    text-decoration: none;
+    padding: 8px 12px;
+    border: 1px solid #007bff;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#write:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.sortButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.sortButtons button {
+    padding: 8px 12px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #007bff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.sortButtons button:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.sortButtons button.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+.pagination button.active {
+    background-color: #007bff; 
+    color: #fff; 
+    border-color: #007bff; 
+}
+
+.sortButtons button.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+.content {
+    width: 100%;
+}
+
+.content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.content th, .content td {
+    padding: 8px 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.content th {
+    background-color: #f9f9f9;
+    color: #333;
+    font-weight: 600;
+    text-align: left;
+}
+
+.content tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.content tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.content tr:hover {
+    background-color: #f1f1f1;
+}
+
+.content td {
+    text-align: left;
+    color: #555;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center; 
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 8px 12px;
+    margin: 0 5px; 
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #007bff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination button:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.pagination button:disabled {
+    cursor: not-allowed;
+    color: #ccc;
+    border-color: #ccc;
+}
