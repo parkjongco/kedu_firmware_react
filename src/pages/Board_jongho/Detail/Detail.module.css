@@ -1,3 +1,8 @@
+.button_container {
+    display: flex;
+    flex-direction: row;    
+}
+
 /* 버튼 기본 스타일 */
 .button {
     background-color: transparent;
@@ -11,19 +16,16 @@
     margin: 5px;
 }
 
-/* 버튼에 마우스를 올렸을 때 */
 .button:hover {
     background-color: #007bff;
     color: #ffffff;
 }
 
-/* 버튼을 클릭했을 때 */
 .button:active {
     background-color: #0056b3;
     color: #ffffff;
 }
 
-/* 버튼에 포커스가 갔을 때 */
 .button:focus {
     outline: none;
     background-color: #0056b3;
@@ -40,6 +42,9 @@
     border-bottom: 2px solid #e0e0e0;
     margin-bottom: 20px;
     padding-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .title {
@@ -74,19 +79,11 @@
     max-height: 300px;
 }
 
-/* 버튼 컨테이너를 우측 상단에 위치시키기 위한 스타일 */
-.button_Container {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-}
-
-.button_Container.edit_Container {
-    top: 20px; /* Edit 버튼 위치 조정 */
-}
-
-.button_Container.back_Container {
-    top: 60px; /* 뒤로가기 버튼 위치 조정 */
+.textarea {
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 100%;
+    min-height: 150px;
+    font-size: 1rem;
+    margin-top: 10px;
 }

@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // 리액트 라우터에서 useNavigate 훅을 가져옵니다.
 import styles from './Edit.module.css';
@@ -82,7 +83,7 @@ export default function Edit() {
     function getFileName(e) {
         const files = e.target.files;
         if (files.length === 0) {
-            setFileComment("여기를 눌러 추가하거나, 끌어서 추가하세요");
+            setFileComment("여기를 눌러 파일을 추가하거나, 끌어서 추가하세요");
             return;
         }
         let filenames = Array.from(files).map(file => file.name).join("\n");
