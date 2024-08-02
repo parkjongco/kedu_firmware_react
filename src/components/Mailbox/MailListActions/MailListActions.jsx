@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './MailListActions.module.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -6,6 +6,7 @@ import { useMailStore } from './../../store/store';
 
 const MailListActions = () => {
     const [searchTerm, setSearchTerm] = useState(''); //검색어 상태 (store로 보낼지 고민 중)
+    const [previewResults, setPreviewResults] = useState([]);
     const navi = useNavigate();
     const { setSelectedMailContent, selectedMailSeq, setSelectedMailSeq, handleGetAll, setMails } = useMailStore();
 
@@ -62,13 +63,50 @@ const MailListActions = () => {
       }
   };
 
+  useEffect(() => {
+    if (searchTerm) {
+        axios.get(`http://192.168.1.36/mail`, {
+            params: { query: searchTerm }
+        }).then((resp) => {
+            setPreviewResults(resp.data);
+        });
+    } else {
+        setPreviewResults([]);
+    }
+}, [searchTerm]);
+
+
+  const handlePreviewClick = (mailSeq) => {
+    // 선택된 미리보기 항목의 메일 Seq를 이용해 메일 리스트를 갱신
+    axios.get(`http://192.168.1.36/mail`, {
+        params: { seq: mailSeq }
+    }).then((resp) => {
+        setMails(resp.data); // 메일 목록 갱신
+        setSelectedMailContent([]); // 선택된 메일 내용 초기화
+        setPreviewResults([]); // 미리보기 결과 초기화
+    });
+  };
+
     return (
         <div className={styles.mailListActions}>
             <input type="text" className={styles.searchInput} placeholder="메일검색" autoComplete="off" maxLength="100" value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)} 
             onKeyPress={handleKeyPress} // Enter 키 누를 때 검색 실행
             /> 
-            
+            {previewResults.length > 0 && (
+                <div className={styles.previewContainer}>
+                    {previewResults.map((mail, index) => (
+                        <div 
+                            key={index} 
+                            className={styles.previewItem} 
+                            onClick={() => handlePreviewClick(mail.mail_seq)} // 미리보기 항목 클릭 시 메일 목록 업데이트
+                        >
+                            <div className={styles.previewTitle}>{mail.mail_title}</div>
+                            <div className={styles.previewContent}>{mail.mail_content}</div>
+                        </div>
+                    ))}
+                </div>
+            )}
             <button className={styles.refreshButton} onClick={handleRefresh}>새로고침</button>
             <button className={styles.actionButtons} onClick={handleComposeMail}>메일쓰기</button>
             <button className={styles.actionButtons} onClick={handleDeleteSelectedMailBox}>삭제</button>
