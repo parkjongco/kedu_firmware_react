@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import styles from './MailItem.module.css'
 
 const MailItem = ({mail, onClick}) => {

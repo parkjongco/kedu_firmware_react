@@ -36,15 +36,19 @@ const MailContent = () => {
 //회신을 하고 돌아왔을때 mailContent 내용을 갱신해준다.
 //mailContent는 메일함 목록을 눌렀을때 갱신이되기때문에
 //회신 이후에 바로 회신 메일을 확인을 확인해주기위해 아래와같은 처리를 해줌
-useEffect(()=>{
+useEffect(() => {
+  if (selectedMailSeq) {//selectedMailSeq가 있을 경우만 실행
+    axios.get(`http://192.168.1.36/mail`, {
+      params: { seq: selectedMailSeq }
+    }).then((resp) => {
+      setSelectedMailContent(resp.data); // 메일 내용 설정
+    });
+  }
+}, [selectedMailSeq]); // selectedMailSeq가 변경될 때마다 실행
 
-  axios.get(`http://192.168.1.36/mail`, {
-    params: { seq: selectedMailSeq }
-  }).then((resp) => {
-    setSelectedMailContent(resp.data);
-  })
-}, []);
-
+if (!selectedMailContent || selectedMailContent.length === 0) { //selectedMailContent가 없을 때
+  return <div className={styles.mailContainer}>메일을 선택해 주세요</div>;
+}
 
 
     return (
@@ -58,7 +62,9 @@ useEffect(()=>{
               
               <div className={styles.contentButtons}>
               <button onClick={() => handleReply(mail.mail_seq)}>회신</button>
-              <button onClick={() => handleDeleteSelectedMail(mail.mail_seq)}>삭제</button>
+              {index !== selectedMailContent.length - 1 && ( //가장 오래전 메일(목록에 표시되는메일)은 content영역에서 삭제 불가(action 컴포넌트의 삭제에서 삭제해야함)
+                <button onClick={() => handleDeleteSelectedMail(mail.mail_seq)}>삭제</button>
+              )} 
               </div>
             </div>
             <div className={styles.mailContent}>
