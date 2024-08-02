@@ -1,8 +1,8 @@
-// src/config/NoticeCategory.js
+// src/config/BoardCategory.js
 import React, { useEffect, useState } from 'react';
-import styles from './NoticeCategory.module.css';
+import styles from './BoardCategory.module.css';
 
-export const NoticeCategory = [
+export const BoardCategory = [
     { code: 0, name: "전사 게시판" },
     { code: 1, name: "공지사항" },
     { code: 2, name: "자유게시판" },
@@ -11,19 +11,19 @@ export const NoticeCategory = [
     { code: 5, name: "퇴사 갤러리" }
 ];
 
-const NoticeCategoryComponent = ({ onCategoryClick } ) => {
+const BoardCategoryComponent = ({ onCategoryClick }) => {
     const [init, setInit] = useState(false);
 
-    useEffect(()=> {
-        if(!init) {
-            onCategoryClick(NoticeCategory[0]);
+    useEffect(() => {
+        if (!init) {
+            onCategoryClick(BoardCategory[0]);
             setInit(!init);
         }
-    })
+    });
 
     return (
-        <div className={styles.noticeCategories}>
-            {NoticeCategory.map(category => (
+        <div className={styles.boardCategories}>
+            {BoardCategory.map(category => (
                 <div
                     key={category.code}
                     className={styles.category}
@@ -35,9 +35,6 @@ const NoticeCategoryComponent = ({ onCategoryClick } ) => {
             ))}
         </div>
     );
-    useEffect(()=> {
-        onCategoryClick(NoticeCategory[0])
-    });
 };
 
-export default NoticeCategoryComponent;
+export default BoardCategoryComponent;

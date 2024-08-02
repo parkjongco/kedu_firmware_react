@@ -1,0 +1,93 @@
+/* 전체 레이아웃 스타일 */
+.container {
+    width: calc(100% - 40px); /* 좌우 여백을 줄여서 전체 너비 사용 */
+    margin: 20px auto; /* 중앙 정렬 및 여백 조정 */
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.category_header {
+    display: flex;
+    justify-content: space-between; /* 제목과 버튼들을 양 끝으로 배치 */
+    align-items: center;
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 20px;
+}
+
+.header_Left {
+    display: flex;
+    align-items: center;
+}
+
+.header_Left h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-right: 10px;
+}
+
+.header_Left p {
+    font-size: 1rem;
+    color: #666;
+}
+
+.header_Right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.button_container {
+    display: flex;
+    gap: 10px;
+}
+
+.action_button {
+    padding: 8px 12px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #007bff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.action_button:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+#title {
+    width: 100%; /* 패딩과 테두리를 포함한 계산 */
+    height: 30px;
+    margin-bottom: 10px;
+    border: 0.5px solid #d9d9d9;
+    border-radius: 8px;
+    padding-left: 10px;
+    outline: none;
+    box-sizing: border-box; /* 전체 크기를 포함하도록 설정 */
+}
+
+.file_container {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* 자식 요소를 중앙에 정렬 */
+    padding: 5px 0px; /* 여백 추가 */
+    box-sizing: border-box; /* Padding 및 border를 포함한 크기 설정 */
+}
+
+.file {
+    width: 100%; /* 컨테이너 너비에서 padding 제외 */
+    display: flex;
+    margin-top: 10px;
+    border: 0.5px dotted #d9d9d9;
+    padding: 10px;
+    color: #8f8f8f;
+    text-align: center;
+    align-self: center;
+    justify-self: center;
+    white-space: pre-line;
+    box-sizing: border-box; 
+    overflow-y: auto;
+    max-height: 100px; 
+}
