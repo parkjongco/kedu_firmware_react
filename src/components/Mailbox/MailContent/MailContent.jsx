@@ -46,7 +46,7 @@ useEffect(() => {
   }
 }, [selectedMailSeq]); // selectedMailSeq가 변경될 때마다 실행
 
-if (!selectedMailContent || selectedMailContent.length === 0) { //selectedMailContent가 없을 때
+if (!selectedMailContent || selectedMailContent.length === 0) { //selectedMailContent가 없을 때(새로고침이 이루어졌을때가 될 것이다.)
   return <div className={styles.mailContainer}>메일을 선택해 주세요</div>;
 }
 
