@@ -4,7 +4,7 @@ import styles from './List.module.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-export const List = (category) => {
+export const List = (category,host) => {
     const name = category.category.name;
     const code = category.category.code;
     const [data, setData] = useState([]);
@@ -14,7 +14,7 @@ export const List = (category) => {
     const itemsPerPage = 10; // 페이지당 아이템 수 정의
 
     useEffect(() => {
-        axios.get(`http://localhost:80/board`).then(resp => {
+        axios.get(`${host}/board`).then(resp => {
             setData(resp.data);
         }).catch(error => {
             console.error('Error fetching data:', error);
@@ -59,7 +59,7 @@ export const List = (category) => {
     };
 
     const handleDelete = (seq) => {
-        axios.delete(`http://localhost:80/board/${seq}`)
+        axios.delete(`${host}/board/${seq}`)
             .then(response => {
                 setData(data.filter(item => item.board_seq !== seq));
             })
@@ -106,7 +106,7 @@ export const List = (category) => {
                             <th>글쓴이</th>
                             <th>작성일자</th>
                             <th>조회수</th>
-                            <th>액션</th> {/* 액션 컬럼 추가 */}
+                            <th>액션</th> 
                         </tr>
                     </thead>
                     <tbody>
@@ -118,7 +118,7 @@ export const List = (category) => {
                                 <td>{e.board_view_count}</td>
                                 <td>
                                     <button onClick={(event) => {
-                                        event.stopPropagation(); // Prevent row click event
+                                        event.stopPropagation();
                                         handleDelete(e.board_seq);
                                     }}>
                                         삭제

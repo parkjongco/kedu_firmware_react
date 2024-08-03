@@ -1,25 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
+import axios from 'axios';
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import styles from './Messenger.module.css';
 
-const Messenger = () => {
-  const [messages, setMessages] = useState([]); // 수신된 메시지를 저장하는 상태
-  const [inputMessage, setInputMessage] = useState(''); // 입력된 메시지를 저장하는 상태
-  const [username, setUsername] = useState(''); // 사용자 이름을 저장하는 상태
-  const [client, setClient] = useState(null); // STOMP 클라이언트를 저장하는 상태
+axios.defaults.withCredentials = true;
 
-  // WebSocket 연결 설정
+const Messenger = () => {
+  const [messages, setMessages] = useState([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [username, setUsername] = useState('');
+  const [client, setClient] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [users, setUsers] = useState([]);
+
+  // 사용자 정보 및 유저 목록 가져오기
   useEffect(() => {
-    // SockJS를 통해 WebSocket 연결을 생성
+    const loginID = sessionStorage.getItem('loginID');
+    if (loginID) {
+      axios.get('http://192.168.1.11/users/all')
+        .then((response) => {
+          const users = response.data;
+          const currentUser = users.find(user => user.users_code === loginID);
+          if (currentUser) {
+            setUsername(currentUser.users_name);
+            setUsers(users.filter(user => user.users_name !== currentUser.users_name)); // 본인 제외
+          } else {
+            console.error('로그인한 사용자 정보를 찾을 수 없습니다.');
+          }
+        })
+        .catch((error) => {
+          console.error('사용자 정보를 가져오는 중 오류 발생:', error);
+        });
+    }
+
     const socket = new SockJS('http://192.168.1.11/ws');
     const stompClient = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
         console.log('Connected to WebSocket');
-        // '/topic/public' 경로를 구독하여 메시지 수신
         stompClient.subscribe('/topic/public', (message) => {
           showMessage(JSON.parse(message.body));
         });
@@ -29,60 +50,72 @@ const Messenger = () => {
       }
     });
 
-    stompClient.activate(); // STOMP 클라이언트 활성화
-    setClient(stompClient); // 클라이언트를 상태로 저장
+    stompClient.activate();
+    setClient(stompClient);
 
     return () => {
       if (stompClient) {
-        stompClient.deactivate(); // 컴포넌트가 언마운트될 때 클라이언트 비활성화
+        stompClient.deactivate();
       }
     };
   }, []);
 
-  // 새로운 메시지를 메시지 리스트에 추가
-  const showMessage = (message) => {
-    setMessages((prevMessages) => [...prevMessages, message]);
+  // 채팅 상대 선택 시 메시지 불러오기
+  const selectUser = async (user) => {
+    setSelectedUser(user);
+    try {
+      const response = await axios.get(`http://192.168.1.11/messages/chat/${username}/${user.users_name}`);
+      setMessages(response.data);
+    } catch (error) {
+      console.error('채팅 기록을 가져오는 중 오류 발생:', error);
+    }
   };
 
-  // 메시지 전송
+  const showMessage = (message) => {
+    if (
+      (message.sender_username === username && message.receiver_username === selectedUser?.users_name) ||
+      (message.sender_username === selectedUser?.users_name && message.receiver_username === username)
+    ) {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    }
+  };
+
   const sendMessage = async () => {
     if (!inputMessage.trim()) {
       console.error('Cannot send empty message');
       return;
     }
 
-    if (!username.trim()) {
-      console.error('Username is required');
+    if (!username.trim() || !selectedUser) {
+      console.error('Username or selected user is required');
       return;
     }
 
     if (client) {
       const message = {
-        sender_username: username, // 필드 이름을 서버의 DTO에 맞게 변경
-        receiver_username: 'Receiver', // 수신자 설정
-        content: inputMessage, // 메시지 내용
-        send_date: new Date().toISOString() // ISO 형식의 전송 날짜
+        sender_username: username,
+        receiver_username: selectedUser.users_name,
+        content: inputMessage,
+        send_date: new Date().toISOString()
       };
 
       try {
-        const response = await fetch('http://192.168.1.11/messages/send', {
-          method: 'POST',
+        await axios.post('http://192.168.1.11/messages/send', message, {
           headers: {
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(message) // JSON 형식으로 메시지 변환
+          }
         });
 
-        if (!response.ok) {
-          // HTTP 오류가 발생한 경우
-          const errorText = await response.text(); // 서버에서 반환한 오류 메시지
-          throw new Error(`Failed to send message: ${errorText}`);
-        }
-
         console.log('Message sent successfully');
-        setInputMessage(''); // 성공적으로 전송한 경우 입력 필드 초기화
+        setInputMessage('');
+        showMessage(message);
       } catch (error) {
         console.error('Error sending message: ', error);
+        if (error.response && error.response.status === 401) {
+          console.error('Unauthorized: Please log in.');
+        } else {
+          console.error('Failed to send message:', error.message);
+        }
       }
     } else {
       console.error('Client is not connected');
@@ -96,19 +129,17 @@ const Messenger = () => {
         <Sidebar />
         <div className={styles.messengerBody}>
           <div className={styles.messengerSidebar}>
-            <div>유저 목록 출력</div>
+            <div>유저 목록</div>
             <ul>
-      
+              {users.map(user => (
+                <li key={user.users_code} onClick={() => selectUser(user)}>
+                  {user.users_name}
+                </li>
+              ))}
             </ul>
           </div>
           <div className={styles.messengerMain}>
-            <div>채팅방 목록</div>
-            <ul>
-       
-            </ul>
-          </div>
-          <div className={styles.messengerChat}>
-            <div>채팅방</div>
+            <div>채팅방: {selectedUser ? selectedUser.users_name : "선택된 사용자가 없습니다"}</div>
             <ul>
               {messages.map((msg, index) => (
                 <li key={index}>
@@ -116,12 +147,6 @@ const Messenger = () => {
                 </li>
               ))}
             </ul>
-            <input
-              type="text"
-              placeholder="이름"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
             <input
               type="text"
               placeholder="메세지를 보내주세요"
