@@ -98,7 +98,11 @@ const CreateMail = () => {
       navigate('/mailbox');
     } catch (error) {
       console.error('메일 전송 오류:', error);
-      alert('메일 전송 중 오류가 발생했습니다.');
+      if (error.response && error.response.status === 404) {
+        alert("해당하는 이메일의 유저가 없습니다.");
+      } else {
+        alert('메일 전송 중 오류가 발생했습니다.');
+      }
     }
   };
 
