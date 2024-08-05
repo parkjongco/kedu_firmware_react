@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useMailStore } from './../../store/store';
 
+const serverUrl = process.env.REACT_APP_SERVER_URL;
+
 const MailListActions = () => {
     const [searchTerm, setSearchTerm] = useState(''); //검색어 상태 (store로 보낼지 고민 중)
     const [previewResults, setPreviewResults] = useState([]);
@@ -18,10 +20,10 @@ const MailListActions = () => {
             return;
         }
         console.log("현재 선택된 메일 Seq: " + selectedMailSeq);
-        axios.delete(`http://192.168.1.36/mailbox/${selectedMailSeq}`).then(() => {
+        axios.delete(`${serverUrl}/mailbox/${selectedMailSeq}`).then(() => {
           handleGetAll();
         }).then(() => {
-            axios.get(`http://192.168.1.36/mail`, {
+            axios.get(`${serverUrl}/mail`, {
               params: { seq: selectedMailSeq }
             }).then((resp) => {
               setSelectedMailContent(resp.data);
@@ -41,7 +43,7 @@ const MailListActions = () => {
     };
 
     const handleSearch = () => {
-      axios.get(`http://192.168.1.36/mail`, {
+      axios.get(`${serverUrl}/mail`, {
           params: { query: searchTerm }
       }).then((resp) => {
           const searchResults = resp.data;
@@ -65,7 +67,7 @@ const MailListActions = () => {
 
   useEffect(() => {
     if (searchTerm) {
-        axios.get(`http://192.168.1.36/mail`, {
+        axios.get(`${serverUrl}/mail`, {
             params: { query: searchTerm }
         }).then((resp) => {
             setPreviewResults(resp.data);
@@ -78,7 +80,7 @@ const MailListActions = () => {
 
   const handlePreviewClick = (mailSeq) => {
     // 선택된 미리보기 항목의 메일 Seq를 이용해 메일 리스트를 갱신
-    axios.get(`http://192.168.1.36/mail`, {
+    axios.get(`${serverUrl}/mail`, {
         params: { seq: mailSeq }
     }).then((resp) => {
         setMails(resp.data); // 메일 목록 갱신

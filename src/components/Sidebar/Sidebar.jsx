@@ -42,7 +42,7 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faEnvelope} />
-                            {toggle && <a href="http://localhost:3000/mailbox" className={styles.link}>메일</a>}
+                            {toggle && <a href="http://192.168.1.36:3000/mailbox" className={styles.link}>메일</a>}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faBarsStaggered} />

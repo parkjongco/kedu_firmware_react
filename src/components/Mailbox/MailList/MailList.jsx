@@ -4,6 +4,8 @@ import styles from './MailList.module.css'
 import axios from 'axios';
 import { useMailStore } from '../../store/store';
 
+const serverUrl = process.env.REACT_APP_SERVER_URL;
+
 const MailList = () => {
 
   const { mails, handleGetAll, setSelectedMailContent, setSelectedMailSeq, handleGetPage } = useMailStore();
@@ -46,7 +48,7 @@ const MailList = () => {
     setSelectedMailSeq(mailSeq); // 선택된 메일의 Seq를 저장(삭제에서 사용)
     console.log("선택된 메일 Seq는" + mailSeq);
     // console.log(`메일 제목: ${mailTitle}을(를) 서버로 전송합니다.`);
-    axios.get(`http://192.168.1.36/mail`, {
+    axios.get(`${serverUrl}/mail`, {
       params: { seq: mailSeq }
     }).then((resp) => {
       console.log("받은 메일 내용:", resp.data);

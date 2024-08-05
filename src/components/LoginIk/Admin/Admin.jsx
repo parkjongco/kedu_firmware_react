@@ -30,7 +30,7 @@ const Admin = (host) => {
   // 부서 목록을 가져오는 useEffect
   useEffect(() => {
 
-    axios.get('http://192.168.1.11/admin/departments', {
+    axios.get('http://192.168.1.36/admin/departments', {
 
       headers: {
         'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ const Admin = (host) => {
   useEffect(() => {
     if (form.department) {
 
-      axios.get(`http://192.168.1.10/admin/departments/${form.department}/units`, {
+      axios.get(`http://192.168.1.36/admin/departments/${form.department}/units`, {
 
 
         headers: {
@@ -82,7 +82,7 @@ const Admin = (host) => {
   // 직급 목록을 가져오는 useEffect
   useEffect(() => {
 
-    axios.get('http://192.168.1.10/ranks', {
+    axios.get('http://192.168.1.36/ranks', {
 
 
       headers: {
@@ -133,7 +133,7 @@ const Admin = (host) => {
     }
 
 
-    axios.post('http://192.168.1.10/users', {
+    axios.post('http://192.168.1.36/users', {
 
 
       users_code: form.employeeCode,
@@ -177,7 +177,7 @@ const Admin = (host) => {
     // department_title, unit_title, rank_title을 가져오기 위해 추가 요청
     axios.all([
 
-      axios.get(`http://192.168.1.10/admin/departments/${form.department}`, {
+      axios.get(`http://192.168.1.36/admin/departments/${form.department}`, {
 
 
         headers: {
@@ -185,7 +185,7 @@ const Admin = (host) => {
         }
       }),
 
-      axios.get(`http://192.168.1.10/admin/units/${unitSeq}`, {
+      axios.get(`http://192.168.1.36/admin/units/${unitSeq}`, {
 
 
         headers: {
@@ -193,7 +193,7 @@ const Admin = (host) => {
         }
       }),
 
-      axios.get(`http://192.168.1.10/ranks/${form.rank_seq}`, {
+      axios.get(`http://192.168.1.36/ranks/${form.rank_seq}`, {
 
 
         headers: {
@@ -203,7 +203,7 @@ const Admin = (host) => {
     ])
     .then(axios.spread((departmentResponse, unitResponse, rankResponse) => {
 
-      return axios.post('http://192.168.1.10/employees/register', {
+      return axios.post('http://192.168.1.36/employees/register', {
 
 
         user_seq: userSeq,

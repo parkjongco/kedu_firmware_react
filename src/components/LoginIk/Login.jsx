@@ -28,7 +28,7 @@ const Login = ({ setIsMypage }) => {
     console.log("로그인 시도 중:", auth);
 
 
-    axios.post(`http://192.168.1.10/auth`, auth)
+    axios.post(`http://192.168.1.36/auth`, auth)
 
 
       .then((resp) => {
@@ -53,7 +53,7 @@ const Login = ({ setIsMypage }) => {
   const handleLogout = () => {
 
 
-    axios.post(`http://192.168.1.10/auth/logout`)
+    axios.post(`http://192.168.1.36/auth/logout`)
 
 
       .then(() => {
@@ -77,7 +77,7 @@ const Login = ({ setIsMypage }) => {
       return;
     }
 
-    axios.delete(`http://192.168.1.10/users`)
+    axios.delete(`http://192.168.1.36/users`)
 
 
       .then(() => {
@@ -106,7 +106,7 @@ const Login = ({ setIsMypage }) => {
   // New function to handle external navigation
   const handleGoToHome = () => {
 
-    window.location.href = "http://192.168.1.10:3000/"; // Directly navigate to the main homepage
+    window.location.href = "http://192.168.1.36:3000/"; // Directly navigate to the main homepage
 
 
   };

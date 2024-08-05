@@ -4,6 +4,8 @@ import styles from './MailContent.module.css'
 import { useMailStore } from '../../store/store';
 import axios from 'axios';
 
+const serverUrl = process.env.REACT_APP_SERVER_URL;
+
 const MailContent = () => {
 
   const {selectedMailContent, selectedMailSeq, setSelectedMailContent, handleGetAll} = useMailStore();
@@ -20,10 +22,10 @@ const MailContent = () => {
     console.log("삭제요청")
       
       console.log("현재 선택된 메일 Seq: " + mailId);
-      axios.delete(`http://192.168.1.36/mail/${mailId}`).then(() => {
+      axios.delete(`${serverUrl}/mail/${mailId}`).then(() => {
         handleGetAll();
       }).then(() => {
-        axios.get(`http://192.168.1.36/mail`, {
+        axios.get(`${serverUrl}/mail`, {
           params: { seq: selectedMailSeq }
         }).then((resp) => {
           setSelectedMailContent(resp.data);
@@ -38,7 +40,7 @@ const MailContent = () => {
 //회신 이후에 바로 회신 메일을 확인을 확인해주기위해 아래와같은 처리를 해줌
 useEffect(() => {
   if (selectedMailSeq) {//selectedMailSeq가 있을 경우만 실행
-    axios.get(`http://192.168.1.36/mail`, {
+    axios.get(`${serverUrl}/mail`, {
       params: { seq: selectedMailSeq }
     }).then((resp) => {
       setSelectedMailContent(resp.data); // 메일 내용 설정
