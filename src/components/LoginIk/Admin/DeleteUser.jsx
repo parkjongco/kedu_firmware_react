@@ -14,7 +14,7 @@ const DeleteUser = () => {
   const navigate = useNavigate(); // useNavigate 훅 사용
 
   useEffect(() => {
-    axios.get('http://192.168.1.172/users/all')
+    axios.get('http://192.168.1.36/users/all')
       .then(response => {
         const usersArray = Array.isArray(response.data) ? response.data : [response.data];
         console.log("Fetched Users:", usersArray);
@@ -47,7 +47,7 @@ const DeleteUser = () => {
 
     if (window.confirm(`정말 이 유저를 제명하시겠습니까?`)) {
       setIsDeleting(true);
-      axios.delete(`http://192.168.1.172/users/code/${selectedUserCode}`)
+      axios.delete(`http://192.168.1.36/users/code/${selectedUserCode}`)
         .then(() => {
           alert("유저 제명 성공");
           setUsers(users.filter(user => user.users_code !== selectedUserCode));
