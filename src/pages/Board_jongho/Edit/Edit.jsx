@@ -6,7 +6,7 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/editor';
 import axios from 'axios';
 
-export default function Edit() {
+export default function Edit(host ) {
     const editorRef = useRef(null);
     const [fileComment, setFileComment] = useState("여기를 눌러 추가하거나, 끌어서 추가하세요");
     const [editorInstance, setEditorInstance] = useState(null);
@@ -62,7 +62,7 @@ export default function Edit() {
         }
 
         axios.post(
-            "http://localhost:80/board", 
+            `${host}/board`, 
             {
                 board_title: boardTitle,
                 board_contents: content

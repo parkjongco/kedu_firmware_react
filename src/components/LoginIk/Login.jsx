@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useAuthStore } from '../../store/store';
 import styles from './Login.module.css';
 
+
+
 axios.defaults.withCredentials = true;
 
 const Login = ({ setIsMypage }) => {
@@ -24,7 +26,11 @@ const Login = ({ setIsMypage }) => {
 
   const handleLogin = () => {
     console.log("로그인 시도 중:", auth);
-    axios.post(`http://192.168.1.36/auth`, auth)
+
+
+    axios.post(`http://192.168.1.10/auth`, auth)
+
+
       .then((resp) => {
         console.log("서버 응답:", resp.data);
         const { users_code, users_is_admin } = resp.data;
@@ -45,7 +51,11 @@ const Login = ({ setIsMypage }) => {
   };
 
   const handleLogout = () => {
-    axios.post(`http://192.168.1.36/auth/logout`)
+
+
+    axios.post(`http://192.168.1.10/auth/logout`)
+
+
       .then(() => {
         console.log("로그아웃 성공");
         sessionStorage.removeItem("loginID");
@@ -66,7 +76,10 @@ const Login = ({ setIsMypage }) => {
     if (!window.confirm("정말 탈퇴하시겠습니까?")) {
       return;
     }
-    axios.delete(`http://192.168.1.36/users`)
+
+    axios.delete(`http://192.168.1.10/users`)
+
+
       .then(() => {
         console.log("회원 탈퇴 성공");
         sessionStorage.removeItem("loginID");
@@ -92,7 +105,10 @@ const Login = ({ setIsMypage }) => {
 
   // New function to handle external navigation
   const handleGoToHome = () => {
-    window.location.href = "http://192.168.1.36:3000/"; // Directly navigate to the main homepage
+
+    window.location.href = "http://192.168.1.10:3000/"; // Directly navigate to the main homepage
+
+
   };
 
   return (
@@ -116,7 +132,9 @@ const Login = ({ setIsMypage }) => {
                   <button className={styles.actionButton} onClick={handleDeleteUser}>사원 제명</button>
                 </>
               )}
+
               <button className={styles.actionButton} onClick={handleGoToHome}>메인 페이지로 이동</button> {/* New button */}
+
             </div>
           </>
         ) : (

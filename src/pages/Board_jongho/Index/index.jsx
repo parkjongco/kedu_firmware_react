@@ -7,7 +7,7 @@ import List from '../List/List';
 import BoardEdit from '../Edit/Edit';
 import BoardDetail from '../Detail/Detail';
 
-const BoardIndex = () => {
+const BoardIndex = (host) => {
     const [selectedCategory, setSelectedCategory] = useState({});
 
     return (
