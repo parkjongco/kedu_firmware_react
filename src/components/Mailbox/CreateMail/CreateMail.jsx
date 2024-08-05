@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './CreateMail.module.css';
@@ -39,10 +39,30 @@ const CreateMail = () => {
   const replyToMailId = location.state?.replyToMailId || null;
   if(replyToMailId){
     console.log("회신 요청입니다.")
+
   }else if(replyToMailId == null){
     console.log("메일 작성 요청입니다.")
   }
 
+  //회신일때 input에 회신자의 이메일을 찾아서 넣어줌
+  useEffect(() => {
+    if (replyToMailId) {
+      fetchReplyToEmail(replyToMailId);
+    }
+  }, [replyToMailId]);
+
+  const fetchReplyToEmail = async (mailId) => {
+    try {
+      const response = await axios.get(`${serverUrl}/mail/${mailId}/replyemail`);
+      setTo(response.data); // 회신자의 이메일을 to 상태에 설정
+    } catch (error) {
+      console.error('회신자 이메일을 가져오는 중 오류가 발생했습니다.', error);
+    }
+  };
+
+
+
+  //
   const handleAddAttachment = () => {
     // '파일 첨부 버튼'을 클릭하면 첨부 리스트에 빈 항목을 추가한다.
     setAttachments([...attachments, '']);
@@ -122,8 +142,11 @@ const CreateMail = () => {
           value={to}
           onChange={(e) => setTo(e.target.value)}
           required
-          className={styles.withButton}
+          className={`${styles.withButton}
+          ${replyToMailId ? styles.inputReadOnly : ''}`}
+          readOnly={!!replyToMailId} // replyToMailId가 존재하면 readOnly 속성을 true로 설정
         />
+        {!replyToMailId && ( // replyToMailId가 없을 때만 버튼을 렌더링
         <button
           type="button"
           className={styles.dropdownButton}
@@ -136,6 +159,7 @@ const CreateMail = () => {
         >
           ▼
         </button>
+        )}
         {/* 부서 이메일 토글 */}
         {showDepartmentList && (
           <div className={styles.departmentList}>
