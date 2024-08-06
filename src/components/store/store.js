@@ -4,7 +4,9 @@ import axios from 'axios';
 const serverUrl = process.env.REACT_APP_SERVER_URL;
 
 export const useMailStore = create((set)=>({
-    mails: [],
+    mails: { mails: [], total: 0 }, // 초기 상태를 객체로 설정
+    // mails의 초기 상태가 빈 배열로 설정되었다가 이후 객체로 변환되는 일이 생긴다.
+    // 상태를 항상 객체로 처리해야 문제가 생기지않는다.
     selectedMailContent: [],
     selectedMailSeq: null,
   

@@ -53,7 +53,7 @@ const MailListActions = () => {
               index === self.findIndex((m) => m.mail_seq === mail.mail_seq)
           );
 
-          setMails(filteredMails);
+          setMails({ mails: filteredMails, total: filteredMails.length });
           setSelectedMailContent([]); // 검색 후 content 초기화
       });
   };
@@ -88,7 +88,7 @@ const MailListActions = () => {
 
     // `setMails`에 검색된 결과 중 첫 번째 메일만 배열로 설정
     if (searchResults && searchResults.length > 0) {
-      setMails([searchResults[0]]); // 첫 번째 메일만 설정
+      setMails({ mails: [searchResults[searchResults.length - 1]], total: 1 }); // 첫 번째 메일만 설정
       setSelectedMailContent(searchResults[0]);
       setPreviewResults([]);
     }

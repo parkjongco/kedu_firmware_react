@@ -6,3 +6,4 @@ export const useAuthStore = create((set) => ({
     setLoginID: (param) => set({ loginID: param }),
     setUsersName: (param) => set({ usersName: param }), // 추가된 메서드
 }));
+

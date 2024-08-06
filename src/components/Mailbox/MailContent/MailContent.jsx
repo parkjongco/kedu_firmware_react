@@ -71,7 +71,8 @@ if (!selectedMailContent || !Array.isArray(selectedMailContent.mails) || selecte
               </div>
             </div>
             <div className={styles.mailContent}>
-              <span>{mail.mail_content}</span> {/* 메일 내용 */}
+              {/* <span>{mail.mail_content}</span> 메일 내용 */}
+              <div className={styles.editor_contents} dangerouslySetInnerHTML={{ __html: mail.mail_content }} /> {/* 메일 내용 */}
             </div>
       </div>
       

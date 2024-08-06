@@ -34,11 +34,12 @@ const MailList = () => {
   
   useEffect(() => {
     console.log("mails 상태 업데이트 감지:", mails);
-    if (Array.isArray(mails)) { // 수정된 부분
-      setCurrentMails(mails);
-      setTotalPages(Math.ceil(mails.length / mailsPerPage)); // mails.total 대신 mails.length 사용
-      console.log("currentMails 설정됨:", mails);
-      console.log("Total pages:", Math.ceil(mails.length / mailsPerPage));
+    if (mails && Array.isArray(mails.mails)) { // mails가 객체이고 mails.mails가 배열인지 확인
+      setCurrentMails(mails.mails);
+      setTotalPages(Math.ceil(mails.total / mailsPerPage)); // mails.total 사용
+      console.log("currentMails 설정됨:", mails.mails);
+      console.log(mails.total);
+      console.log("Total pages:", Math.ceil(mails.total / mailsPerPage));
     }
   }, [mails]);
   
@@ -75,7 +76,8 @@ const MailList = () => {
       </div>
       <div className={styles.mailList}>
         {currentMails.map((mail) => (
-          <MailItem key={`${mail.mail_seq}-${mail.mailbox_seq}`} // 복합 키 사용
+          // <MailItem key={`${mail.mail_seq}-${mail.mailbox_seq}`} // 복합 키 사용 (확장 기능에서 필요해진다면)
+          <MailItem key={mail.mail_seq}
            mail={mail} onClick={() => handleMailClick(mail.mail_seq)}/>
         ))}
       </div>

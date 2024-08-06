@@ -32,3 +32,11 @@
     flex-grow: 1;
    
 }
+
+.mailList {
+    flex: 1;
+}
+
+.mailContent {
+    flex: 1;
+}

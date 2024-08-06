@@ -8,6 +8,10 @@
     overflow-y: auto;
 }
 
+.mailContainer img {
+    width: 100%;
+}
+
 .mail {
     display: flex;
     flex-direction: column;
@@ -83,3 +87,20 @@
     flex-grow: 1; /* 나머지 공간을 채움 */
     text-align: center;
 }
+
+
+.editor_contents table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .editor_contents th,
+  .editor_contents td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .editor_contents th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
