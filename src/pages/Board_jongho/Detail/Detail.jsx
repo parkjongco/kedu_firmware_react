@@ -7,26 +7,30 @@ import { useAuthStore } from '../../../store/store';
 axios.defaults.withCredentials = true;
 
 const Detail = () => {
+    // 네비게이션과 현재 위치를 위한 hooks
     const navigate = useNavigate();
     const location = useLocation();
-    const { usersName } = useAuthStore(); // Zustand 스토어에서 사용자 이름 가져오기
+    
+    // 사용자 이름을 얻기 위한 상태 관리
+    const { usersName } = useAuthStore();
 
-    const [board, setBoard] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [updatedTitle, setUpdatedTitle] = useState('');
-    const [updatedContents, setUpdatedContents] = useState('');
-    const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState('');
+    // 상태 변수 선언
+    const [board, setBoard] = useState(null); // 게시글 데이터
+    const [isEditing, setIsEditing] = useState(false); // 편집 모드 여부
+    const [updatedTitle, setUpdatedTitle] = useState(''); // 수정된 제목
+    const [updatedContents, setUpdatedContents] = useState(''); // 수정된 내용
+    const [comments, setComments] = useState([]); // 댓글 목록
+    const [newComment, setNewComment] = useState(''); // 새 댓글 내용
+    const [editingCommentId, setEditingCommentId] = useState(null); // 편집 중인 댓글 ID
+    const [editedCommentText, setEditedCommentText] = useState(''); // 편집된 댓글 내용
 
-    const [editingCommentId, setEditingCommentId] = useState();
-    const [editedCommentText, setEditedCommentText] = useState('');
-
+    // URL에서 게시글 ID 추출
     const seq = location.pathname.split('/').pop();
-    const serverUrl = process.env.REACT_APP_SERVER_URL;
-    const sessionUserName = sessionStorage.getItem("usersName") || "Unknown User";
+    const serverUrl = process.env.REACT_APP_SERVER_URL; // 서버 URL
+    const sessionUserName = sessionStorage.getItem("usersName") || "Unknown User"; // 세션에서 사용자 이름
 
+    // 컴포넌트가 처음 렌더링될 때 게시글 및 댓글 데이터 로드
     useEffect(() => {
-        // 게시물과 댓글 데이터 요청
         axios.get(`${serverUrl}/board/detail/${seq}`)
             .then(resp => {
                 setBoard(resp.data);
@@ -47,6 +51,7 @@ const Detail = () => {
 
     }, [seq, serverUrl]);
 
+    // 게시글 업데이트 처리
     const handleUpdate = (e) => {
         const updatedData = {
             board_title: updatedTitle,
@@ -63,15 +68,28 @@ const Detail = () => {
             });
     };
 
+    // 게시글 삭제 처리
+    const handleDeleteBoard = () => {
+        axios.delete(`${serverUrl}/board/${seq}`)
+            .then(() => {
+                navigate("/Board"); // 삭제 후 게시판 목록으로 이동
+            })
+            .catch(error => {
+                console.error('Error deleting board:', error);
+            });
+    };
+
+    // 편집 모드 전환
     const toggleEditMode = () => {
         setIsEditing(prev => !prev);
     };
 
+    // 새 댓글 제출 처리
     const handleCommentSubmit = (e) => {
         const commentData = {
-            reply_userName: usersName || sessionUserName, // 사용자 이름
-            reply_contents: newComment, // 댓글 내용
-            board_seq: seq, // 부모 게시물의 seq
+            reply_userName: usersName || sessionUserName,
+            reply_contents: newComment,
+            board_seq: seq,
         };
 
         axios.post(`${serverUrl}/board_reply`, commentData)
@@ -84,31 +102,44 @@ const Detail = () => {
             });
     };
 
+    // 댓글 업데이트 처리
     const handleUpdateReply = (commentId) => {
         const updatedCommentData = {
             reply_contents: editedCommentText,
-            reply_reg_date: new Date().toISOString(), // 현재 날짜와 시간
+            reply_reg_date: new Date().toISOString(),
         };
-    
+
         axios.put(`${serverUrl}/board_reply/${seq}/${commentId}`, updatedCommentData)
-            .then(resp => {
+            .then(() => {
                 setComments(prevComments => prevComments.map(comment =>
-                    comment.reply_seq === commentId ? resp.data : comment
+                    comment.reply_seq === commentId ? { ...comment, ...updatedCommentData } : comment
                 ));
-                setEditingCommentId(null); // null로 설정하여 편집 모드 종료
+                setEditingCommentId(null);
                 setEditedCommentText('');
             })
             .catch(error => {
                 console.error('Error updating comment:', error);
             });
     };
-    
 
+    // 댓글 삭제 처리
+    const handleDeleteComment = (commentId) => {
+        axios.delete(`${serverUrl}/board_reply/${seq}/${commentId}`)
+            .then(() => {
+                setComments(prevComments => prevComments.filter(comment => comment.reply_seq !== commentId));
+            })
+            .catch(error => {
+                console.error('Error deleting comment:', error);
+            });
+    };
+
+    // 댓글 편집 모드 전환
     const handleCommentEdit = (commentId, commentText) => {
         setEditingCommentId(commentId);
         setEditedCommentText(commentText);
     };
 
+    // 게시글 데이터가 로드되지 않은 경우 로딩 메시지 표시
     if (!board) {
         return <div>Loading...</div>;
     }
@@ -128,7 +159,10 @@ const Detail = () => {
                 )}
                 <div>
                     {!isEditing ? (
-                        <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
+                        <>
+                            <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
+                            <button onClick={handleDeleteBoard} className={styles.button}>삭제하기</button>
+                        </>
                     ) : (
                         <div className={styles.button_container}>
                             <form onSubmit={handleUpdate} className={styles.editForm}>
@@ -188,7 +222,10 @@ const Detail = () => {
                                 </div>
                                 <div>{new Date(comment.reply_reg_date).toLocaleString()}</div>
                                 {comment.reply_userName === (usersName || sessionUserName) && (
-                                    <button onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)} className={styles.button}>수정</button>
+                                    <>
+                                        <button onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)} className={styles.button}>수정</button>
+                                        <button onClick={() => handleDeleteComment(comment.reply_seq)} className={styles.button}>삭제</button>
+                                    </>
                                 )}
                             </div>
                         ))
