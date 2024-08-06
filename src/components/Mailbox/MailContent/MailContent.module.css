@@ -82,25 +82,34 @@
 
 .mailContent {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
     flex-grow: 1; /* 나머지 공간을 채움 */
-    text-align: center;
+    text-align: left; /* 내용을 왼쪽 정렬 */
+    padding: 10px; /* 내부 여백 추가 */
+    white-space: pre-line; /* 줄바꿈을 포함한 텍스트 표시 */
+    overflow-wrap: break-word; /* 긴 단어를 자동으로 줄바꿈 */
 }
 
+.mailContent img {
+    max-width: 100%; /* 이미지를 컨테이너의 너비에 맞게 조정 */
+    height: auto;
+    margin-top: 10px; /* 이미지와 텍스트 간의 간격 */
+}
 
 .editor_contents table {
-    width: 100%;
+    width: auto; /* 테이블의 폭을 자동으로 조정 */
     border-collapse: collapse;
-  }
-  
-  .editor_contents th,
-  .editor_contents td {
+    margin-top: 10px; /* 테이블과 텍스트 사이의 간격 */
+}
+
+.editor_contents th,
+.editor_contents td {
     border: 1px solid #ddd;
     padding: 8px;
-  }
-  
-  .editor_contents th {
+}
+
+.editor_contents th {
     background-color: #f2f2f2;
     text-align: left;
-  }
+}

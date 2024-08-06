@@ -21,6 +21,10 @@ const MailContent = () => {
   const handleDeleteSelectedMail = (mailId) => {
     console.log("삭제요청")
       
+    // 삭제 확인 대화 상자
+    const confirmDelete = window.confirm("정말로 해당 메일을 삭제하시겠습니까?");
+
+    if ( confirmDelete ) {
       console.log("현재 선택된 메일 Seq: " + mailId);
       axios.delete(`${serverUrl}/mail/${mailId}`).then(() => {
         handleGetAll();
@@ -29,9 +33,12 @@ const MailContent = () => {
           params: { seq: selectedMailSeq }
         }).then((resp) => {
           setSelectedMailContent(resp.data);
+          
         })
       })
-      
+    } else{
+      console.log("메일 삭제 취소");
+    }
     };
 
 
@@ -59,9 +66,17 @@ if (!selectedMailContent || !Array.isArray(selectedMailContent.mails) || selecte
 
       {selectedMailContent.mails.map((mail,index) => (
         <div key={index} className={styles.mail}>
-        <h2>{mail.mail_title}</h2> {/* 메일제목 */}
+        <h2>
+          {mail.mail_title}
+        </h2>
+        {mail.copyType === 'reply' && <small>(회신)</small>} {/* 메일제목 */}
             <div className={styles.contentHeader}>
-              <div className={styles.contentInfo}><span>{mail.sender_name} (부서)<br></br>받는 사람</span></div>
+              <div className={styles.contentInfo}>
+                <span>
+                  {mail.sender_name} ({mail.sender_department_name})<br></br>
+                  <strong>받는 사람</strong> {mail.receiver_name} ({mail.receiver_department_name})
+                </span>
+              </div>
               
               <div className={styles.contentButtons}>
               <button onClick={() => handleReply(mail.mail_seq)}>회신</button>

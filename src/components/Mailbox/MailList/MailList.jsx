@@ -61,10 +61,6 @@ const MailList = () => {
   };
 
   
-
-  
-
-  
   return (
     <div className={styles.mailContainer}>
       <div className={styles.sortButtons}>

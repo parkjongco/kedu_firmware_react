@@ -19,6 +19,11 @@ const MailListActions = () => {
             console.log("선택된 메일함이 없습니다.");
             return;
         }
+
+        // 삭제 확인 대화 상자
+        const confirmDelete = window.confirm("정말로 이 메일함을 삭제하시겠습니까?");
+  
+        if (confirmDelete) {
         console.log("현재 선택된 메일 Seq: " + selectedMailSeq);
         axios.delete(`${serverUrl}/mailbox/${selectedMailSeq}`).then(() => {
           handleGetAll();
@@ -29,7 +34,10 @@ const MailListActions = () => {
               setSelectedMailContent(resp.data);
               setSelectedMailSeq(null);
             })
-          })
+          });
+        } else {
+            console.log("메일함 삭제 취소")
+        }
       };
     
     const handleComposeMail = () => {
@@ -55,6 +63,7 @@ const MailListActions = () => {
 
           setMails({ mails: filteredMails, total: filteredMails.length });
           setSelectedMailContent([]); // 검색 후 content 초기화
+          setPreviewResults([]);
       });
   };
 

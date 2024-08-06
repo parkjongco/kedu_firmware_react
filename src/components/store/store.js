@@ -17,10 +17,12 @@ export const useMailStore = create((set)=>({
     handleGetAll: () => {
         console.log("모든 메일을 불러옵니다")
         axios.get(`${serverUrl}/mail`).then((resp) => { //객체배열 가져옴
-          // console.log(resp.data); //객체 배열의 데이터만 콘솔 로그
-          // console.log("서버와 접근완료")
-          // console.log("받은데이터:",resp.data);
-          set({ mails: Array.isArray(resp.data.mails) ? resp.data.mails : [] });
+          // 응답 데이터가 객체인지 확인하고, mails와 total을 설정
+          if (resp.data && Array.isArray(resp.data.mails)) {
+            set({ mails: { mails: resp.data.mails, total: resp.data.total || resp.data.mails.length } });
+          } else {
+            set({ mails: { mails: [], total: 0 } });
+          }
         
         });
       },
