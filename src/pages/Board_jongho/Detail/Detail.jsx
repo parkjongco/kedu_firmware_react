@@ -7,29 +7,23 @@ import { useAuthStore } from '../../../store/store';
 axios.defaults.withCredentials = true;
 
 const Detail = () => {
-    // 네비게이션과 현재 위치를 위한 hooks
     const navigate = useNavigate();
     const location = useLocation();
-    
-    // 사용자 이름을 얻기 위한 상태 관리
     const { usersName } = useAuthStore();
 
-    // 상태 변수 선언
-    const [board, setBoard] = useState(null); // 게시글 데이터
-    const [isEditing, setIsEditing] = useState(false); // 편집 모드 여부
-    const [updatedTitle, setUpdatedTitle] = useState(''); // 수정된 제목
-    const [updatedContents, setUpdatedContents] = useState(''); // 수정된 내용
-    const [comments, setComments] = useState([]); // 댓글 목록
-    const [newComment, setNewComment] = useState(''); // 새 댓글 내용
-    const [editingCommentId, setEditingCommentId] = useState(null); // 편집 중인 댓글 ID
-    const [editedCommentText, setEditedCommentText] = useState(''); // 편집된 댓글 내용
+    const [board, setBoard] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [updatedTitle, setUpdatedTitle] = useState('');
+    const [updatedContents, setUpdatedContents] = useState('');
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
+    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [editedCommentText, setEditedCommentText] = useState('');
 
-    // URL에서 게시글 ID 추출
     const seq = location.pathname.split('/').pop();
-    const serverUrl = process.env.REACT_APP_SERVER_URL; // 서버 URL
-    const sessionUserName = sessionStorage.getItem("usersName") || "Unknown User"; // 세션에서 사용자 이름
+    const serverUrl = process.env.REACT_APP_SERVER_URL;
+    const sessionUserName = sessionStorage.getItem("usersName") || "Unknown User";
 
-    // 컴포넌트가 처음 렌더링될 때 게시글 및 댓글 데이터 로드
     useEffect(() => {
         axios.get(`${serverUrl}/board/detail/${seq}`)
             .then(resp => {
@@ -51,7 +45,6 @@ const Detail = () => {
 
     }, [seq, serverUrl]);
 
-    // 게시글 업데이트 처리
     const handleUpdate = (e) => {
         const updatedData = {
             board_title: updatedTitle,
@@ -68,23 +61,20 @@ const Detail = () => {
             });
     };
 
-    // 게시글 삭제 처리
     const handleDeleteBoard = () => {
         axios.delete(`${serverUrl}/board/${seq}`)
             .then(() => {
-                navigate("/Board"); // 삭제 후 게시판 목록으로 이동
+                navigate("/Board");
             })
             .catch(error => {
                 console.error('Error deleting board:', error);
             });
     };
 
-    // 편집 모드 전환
     const toggleEditMode = () => {
         setIsEditing(prev => !prev);
     };
 
-    // 새 댓글 제출 처리
     const handleCommentSubmit = (e) => {
         const commentData = {
             reply_userName: usersName || sessionUserName,
@@ -102,7 +92,6 @@ const Detail = () => {
             });
     };
 
-    // 댓글 업데이트 처리
     const handleUpdateReply = (commentId) => {
         const updatedCommentData = {
             reply_contents: editedCommentText,
@@ -122,7 +111,6 @@ const Detail = () => {
             });
     };
 
-    // 댓글 삭제 처리
     const handleDeleteComment = (commentId) => {
         axios.delete(`${serverUrl}/board_reply/${seq}/${commentId}`)
             .then(() => {
@@ -133,13 +121,11 @@ const Detail = () => {
             });
     };
 
-    // 댓글 편집 모드 전환
     const handleCommentEdit = (commentId, commentText) => {
         setEditingCommentId(commentId);
         setEditedCommentText(commentText);
     };
 
-    // 게시글 데이터가 로드되지 않은 경우 로딩 메시지 표시
     if (!board) {
         return <div>Loading...</div>;
     }
@@ -187,7 +173,7 @@ const Detail = () => {
                                     <textarea
                                         value={updatedContents}
                                         onChange={(e) => setUpdatedContents(e.target.value)}
-                                        className={styles.contentEditable}
+                                        className={styles.textarea}
                                     />
                                 </label>
                             </div>
@@ -211,7 +197,7 @@ const Detail = () => {
                                             <textarea
                                                 value={editedCommentText}
                                                 onChange={(e) => setEditedCommentText(e.target.value)}
-                                                className={styles.comment_Input}
+                                                className={styles.textarea}
                                             />
                                             <button onClick={() => handleUpdateReply(comment.reply_seq)} className={styles.button}>수정 완료</button>
                                             <button onClick={() => setEditingCommentId(null)} className={styles.button}>취소</button>
@@ -234,7 +220,7 @@ const Detail = () => {
                     )}
                     <form onSubmit={handleCommentSubmit} className={styles.comment_Form}>
                         <textarea
-                            className={styles.comment_Input}
+                            className={styles.textarea}
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             placeholder="댓글을 작성하세요"
