@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'; // useNavigate를 import
 import axios from 'axios';
 import styles from './DeleteUser.module.css';
 
-// 환경 변수에서 API URL을 가져옵니다
-const API_URL = process.env.REACT_APP_API_URL;
+// 환경 변수에서 서버 URL을 가져옵니다
+const serverUrl = process.env.REACT_APP_SERVER_URL;
 
 axios.defaults.withCredentials = true;
 
@@ -17,7 +17,7 @@ const DeleteUser = () => {
   const navigate = useNavigate(); // useNavigate 훅 사용
 
   useEffect(() => {
-    axios.get(`${API_URL}/users/all`)
+    axios.get(`${serverUrl}/users/all`)
       .then(response => {
         const usersArray = Array.isArray(response.data) ? response.data : [response.data];
         console.log("Fetched Users:", usersArray);
@@ -33,7 +33,7 @@ const DeleteUser = () => {
         console.error("유저 목록을 가져오는 중 오류 발생:", error);
         alert("유저 목록을 불러오는 중 오류가 발생했습니다.");
       });
-  }, [API_URL]);
+  }, [serverUrl]);
 
   const handleDelete = () => {
     if (!selectedUserCode) {
@@ -50,7 +50,7 @@ const DeleteUser = () => {
 
     if (window.confirm(`정말 이 유저를 제명하시겠습니까?`)) {
       setIsDeleting(true);
-      axios.delete(`${API_URL}/users/code/${selectedUserCode}`)
+      axios.delete(`${serverUrl}/users/code/${selectedUserCode}`)
         .then(() => {
           alert("유저 제명 성공");
           setUsers(users.filter(user => user.users_code !== selectedUserCode));
