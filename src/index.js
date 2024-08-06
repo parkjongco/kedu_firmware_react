@@ -17,6 +17,7 @@ axios.defaults.withCredentials = true
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} /> {/* Main homepage route */}
@@ -28,6 +29,6 @@ root.render(
         <Route path="/users/login" element={<Login />} /> 
       </Routes>
     </BrowserRouter>
-);
+)
 
 reportWebVitals();
