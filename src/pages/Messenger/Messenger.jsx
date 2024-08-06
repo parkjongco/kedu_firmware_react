@@ -160,14 +160,13 @@ const Messenger = () => {
         body: JSON.stringify(message),
       });
 
-      showMessage(message); // Send and immediately show message
       setInputMessage('');
 
       isSendingMessage.current = false; // 메시지 전송 후 플래그 해제
     } else {
       console.error('클라이언트가 연결되어 있지 않습니다');
     }
-  }, [inputMessage, username, selectedUser, client, showMessage]);
+  }, [inputMessage, username, selectedUser, client]);
 
   // Enter 키를 누르면 메시지 전송
   const handleKeyDown = useCallback(
@@ -277,4 +276,3 @@ const Messenger = () => {
 };
 
 export default Messenger;
-

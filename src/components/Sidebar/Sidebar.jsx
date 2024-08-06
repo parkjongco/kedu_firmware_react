@@ -40,11 +40,15 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                     <div className={styles.side_list}>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faHome} />
-                            {toggle && <a href="http://localhost:3000/" className={styles.link}>홈</a>}
+                            {toggle && (
+                                <a href={`${serverUrl}:3000/`} className={styles.link}>홈</a>
+                            )}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faEnvelope} />
-                            {toggle && <a href="http://192.168.1.11:3000/mailbox" className={styles.link}>메일</a>}
+                            {toggle && (
+                                <a href={`${serverUrl}:3000/mailbox`} className={styles.link}>메일함</a>
+                            )}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faBarsStaggered} />
@@ -67,6 +71,7 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                                 <a href={`${serverUrl}:3000/Messenger`} className={styles.link}>메신저</a>
                             )}
                         </div>
+                        
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faHardDrive} />
                             {toggle && <a href="자료실" className={styles.link}>자료실</a>}
@@ -75,7 +80,7 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                     <div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faImagePortrait} />
-                            {toggle && <a href="자료실" className={styles.link}>자료실</a>}
+                            {toggle && <a href="마이페이지" className={styles.link}>마이페이지</a>}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faRightFromBracket} />
