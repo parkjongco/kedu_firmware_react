@@ -18,7 +18,7 @@ export const useMailStore = create((set)=>({
           // console.log(resp.data); //객체 배열의 데이터만 콘솔 로그
           // console.log("서버와 접근완료")
           // console.log("받은데이터:",resp.data);
-          set({ mails: resp.data });
+          set({ mails: Array.isArray(resp.data.mails) ? resp.data.mails : [] });
         
         });
       },
@@ -32,5 +32,11 @@ export const useMailStore = create((set)=>({
       console.error("데이터 가져오기 실패:", error);
     });
   },
+
+}));
+
+export const useUsersStore = create((set)=>({
+
+
 
 }));

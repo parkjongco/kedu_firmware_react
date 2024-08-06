@@ -22,10 +22,10 @@ const MailList = () => {
     setCurrentPage(pageNumber);
   };
 
-  // useEffect(()=>{
-  //   console.log("useEffect 호출됨");
-  //   handleGetAll();
-  // }, []); //빈 배열을 전달하면 컴포넌트가 처음 마운트될 때 한번만 실행 됌
+  useEffect(()=>{
+    // console.log("useEffect 호출됨");
+    handleGetAll();
+  }, []); //빈 배열을 전달하면 컴포넌트가 처음 마운트될 때 한번만 실행 됌
 
   useEffect(() => {
     console.log("useEffect 호출됨");
@@ -34,13 +34,14 @@ const MailList = () => {
   
   useEffect(() => {
     console.log("mails 상태 업데이트 감지:", mails);
-    if (Array.isArray(mails.mails)) {
-      setCurrentMails(mails.mails);
-      setTotalPages(Math.ceil(mails.total / mailsPerPage));
-      console.log("currentMails 설정됨:", mails.mails);
-      console.log("Total pages:", Math.ceil(mails.total / mailsPerPage));
+    if (Array.isArray(mails)) { // 수정된 부분
+      setCurrentMails(mails);
+      setTotalPages(Math.ceil(mails.length / mailsPerPage)); // mails.total 대신 mails.length 사용
+      console.log("currentMails 설정됨:", mails);
+      console.log("Total pages:", Math.ceil(mails.length / mailsPerPage));
     }
   }, [mails]);
+  
   
 
   const handleMailClick = (mailSeq) => {
@@ -74,7 +75,8 @@ const MailList = () => {
       </div>
       <div className={styles.mailList}>
         {currentMails.map((mail) => (
-          <MailItem key={mail.mail_seq} mail={mail} onClick={() => handleMailClick(mail.mail_seq)}/>
+          <MailItem key={`${mail.mail_seq}-${mail.mailbox_seq}`} // 복합 키 사용
+           mail={mail} onClick={() => handleMailClick(mail.mail_seq)}/>
         ))}
       </div>
 

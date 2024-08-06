@@ -46,7 +46,7 @@ const MailListActions = () => {
       axios.get(`${serverUrl}/mail`, {
           params: { query: searchTerm }
       }).then((resp) => {
-          const searchResults = resp.data;
+          const searchResults = resp.data.mails;
 
           // 각 메일함의 첫 번째 메일만 가져오도록 필터링
           const filteredMails = searchResults.filter((mail, index, self) =>
@@ -70,7 +70,8 @@ const MailListActions = () => {
         axios.get(`${serverUrl}/mail`, {
             params: { query: searchTerm }
         }).then((resp) => {
-            setPreviewResults(resp.data);
+            setPreviewResults(resp.data.mails);
+            console.log(previewResults);
         });
     } else {
         setPreviewResults([]);
@@ -83,9 +84,14 @@ const MailListActions = () => {
     axios.get(`${serverUrl}/mail`, {
         params: { seq: mailSeq }
     }).then((resp) => {
-        setMails(resp.data); // 메일 목록 갱신
-        setSelectedMailContent([]); // 선택된 메일 내용 초기화
-        setPreviewResults([]); // 미리보기 결과 초기화
+        const searchResults = resp.data.mails;
+
+    // `setMails`에 검색된 결과 중 첫 번째 메일만 배열로 설정
+    if (searchResults && searchResults.length > 0) {
+      setMails([searchResults[0]]); // 첫 번째 메일만 설정
+      setSelectedMailContent(searchResults[0]);
+      setPreviewResults([]);
+    }
     });
   };
 
