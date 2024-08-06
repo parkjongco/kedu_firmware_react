@@ -2,17 +2,17 @@ import React from 'react';
 import Header from './components/Header/Header';
 import Sidebar from './components/Sidebar/Sidebar';
 import MainContent from './components/MainContent/MainContent';
-
-
-
 import './App.css';
+import axios from 'axios';
 
+
+axios.defaults.withCredentials = true
 const App = () => {
   return (
     <div className="app">
       <Header />
       <div className="container">
-        <Sidebar />
+        <Sidebar  />
         <MainContent />
       </div>
     </div>

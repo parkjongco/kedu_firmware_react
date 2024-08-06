@@ -6,6 +6,8 @@ import styles from './Sidebar.module.css';
 
 export default function SideBar({ profile_src = "", username, useremail }) {
     const [toggle, setToggle] = useState(false);
+    const serverUrl = process.env.REACT_APP_SERVER_URL;
+    const session = sessionStorage;
 
     return (
         <div className={styles.sidebar} style={!toggle ? { width: "50px" } : {}}>
@@ -46,8 +48,11 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faBarsStaggered} />
-                            {toggle && <a href="http://localhost:3000/Board" className={styles.link}>게시판</a>}
+                            {toggle && (
+                                <Link to={`${serverUrl}/Board`} className={styles.link}>게시판</Link>
+                            )}
                         </div>
+
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faCalendar} />
                             {toggle && <a href="캘린더" className={styles.link}>캘린더</a>}

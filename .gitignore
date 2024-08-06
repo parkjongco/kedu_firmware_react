@@ -25,3 +25,6 @@ yarn-error.log*
 package.json
 .gitignore
 package-lock.json
+
+
+.env
