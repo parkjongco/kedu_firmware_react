@@ -3,9 +3,12 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styles from './Admin.module.css';
 
+// 환경 변수에서 API URL을 가져옵니다
+const API_URL = process.env.REACT_APP_API_URL;
+
 axios.defaults.withCredentials = true; // 세션 쿠키 포함
 
-const Admin = (host) => {
+const Admin = () => {
   const [form, setForm] = useState({
     department: '',
     unitCode: '',
@@ -27,13 +30,9 @@ const Admin = (host) => {
   const [isLoading, setIsLoading] = useState(true); // 데이터 로드 상태 관리
   const navi = useNavigate();
 
-  const serverUrl = process.env.REACT_APP_SERVER_URL;
-
   // 부서 목록을 가져오는 useEffect
   useEffect(() => {
-
-    axios.get(`${serverUrl}/admin/departments`, {
-
+    axios.get(`${API_URL}/admin/departments`, {
       headers: {
         'Content-Type': 'application/json',
       }
@@ -50,14 +49,12 @@ const Admin = (host) => {
         alert('부서 정보를 가져오는 중 오류가 발생했습니다. 관리자에게 문의하세요.');
       }
     });
-  }, []);
+  }, [API_URL]);
 
   // 부서 선택 시 유닛 코드를 가져와 input 필드에 표시하고 unit_seq도 가져오기
   useEffect(() => {
     if (form.department) {
-
-      axios.get(`${serverUrl}/admin/departments/${form.department}/units`, {
-
+      axios.get(`${API_URL}/admin/departments/${form.department}/units`, {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -78,13 +75,11 @@ const Admin = (host) => {
         alert('유닛 정보를 가져오는 중 오류가 발생했습니다.');
       });
     }
-  }, [form.department]);
+  }, [form.department, API_URL]);
 
   // 직급 목록을 가져오는 useEffect
   useEffect(() => {
-
-    axios.get(`${serverUrl}/ranks`, {
-
+    axios.get(`${API_URL}/ranks`, {
       headers: {
         'Content-Type': 'application/json',
       }
@@ -98,7 +93,7 @@ const Admin = (host) => {
       console.error('Error fetching ranks:', error);
       alert('직급 정보를 가져오는 중 오류가 발생했습니다.');
     });
-  }, []);
+  }, [API_URL]);
 
   // 유닛 코드 선택 시 유저 코드와 패스워드를 생성
   useEffect(() => {
@@ -132,9 +127,7 @@ const Admin = (host) => {
       return;
     }
 
-
-    axios.post(`${serverUrl}/users`, {
-
+    axios.post(`${API_URL}/users`, {
       users_code: form.employeeCode,
       users_name: form.users_name,
       users_password: form.tempPassword,
@@ -175,32 +168,24 @@ const Admin = (host) => {
 
     // department_title, unit_title, rank_title을 가져오기 위해 추가 요청
     axios.all([
-
-      axios.get(`${serverUrl}/admin/departments/${form.department}`, {
-
+      axios.get(`${API_URL}/admin/departments/${form.department}`, {
         headers: {
           'Content-Type': 'application/json',
         }
       }),
-
-      axios.get(`${serverUrl}/admin/units/${unitSeq}`, {
-
+      axios.get(`${API_URL}/admin/units/${unitSeq}`, {
         headers: {
           'Content-Type': 'application/json',
         }
       }),
-
-      axios.get(`${serverUrl}/ranks/${form.rank_seq}`, {
-
+      axios.get(`${API_URL}/ranks/${form.rank_seq}`, {
         headers: {
           'Content-Type': 'application/json',
         }
       })
     ])
     .then(axios.spread((departmentResponse, unitResponse, rankResponse) => {
-
-      return axios.post(`${serverUrl}/employees/register`, {
-
+      return axios.post(`${API_URL}/employees/register`, {
         user_seq: userSeq,
         users_name: form.users_name,
         department_seq: parseInt(form.department),
