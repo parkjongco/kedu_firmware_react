@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styles from './MailListActions.module.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useMailStore } from './../../store/store';
+import { useMailStore } from '../../../store/mail_store';
 
 const serverUrl = process.env.REACT_APP_SERVER_URL;
 

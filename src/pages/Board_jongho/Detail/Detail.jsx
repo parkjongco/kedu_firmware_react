@@ -18,7 +18,7 @@ const Detail = () => {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
 
-    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [editingCommentId, setEditingCommentId] = useState();
     const [editedCommentText, setEditedCommentText] = useState('');
 
     const seq = location.pathname.split('/').pop();
@@ -89,19 +89,20 @@ const Detail = () => {
             reply_contents: editedCommentText,
             reply_reg_date: new Date().toISOString(), // 현재 날짜와 시간
         };
-
-        axios.put(`${serverUrl}/board_reply/${commentId}`, updatedCommentData)
+    
+        axios.put(`${serverUrl}/board_reply/${seq}/${commentId}`, updatedCommentData)
             .then(resp => {
                 setComments(prevComments => prevComments.map(comment =>
                     comment.reply_seq === commentId ? resp.data : comment
                 ));
-                setEditingCommentId(null);
+                setEditingCommentId(null); // null로 설정하여 편집 모드 종료
                 setEditedCommentText('');
             })
             .catch(error => {
                 console.error('Error updating comment:', error);
             });
     };
+    
 
     const handleCommentEdit = (commentId, commentText) => {
         setEditingCommentId(commentId);
