@@ -15,6 +15,8 @@ const Login = ({ setIsMypage }) => {
   const [auth, setAuth] = useState({ users_code: '', users_password: '' });
   const [isAdmin, setIsAdmin] = useState(() => sessionStorage.getItem('isAdmin') === 'true');
 
+  
+  const serverUrl = process.env.REACT_APP_SERVER_URL;
   useEffect(() => {
     sessionStorage.setItem('isAdmin', isAdmin);
   }, [isAdmin]);
@@ -24,37 +26,48 @@ const Login = ({ setIsMypage }) => {
     setAuth((prev) => ({ ...prev, [name]: value }));
   };
 
+  
   const handleLogin = () => {
-    console.log("로그인 시도 중:", auth);
-
-
-    axios.post(`http://192.168.1.36/auth`, auth)
-
-
-      .then((resp) => {
-        console.log("서버 응답:", resp.data);
-        const { users_code, users_is_admin } = resp.data;
-        sessionStorage.setItem("loginID", users_code);
-        setLoginID(users_code);
-        setIsAdmin(users_is_admin === 1);
-        alert("로그인 성공");
-        navigate("/users/login");
-      })
-      .catch((err) => {
-        console.error("로그인 오류:", err);
-        if (err.response && err.response.status === 401) {
-          alert("사원 코드 또는 패스워드를 다시 확인해주세요.");
-        } else {
-          alert("서버 오류가 발생했습니다. 관리자에게 문의하세요.");
-        }
-      });
+      console.log("로그인 시도 중:", auth);
+      axios.post(`${serverUrl}/auth`, auth)
+          .then((resp) => {
+              console.log("서버 응답:", resp.data);
+              const { users_code, users_name, users_is_admin, users_seq } = resp.data;
+  
+              // Zustand 스토어 업데이트
+              useAuthStore.getState().setLoginID(users_code);
+              useAuthStore.getState().setUsersName(users_name);
+  
+              // 세션 스토리지에 저장
+              sessionStorage.setItem("loginID", users_code);
+              sessionStorage.setItem("usersName", users_name);
+              sessionStorage.setItem("usersSeq", users_seq);
+  
+              const isAdmin = users_is_admin === 1;
+              setIsAdmin(isAdmin);
+  
+              alert("로그인 성공");
+  
+              // 페이지 네비게이션
+              if (isAdmin) {
+                  navigate("/users/login");
+              } else {
+                  navigate("/");
+              }
+          })
+          .catch((err) => {
+              console.error("로그인 오류:", err);
+              if (err.response && err.response.status === 401) {
+                  alert("사원 코드 또는 패스워드를 다시 확인해주세요.");
+              } else {
+                  alert("서버 오류가 발생했습니다. 관리자에게 문의하세요.");
+              }
+          });
   };
-
+  
   const handleLogout = () => {
 
-
-    axios.post(`http://192.168.1.36/auth/logout`)
-
+    axios.post(`${serverUrl}/auth/logout`)
 
       .then(() => {
         console.log("로그아웃 성공");
@@ -77,8 +90,7 @@ const Login = ({ setIsMypage }) => {
       return;
     }
 
-    axios.delete(`http://192.168.1.36/users`)
-
+    axios.delete(`${serverUrl}/users`)
 
       .then(() => {
         console.log("회원 탈퇴 성공");
@@ -106,8 +118,7 @@ const Login = ({ setIsMypage }) => {
   // New function to handle external navigation
   const handleGoToHome = () => {
 
-    window.location.href = "http://192.168.1.36:3000/"; // Directly navigate to the main homepage
-
+    window.location.href = `${serverUrl}/`; // Directly navigate to the main homepage
 
   };
 

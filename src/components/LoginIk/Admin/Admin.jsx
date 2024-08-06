@@ -27,10 +27,12 @@ const Admin = (host) => {
   const [isLoading, setIsLoading] = useState(true); // 데이터 로드 상태 관리
   const navi = useNavigate();
 
+  const serverUrl = process.env.REACT_APP_SERVER_URL;
+
   // 부서 목록을 가져오는 useEffect
   useEffect(() => {
 
-    axios.get('http://192.168.1.36/admin/departments', {
+    axios.get(`${serverUrl}/admin/departments`, {
 
       headers: {
         'Content-Type': 'application/json',
@@ -54,8 +56,7 @@ const Admin = (host) => {
   useEffect(() => {
     if (form.department) {
 
-      axios.get(`http://192.168.1.36/admin/departments/${form.department}/units`, {
-
+      axios.get(`${serverUrl}/admin/departments/${form.department}/units`, {
 
         headers: {
           'Content-Type': 'application/json',
@@ -82,8 +83,7 @@ const Admin = (host) => {
   // 직급 목록을 가져오는 useEffect
   useEffect(() => {
 
-    axios.get('http://192.168.1.36/ranks', {
-
+    axios.get(`${serverUrl}/ranks`, {
 
       headers: {
         'Content-Type': 'application/json',
@@ -133,8 +133,7 @@ const Admin = (host) => {
     }
 
 
-    axios.post('http://192.168.1.36/users', {
-
+    axios.post(`${serverUrl}/users`, {
 
       users_code: form.employeeCode,
       users_name: form.users_name,
@@ -177,24 +176,21 @@ const Admin = (host) => {
     // department_title, unit_title, rank_title을 가져오기 위해 추가 요청
     axios.all([
 
-      axios.get(`http://192.168.1.36/admin/departments/${form.department}`, {
-
-
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      }),
-
-      axios.get(`http://192.168.1.36/admin/units/${unitSeq}`, {
-
+      axios.get(`${serverUrl}/admin/departments/${form.department}`, {
 
         headers: {
           'Content-Type': 'application/json',
         }
       }),
 
-      axios.get(`http://192.168.1.36/ranks/${form.rank_seq}`, {
+      axios.get(`${serverUrl}/admin/units/${unitSeq}`, {
 
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }),
+
+      axios.get(`${serverUrl}/ranks/${form.rank_seq}`, {
 
         headers: {
           'Content-Type': 'application/json',
@@ -203,8 +199,7 @@ const Admin = (host) => {
     ])
     .then(axios.spread((departmentResponse, unitResponse, rankResponse) => {
 
-      return axios.post('http://192.168.1.36/employees/register', {
-
+      return axios.post(`${serverUrl}/employees/register`, {
 
         user_seq: userSeq,
         users_name: form.users_name,

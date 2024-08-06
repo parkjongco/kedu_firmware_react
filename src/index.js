@@ -11,6 +11,9 @@ import Messenger from './pages/Messenger/Messenger'; // Messenger 컴포넌트 i
 import Login from './components/LoginIk/Login';
 import Admin from './components/LoginIk/Admin/Admin';
 import DeleteUser from './components/LoginIk/Admin/DeleteUser'; 
+import axios from 'axios';
+
+axios.defaults.withCredentials = true
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

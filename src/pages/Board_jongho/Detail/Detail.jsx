@@ -2,19 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './Detail.module.css';
+import { useAuthStore } from '../../../store/store';
 
-const Detail = (host) => {
+axios.defaults.withCredentials = true;
+
+const Detail = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { usersName } = useAuthStore(); // Zustand 스토어에서 사용자 이름 가져오기
+
     const [board, setBoard] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [updatedTitle, setUpdatedTitle] = useState('');
     const [updatedContents, setUpdatedContents] = useState('');
-    const location = useLocation();
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
+
+    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [editedCommentText, setEditedCommentText] = useState('');
 
     const seq = location.pathname.split('/').pop();
+    const serverUrl = process.env.REACT_APP_SERVER_URL;
+    const sessionUserName = sessionStorage.getItem("usersName") || "Unknown User";
 
     useEffect(() => {
-        axios.get(`${host}/board/detail/${seq}`)
+        // 게시물과 댓글 데이터 요청
+        axios.get(`${serverUrl}/board/detail/${seq}`)
             .then(resp => {
                 setBoard(resp.data);
                 setUpdatedTitle(resp.data.board_title);
@@ -23,7 +36,16 @@ const Detail = (host) => {
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
-    }, [seq]);
+
+        axios.get(`${serverUrl}/board_reply/${seq}`)
+            .then(resp => {
+                setComments(resp.data || []);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+
+    }, [seq, serverUrl]);
 
     const handleUpdate = (e) => {
         const updatedData = {
@@ -31,7 +53,7 @@ const Detail = (host) => {
             board_contents: updatedContents,
         };
 
-        axios.put(`${host}/board/${seq}`, updatedData)
+        axios.put(`${serverUrl}/board/${seq}`, updatedData)
             .then(resp => {
                 setBoard(resp.data);
                 setIsEditing(false);
@@ -43,6 +65,46 @@ const Detail = (host) => {
 
     const toggleEditMode = () => {
         setIsEditing(prev => !prev);
+    };
+
+    const handleCommentSubmit = (e) => {
+        const commentData = {
+            reply_userName: usersName || sessionUserName, // 사용자 이름
+            reply_contents: newComment, // 댓글 내용
+            board_seq: seq, // 부모 게시물의 seq
+        };
+
+        axios.post(`${serverUrl}/board_reply`, commentData)
+            .then(resp => {
+                setComments(prevComments => [...prevComments, resp.data]);
+                setNewComment('');
+            })
+            .catch(error => {
+                console.error('Error submitting comment:', error);
+            });
+    };
+
+    const handleUpdateReply = (commentId) => {
+        const updatedCommentData = {
+            reply_contents: editedCommentText,
+        };
+
+        axios.put(`${serverUrl}/board_reply/${commentId}`, updatedCommentData)
+            .then(resp => {
+                setComments(prevComments => prevComments.map(comment =>
+                    comment.reply_seq === commentId ? resp.data : comment
+                ));
+                setEditingCommentId(null);
+                setEditedCommentText('');
+            })
+            .catch(error => {
+                console.error('Error updating comment:', error);
+            });
+    };
+
+    const handleCommentEdit = (commentId, commentText) => {
+        setEditingCommentId(commentId);
+        setEditedCommentText(commentText);
     };
 
     if (!board) {
@@ -77,31 +139,70 @@ const Detail = (host) => {
                 </div>
             </div>
             <div className={styles.body}>
-                <div><strong>글쓴이:</strong> {board.writer}</div>
+                <div><strong>글쓴이:</strong> {board.board_userName || sessionUserName}</div>
                 <div><strong>작성일자:</strong> {new Date(board.board_write_date).toLocaleString()}</div>
                 <div><strong>조회수:</strong> {board.board_view_count}</div>
-            </div>
-            <div className={styles.content}>
-                {isEditing ? (
-                    <form onSubmit={handleUpdate} className={styles.editForm}>
-                        <div>
-                            <label>
-                                내용:
-                                <div
-                                    contentEditable
-                                    className={styles.contentEditable}
-                                    onInput={(e) => setUpdatedContents(e.currentTarget.textContent)}
-                                >
-                                    {updatedContents}
+                <div className={styles.content}>
+                    {isEditing ? (
+                        <form onSubmit={handleUpdate} className={styles.editForm}>
+                            <div>
+                                <label>
+                                    내용:
+                                    <textarea
+                                        value={updatedContents}
+                                        onChange={(e) => setUpdatedContents(e.target.value)}
+                                        className={styles.contentEditable}
+                                    />
+                                </label>
+                            </div>
+                        </form>
+                    ) : (
+                        <div
+                            dangerouslySetInnerHTML={{ __html: board.board_contents }}
+                        />
+                    )}
+                </div>
+
+                <div className={styles.comments_Section}>
+                    <h3>댓글</h3>
+                    {comments.length > 0 ? (
+                        comments.map((comment) => (
+                            <div key={comment.reply_seq} className={styles.comment}>
+                                <div><strong>{comment.reply_userName || sessionUserName}</strong></div>
+                                <div>
+                                    {editingCommentId === comment.reply_seq ? (
+                                        <div>
+                                            <textarea
+                                                value={editedCommentText}
+                                                onChange={(e) => setEditedCommentText(e.target.value)}
+                                                className={styles.comment_Input}
+                                            />
+                                            <button onClick={() => handleUpdateReply(comment.reply_seq)} className={styles.button}>수정 완료</button>
+                                            <button onClick={() => setEditingCommentId(null)} className={styles.button}>취소</button>
+                                        </div>
+                                    ) : (
+                                        <div>{comment.reply_contents}</div>
+                                    )}
                                 </div>
-                            </label>
-                        </div>
+                                <div>{new Date(comment.reply_reg_date).toLocaleString()}</div>
+                                {comment.reply_userName === (usersName || sessionUserName) && (
+                                    <button onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)} className={styles.button}>수정</button>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <div>댓글이 없습니다.</div>
+                    )}
+                    <form onSubmit={handleCommentSubmit} className={styles.comment_Form}>
+                        <textarea
+                            className={styles.comment_Input}
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="댓글을 작성하세요"
+                        />
+                        <button type="submit" className={styles.button}>댓글 작성</button>
                     </form>
-                ) : (
-                    <div
-                        dangerouslySetInnerHTML={{ __html: board.board_contents }}
-                    />
-                )}
+                </div>
             </div>
         </div>
     );
