@@ -75,7 +75,7 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                     <div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faImagePortrait} />
-                            {toggle && <a href="자료실" className={styles.link}>자료실</a>}
+                            {toggle && <a href="`${serverUrl}:3000/Mypage`" className={styles.link}>마이페이지</a>}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faRightFromBracket} />
