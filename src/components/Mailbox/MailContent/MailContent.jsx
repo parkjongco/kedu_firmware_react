@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import styles from './MailContent.module.css'
-import { useMailStore } from '../../store/store';
+import { useMailStore } from '../../../store/mail_store';
 import axios from 'axios';
 
 const serverUrl = process.env.REACT_APP_SERVER_URL;
