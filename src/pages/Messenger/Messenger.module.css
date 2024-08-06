@@ -11,12 +11,10 @@
 
 .messengerBody {
     display: flex;
-height: 900px;
-width: 900px;
+    flex: 1;
     padding: 20px;
     box-sizing: border-box; /* Padding 포함하여 크기 계산 */
     background-color: #f5f7fa; /* 배경색 설정 */
-    align-items: center; 
 }
 
 .messengerSidebar {
@@ -58,13 +56,14 @@ width: 900px;
 }
 
 .messengerMain {
-    flex: 1;
     display: flex;
     flex-direction: column;
     border-radius: 8px;
     border: 1px solid #ddd;
     background-color: #ffffff;
     overflow: hidden;
+    height: 850px;
+    width: 600px;
 }
 
 .chatHeader {
@@ -79,10 +78,15 @@ width: 900px;
 .messengerChat {
     flex: 1;
     padding: 20px;
-    overflow-y: auto; /* 채팅 메시지가 많아지면 스크롤 가능 */
+    overflow-y: auto;
     background-color: #f7f9fc; /* 채팅 배경색 */
-    height: 0; /* 높이를 0으로 설정하고, flex-grow로 채팅 목록이 차지할 공간을 제한 */
-    max-height: calc(100vh - 200px); /* 전체 높이에서 헤더, 입력창 크기를 빼고 남은 공간 */
+}
+
+.messengerChat ul {
+    width: 100%; /* ul 요소의 너비를 부모 컨테이너에 꽉 차게 설정 */
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
 }
 
 .messageBox {
@@ -103,26 +107,27 @@ width: 900px;
     display: flex;
     margin-bottom: 10px;
     align-items: center;
+    width: 50%; /* 메시지 컨테이너도 전체 너비를 사용 */
 }
 
 .messageSent {
     background-color: #dcf8c6;
-    align-self: flex-end;
     padding: 10px;
     border-radius: 10px;
-    max-width: 60%;
-    margin-left: auto;
+    max-width: 50%;
+    margin-left: auto; /* 메시지를 오른쪽으로 정렬 */
     margin-bottom: 10px;
 }
 
 .messageReceived {
     background-color: #ffffff;
-    align-self: flex-start;
     padding: 10px;
     border-radius: 10px;
     max-width: 60%;
-    margin-right: auto;
+    margin-left: 0; /* 왼쪽 여백을 제거하여 메시지를 왼쪽으로 붙임 */
     margin-bottom: 10px;
+    text-align: left; /* 텍스트를 왼쪽 정렬 */
+    margin-right: auto; /* 오른쪽 여백 자동 설정 */
 }
 
 .messageStatus {
@@ -143,6 +148,3 @@ width: 900px;
 .messengerSidebar::-webkit-scrollbar-track, .messengerChat::-webkit-scrollbar-track {
     background-color: transparent;
 }
-
-
-
