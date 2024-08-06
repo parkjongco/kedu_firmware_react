@@ -2,21 +2,19 @@
 .mailListActions {
     display: flex;
     align-items: center;
+    position: relative; /* 자식 요소의 위치 설정 기준 */
 }
 
 .searchInput{
     width: 170px;
-    /* border-radius: 10px; */
     border:solid 1px #ccc;
     box-sizing: border-box;
     margin-right: 10px;
     padding: 6px 0 6px 15px;
     line-height: 20px;
-
     font-size: 14px;
     font-weight: bold;
     color:#1e1e23;
-    
 }
 
 .searchInput:focus {
@@ -29,8 +27,7 @@
     border: solid 1px #ccc;
     padding: 6px 14px;
     color: #1e1e23;
-    background-color: #ffffff; 
-     /* 부드러운 전환 효과를 주기위한 코드 */
+    background-color: #ffffff;
     transition: border-color 0.3s, background-color 0.3s, color 0.3s, font-weight 0.3s;
     cursor: pointer; 
 }
@@ -53,4 +50,43 @@
     margin-right: 10px;
 }
 
+/* 검색 미리보기 기능 추가 */
+.previewContainer {
+    position: absolute;
+    top: 45px; /* 검색 input 아래에 미리보기 컨테이너 위치 */
+    left: 0;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* 다른 요소들 위에 미리보기 컨테이너를 표시 */
+}
 
+.previewItem {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.previewItem:last-child {
+    border-bottom: none;
+}
+
+.previewItem:hover {
+    background-color: #f9f9f9;
+}
+
+.previewTitle {
+    font-weight: bold;
+}
+
+.previewContent {
+    color: #555;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* 검색 미리보기 기능 추가 끝 */

@@ -1,0 +1,54 @@
+.deleteUserContainer {
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #85d2ff;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: bold;
+  color: white; 
+  margin-bottom: 20px; 
+}
+
+.deleteUserForm {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 350px;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+select {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.deleteButton {
+  width: 100%;
+  padding: 10px;
+  background-color: #f44336;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.deleteButton:disabled {
+  background-color: #ff7961;
+  cursor: not-allowed;
+}

@@ -33,9 +33,9 @@
 }
 
 .container {
-    width: calc(100% - 40px);
-    padding: 20px;
-    position: relative; /* 버튼을 우측 상단에 위치시키기 위해 상대 위치 설정 */
+    /* width: calc(100% - 40px); */
+    padding: 20px; 
+    position: relative; 
 }
 
 .header {

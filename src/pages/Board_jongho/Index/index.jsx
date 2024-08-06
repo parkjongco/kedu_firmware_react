@@ -7,8 +7,10 @@ import List from '../List/List';
 import BoardEdit from '../Edit/Edit';
 import BoardDetail from '../Detail/Detail';
 
-const BoardIndex = () => {
+const BoardIndex = (host) => {
     const [selectedCategory, setSelectedCategory] = useState({});
+
+    const serverUrl = process.env.REACT_APP_SERVER_URL;
 
     return (
         <div className={styles.container}>
@@ -23,7 +25,7 @@ const BoardIndex = () => {
                 <div className={styles.navigation}>
                     <Link to="/Board">List</Link>
                     <Link to="/Board/Edit">Edit</Link>
-                    <Link to="/Board/Detail">Detail</Link>
+                    <Link to="/Board/Detail">Detail</Link>  
                 </div>
                 <div className={styles.content}>
                     <Routes>

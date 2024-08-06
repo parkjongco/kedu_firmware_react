@@ -3,25 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import styles from './List.module.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useAuthStore } from '../../../store/store';
 
-export const List = (category) => {
-    const name = category.category.name;
-    const code = category.category.code;
+axios.defaults.withCredentials = true
+export const List = ({ category = {} }) => {
+    const { usersName } = useAuthStore(); 
     const [data, setData] = useState([]);
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [sortOrder, setSortOrder] = useState('default');
-    const itemsPerPage = 10; // 페이지당 아이템 수 정의
+    const itemsPerPage = 10;
+    const [isUserName ,setUserName] =  useState( () =>sessionStorage.getItem("userName") ==='true' ) ;
 
+    const serverUrl = process.env.REACT_APP_SERVER_URL;
+
+    const session = sessionStorage.getItem("usersName");
     useEffect(() => {
-        axios.get(`http://localhost:80/board`).then(resp => {
-            setData(resp.data);
-        }).catch(error => {
-            console.error('Error fetching data:', error);
-        });
-    }, []);
+        // console.log("현재 유저 이름:", session.getItem("usersName")); // 현재 유저 이름을 콘솔에 출력
+        axios.get(`${serverUrl}/board`)
+            .then(resp => {
+                setData(resp.data);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }, [serverUrl, usersName]);
 
-    // Sorting the data based on the sortOrder
     const sortedData = () => {
         return [...data].sort((a, b) => {
             const dateA = new Date(a.board_write_date);
@@ -59,8 +66,8 @@ export const List = (category) => {
     };
 
     const handleDelete = (seq) => {
-        axios.delete(`http://localhost:80/board/${seq}`)
-            .then(response => {
+        axios.delete(`${serverUrl}/board/${seq}`, { withCredentials: true })
+            .then(() => {
                 setData(data.filter(item => item.board_seq !== seq));
             })
             .catch(error => {
@@ -72,7 +79,7 @@ export const List = (category) => {
         <div className={styles.container}>
             <div className={styles.category_header}>
                 <div className={styles.headerLeft}>
-                    <h2>{name}</h2>
+                    <h2>{category.name || 'Default Category'}</h2>
                 </div>
                 <div className={styles.header_Right}>
                     <Link id={styles.write} to="Edit">등록하기</Link>
@@ -106,19 +113,19 @@ export const List = (category) => {
                             <th>글쓴이</th>
                             <th>작성일자</th>
                             <th>조회수</th>
-                            <th>액션</th> {/* 액션 컬럼 추가 */}
+                            <th>액션</th>
                         </tr>
                     </thead>
                     <tbody>
                         {currentItems.map((e) => (
                             <tr key={e.board_seq} onClick={() => handleRowClick(e.board_seq)} className={styles.row}>
                                 <td>{e.board_title}</td>
-                                <td>{e.writer}</td>
-                                <td>{new Date(e.board_write_date).toLocaleString()}</td> {/* Format date */}
+                                <td>{session || '작성자 정보 없음'}</td> {/* 사용자 이름을 표시 */}
+                                <td>{new Date(e.board_write_date).toLocaleString()}</td>
                                 <td>{e.board_view_count}</td>
                                 <td>
                                     <button onClick={(event) => {
-                                        event.stopPropagation(); // Prevent row click event
+                                        event.stopPropagation();
                                         handleDelete(e.board_seq);
                                     }}>
                                         삭제
