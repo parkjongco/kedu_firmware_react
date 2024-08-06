@@ -3,9 +3,12 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styles from './Admin.module.css';
 
+// 환경 변수에서 서버 URL을 가져옵니다
+const serverUrl = process.env.REACT_APP_SERVER_URL;
+
 axios.defaults.withCredentials = true; // 세션 쿠키 포함
 
-const Admin = (host) => {
+const Admin = () => {
   const [form, setForm] = useState({
     department: '',
     unitCode: '',
@@ -27,13 +30,9 @@ const Admin = (host) => {
   const [isLoading, setIsLoading] = useState(true); // 데이터 로드 상태 관리
   const navi = useNavigate();
 
-  const serverUrl = process.env.REACT_APP_SERVER_URL;
-
   // 부서 목록을 가져오는 useEffect
   useEffect(() => {
-
     axios.get(`${serverUrl}/admin/departments`, {
-
       headers: {
         'Content-Type': 'application/json',
       }
@@ -55,9 +54,7 @@ const Admin = (host) => {
   // 부서 선택 시 유닛 코드를 가져와 input 필드에 표시하고 unit_seq도 가져오기
   useEffect(() => {
     if (form.department) {
-
       axios.get(`${serverUrl}/admin/departments/${form.department}/units`, {
-
         headers: {
           'Content-Type': 'application/json',
         }
@@ -82,15 +79,12 @@ const Admin = (host) => {
 
   // 직급 목록을 가져오는 useEffect
   useEffect(() => {
-
     axios.get(`${serverUrl}/ranks`, {
-
       headers: {
         'Content-Type': 'application/json',
       }
     })
     .then(response => {
-      console.log('Ranks loaded:', response.data); // 데이터 로드 후 상태 확인
       setRanks(response.data);
       setIsLoading(false); // 데이터 로드 완료 후 로딩 상태 업데이트
     })
@@ -132,9 +126,7 @@ const Admin = (host) => {
       return;
     }
 
-
     axios.post(`${serverUrl}/users`, {
-
       users_code: form.employeeCode,
       users_name: form.users_name,
       users_password: form.tempPassword,
@@ -167,40 +159,30 @@ const Admin = (host) => {
   const handleEmployeeSubmit = (e) => {
     e.preventDefault();
 
-    // 부서, 유닛, 직급 선택 확인
-    if (!form.department || !unitSeq || !form.rank_seq) { // unitSeq 및 rank_seq 사용
+    if (!form.department || !unitSeq || !form.rank_seq) {
       alert('부서, 유닛 및 직급을 선택하세요.');
       return;
     }
 
-    // department_title, unit_title, rank_title을 가져오기 위해 추가 요청
     axios.all([
-
       axios.get(`${serverUrl}/admin/departments/${form.department}`, {
-
         headers: {
           'Content-Type': 'application/json',
         }
       }),
-
       axios.get(`${serverUrl}/admin/units/${unitSeq}`, {
-
         headers: {
           'Content-Type': 'application/json',
         }
       }),
-
       axios.get(`${serverUrl}/ranks/${form.rank_seq}`, {
-
         headers: {
           'Content-Type': 'application/json',
         }
       })
     ])
     .then(axios.spread((departmentResponse, unitResponse, rankResponse) => {
-
       return axios.post(`${serverUrl}/employees/register`, {
-
         user_seq: userSeq,
         users_name: form.users_name,
         department_seq: parseInt(form.department),
@@ -273,15 +255,27 @@ const Admin = (host) => {
             <input type="text" name="unitCode" placeholder="유닛 부서" value={unit} readOnly />
           </div>
           <div className={styles.inputContainer}>
-            <select name="rank_seq" value={form.rank_seq} onChange={(e) => {
-              const selectedRank = ranks.find(rank => rank.rank_seq === parseInt(e.target.value));
-              
-              if (selectedRank) { // 선택된 값이 undefined가 아닌 경우에만 설정
-                setForm(prev => ({...prev, rank_seq: selectedRank.rank_seq, rank_title: selectedRank.rank_title}));
-              } else {
-                console.error('Rank not found for selected value');
-              }
-            }}>
+            <input type="text" name="employeeCode" placeholder="직원 코드" value={form.employeeCode} readOnly />
+          </div>
+          <div className={styles.inputContainer}>
+            <input type="text" name="tempPassword" placeholder="임시 비밀번호" value={form.tempPassword} readOnly />
+          </div>
+          <div className={styles.inputContainer}>
+            <input type="text" name="users_name" placeholder="사용자 이름" value={form.users_name} onChange={handleChange} />
+          </div>
+          <div className={styles.inputContainer}>
+            <input type="email" name="users_email" placeholder="이메일" value={form.users_email} onChange={handleChange} />
+          </div>
+          <div className={styles.inputContainer}>
+            <input type="text" name="users_full_name" placeholder="풀 네임" value={form.users_full_name} onChange={handleChange} />
+          </div>
+          <button type="submit">유저 등록</button>
+        </form>
+      )}
+      {step === 2 && (
+        <form className={styles.loginForm} onSubmit={handleEmployeeSubmit}>
+          <div className={styles.inputContainer}>
+            <select name="rank_seq" value={form.rank_seq} onChange={handleChange}>
               <option value="">직급 선택</option>
               {ranks.map(rank => (
                 <option key={rank.rank_seq} value={rank.rank_seq}>
@@ -290,30 +284,7 @@ const Admin = (host) => {
               ))}
             </select>
           </div>
-          <div className={styles.inputContainer}>
-            <input type="text" name="users_name" placeholder="사용자 이름" value={form.users_name} onChange={handleChange} required />
-          </div>
-          <div className={styles.inputContainer}>
-            <input type="email" name="users_email" placeholder="이메일" value={form.users_email} onChange={handleChange} required />
-          </div>
-          <div className={styles.inputContainer}>
-            <input type="text" name="users_full_name" placeholder="전체 이름" value={form.users_full_name} onChange={handleChange} required />
-          </div>
-          <div className={styles.inputContainer}>
-            <input type="text" name="employeeCode" placeholder="사원 ID" value={form.employeeCode} readOnly />
-          </div>
-          <div className={styles.inputContainer}>
-            <input type="text" name="tempPassword" placeholder="임시 비밀번호" value={form.tempPassword} readOnly />
-          </div>
-          <button type="submit" className={styles.loginButton}>유저 등록</button>
-        </form>
-      )}
-      {step === 2 && (
-        <form className={styles.loginForm} onSubmit={handleEmployeeSubmit}>
-          <div className={styles.inputContainer}>
-            <input type="text" name="employeeCode" placeholder="사원 ID" value={form.employeeCode} readOnly />
-          </div>
-          <button type="submit" className={styles.loginButton}>사원 등록</button>
+          <button type="submit">사원 등록</button>
         </form>
       )}
     </div>
