@@ -84,15 +84,15 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                             {toggle && (
                                <Link to={`${serverUrl}/mypage`} className={styles.link}>마이페이지</Link>
                             )}
+                        </div>
 
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faRightFromBracket} />
                             {toggle && <a href="로그아웃" className={styles.link}>로그아웃</a>}
                         </div>
                     </div>
-                </div>
             </div>
         </div>
     </div>
-    )
+)
 }
