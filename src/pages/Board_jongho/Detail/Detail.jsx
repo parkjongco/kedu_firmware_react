@@ -87,6 +87,7 @@ const Detail = () => {
     const handleUpdateReply = (commentId) => {
         const updatedCommentData = {
             reply_contents: editedCommentText,
+            reply_reg_date: new Date().toISOString(), // 현재 날짜와 시간
         };
 
         axios.put(`${serverUrl}/board_reply/${commentId}`, updatedCommentData)
