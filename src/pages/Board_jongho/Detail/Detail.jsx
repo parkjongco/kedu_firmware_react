@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './Detail.module.css';
 import { useAuthStore } from '../../../store/store';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBookmark } from '@fortawesome/free-solid-svg-icons';
 
 axios.defaults.withCredentials = true;
 
@@ -19,6 +21,7 @@ const Detail = () => {
     const [newComment, setNewComment] = useState('');
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editedCommentText, setEditedCommentText] = useState('');
+    const [isBookmarked, setIsBookmarked] = useState(false);
 
     const seq = location.pathname.split('/').pop();
     const serverUrl = process.env.REACT_APP_SERVER_URL;
@@ -126,6 +129,10 @@ const Detail = () => {
         setEditedCommentText(commentText);
     };
 
+    const handleBookmarkClick = () => {
+        setIsBookmarked(prev => !prev);
+    };
+
     if (!board) {
         return <div>Loading...</div>;
     }
@@ -141,7 +148,15 @@ const Detail = () => {
                         className={styles.titleInput}
                     />
                 ) : (
-                    <div className={styles.title}>{board.board_title}</div>
+                    <div className={styles.title}>
+                        {board.board_title}
+                        <FontAwesomeIcon
+                            icon={faBookmark}
+                            className={styles.bookmarkIcon}
+                            style={{ color: isBookmarked ? 'blue' : '#f0a500' }}
+                            onClick={handleBookmarkClick}
+                        />
+                    </div>
                 )}
                 <div>
                     {!isEditing ? (
@@ -234,3 +249,4 @@ const Detail = () => {
 };
 
 export default Detail;
+
