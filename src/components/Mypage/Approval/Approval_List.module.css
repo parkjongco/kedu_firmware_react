@@ -23,7 +23,7 @@
   align-items: center;
 }
 
-button {
+.button {
   background-color: #007bff;
   color: white;
   border: none;
@@ -33,17 +33,17 @@ button {
   margin-top: 20px;
 }
 
-button:hover {
+.button:hover {
   background-color: #0056b3;
 }
 
-ul {
+.ul {
   list-style: none;
   padding: 0;
   width: 100%;
 }
 
-li {
+.li {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -54,11 +54,11 @@ li {
   background-color: #f9f9f9;
 }
 
-li p {
+.li .p {
   margin: 0;
 }
 
-li button {
+.li .button {
   margin-left: 10px;
   margin-top: 0;
   padding: 5px 10px;
@@ -68,38 +68,37 @@ li button {
   margin-top: 30px;
 }
 
-.adminActions button {
+.adminActions .button {
   background-color: #007bff;
   margin-right: 10px;
 }
 
-.adminActions button:hover {
+.adminActions .button:hover {
   background-color: #0056b3;
 }
 
-.adminActions button:last-child {
+.adminActions .button:last-child {
   background-color: #dc3545;
 }
 
-.adminActions button:last-child:hover {
+.adminActions .button:last-child:hover {
   background-color: #c82333;
 }
 
-/* 추가된 부분 */
-li .approveButton {
+.li .approveButton {
   background-color: #007bff;
   color: white;
 }
 
-li .approveButton:hover {
+.li .approveButton:hover {
   background-color: #0056b3;
 }
 
-li .rejectButton {
+.li .rejectButton {
   background-color: #dc3545;
   color: white;
 }
 
-li .rejectButton:hover {
+.li .rejectButton:hover {
   background-color: #c82333;
 }

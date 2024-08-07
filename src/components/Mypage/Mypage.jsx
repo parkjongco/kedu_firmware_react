@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styles from './Mypage.module.css';
@@ -7,10 +7,10 @@ import ApprovalListModal from './Approval/Approval_List';
 import SideBar from './SideBar/SideBar';
 import profileImagePlaceholder from '../../assets/image.png';
 
+axios.defaults.withCredentials = true;
+
 // 환경 변수에서 서버 URL을 가져옵니다
 const serverUrl = process.env.REACT_APP_SERVER_URL;
-
-axios.defaults.withCredentials = true;
 
 const Mypage = () => {
   const navigate = useNavigate();
@@ -32,7 +32,6 @@ const Mypage = () => {
     name: '',
   });
 
-  const [originalUserInfo, setOriginalUserInfo] = useState(null); // 원래 데이터 저장용
   const [isProfileEdit, setIsProfileEdit] = useState(false);
   const [isAddressOpen, setIsAddressOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -45,25 +44,24 @@ const Mypage = () => {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
   };
 
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     const loginID = sessionStorage.getItem('loginID');
     const usersSeq = sessionStorage.getItem('usersSeq');
     const usersName = sessionStorage.getItem('usersName'); 
     const rank = sessionStorage.getItem('rank');
     const employeeId = sessionStorage.getItem('employeeId');
-    const joinDate = sessionStorage.getItem('joinDate');
-
+  
     if (!usersSeq) {
       console.error('usersSeq is missing.');
       alert('usersSeq 값이 누락되었습니다. 다시 시도해 주세요.');
       navigate('/users/login');
       return;
     }
-
+  
     try {
       const response = await axios.get(`${serverUrl}/user-update-request/approval-list`);
       const latestRequest = response.data.find(item => item.usersSeq === parseInt(usersSeq) && (item.requestStatus === '승인됨' || item.requestStatus === '거부됨'));
-
+  
       if (latestRequest) {
         setUserInfo(prevState => ({
           ...prevState,
@@ -86,7 +84,7 @@ const Mypage = () => {
         const userProfileResponse = await axios.get(`${serverUrl}/user-profile`, {
           params: { userCode: loginID }
         });
-
+  
         const data = userProfileResponse.data;
         setUserInfo({
           usersSeq: usersSeq,
@@ -105,36 +103,17 @@ const Mypage = () => {
           joinDate: data.joinDate ? formatDateToString(new Date(data.joinDate)) : '',
           name: data.name || '',
         });
-
-        setOriginalUserInfo({
-          usersSeq: usersSeq,
-          phone: data.phoneNumber,
-          email: data.email,
-          address: data.address,
-          zipCode: data.zipCode || '',  
-          detailedAddress: data.detailedAddress || '',  
-          reason: '',
-          approver: usersName || data.name || '', 
-          applicationDate: '',
-          applicationStatus: sessionStorage.getItem('applicationStatus') || '', 
-          profileImage: data.profilePictureUrl || profileImagePlaceholder,
-          rank: rank || data.rank,
-          employeeId: data.employeeId,
-          joinDate: data.joinDate ? formatDateToString(new Date(data.joinDate)) : '',
-          name: data.name || '',
-        });
-
+  
         setProfileImagePreview(data.profilePictureUrl || profileImagePlaceholder);
       }
-
-      console.log('Updated User Info:', userInfo);
     } catch (error) {
       console.error('Error fetching user data:', error);
       alert('사용자 정보를 가져오는 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [navigate]); // 여기서 serverUrl을 제외하세요
+  
 
   useEffect(() => {
     const loginID = sessionStorage.getItem('loginID');
@@ -142,10 +121,9 @@ const Mypage = () => {
     const usersName = sessionStorage.getItem('usersName');
     const rank = sessionStorage.getItem('rank');
     const employeeId = sessionStorage.getItem('employeeId');
-    const joinDate = sessionStorage.getItem('joinDate');
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
 
-    console.log('Session Storage Values:', { loginID, usersSeq, usersName, rank, employeeId, joinDate, isAdmin });
+    console.log('Session Storage Values:', { loginID, usersSeq, usersName, rank, employeeId, isAdmin });
 
     if (!loginID || !usersSeq) {
       console.error('User code 또는 usersSeq 값이 세션에 없습니다');
@@ -159,12 +137,11 @@ const Mypage = () => {
       usersSeq: usersSeq,
       rank: rank,
       employeeId: employeeId,
-      joinDate: joinDate ? formatDateToString(new Date(joinDate)) : '',
     }));
     setIsAdmin(isAdmin);
 
     fetchUserProfile();
-  }, [navigate]);
+  }, [navigate, fetchUserProfile]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -266,21 +243,47 @@ const Mypage = () => {
     }
   };
 
-  const handleProfileImageChange = (e) => {
+  const handleProfileImageChange = async (e) => {
     const file = e.target.files[0];
+    
+    // 파일 사이즈 제한: 10MB (10 * 1024 * 1024 바이트)
+    const maxSize = 10 * 1024 * 1024;
+  
+    if (file && file.size > maxSize) {
+      alert('파일 사이즈가 너무 큽니다. 10MB 이하의 파일만 업로드할 수 있습니다.');
+      return;
+    }
+  
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImagePreview(reader.result);
+      const formData = new FormData();
+      formData.append('file', file);
+  
+      try {
+        const uploadResponse = await axios.post(`${serverUrl}/user-update-request/upload-profile-image`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+  
+        // 서버에서 반환하는 데이터가 파일명인지, 전체 URL인지 확인
+        const profileImageUrl = uploadResponse.data;
+        
+        // 미리보기와 프로필 이미지를 업데이트
+        setProfileImagePreview(profileImageUrl);
         setUserInfo(prevState => ({
           ...prevState,
-          profileImage: reader.result
+          profileImage: profileImageUrl
         }));
-      };
-      reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error uploading profile image:', error);
+        alert('프로필 이미지 업로드 중 오류가 발생했습니다.');
+      }
     }
   };
 
+
+
+  
   const loadApprovalList = () => {
     axios.get(`${serverUrl}/user-update-request/approval-list`)
       .then(response => {
@@ -384,9 +387,9 @@ const Mypage = () => {
         <AddressModal
           onClose={() => setIsAddressOpen(false)}
           onComplete={handleAddressComplete}
-        />
+        />  
       )}
-      {isApprovalListOpen && isAdmin && ( // 관리자만 승인 리스트를 볼 수 있도록 설정
+      {isApprovalListOpen && isAdmin && (
         <ApprovalListModal
           onClose={() => setIsApprovalListOpen(false)}
           approvalList={approvalList}
@@ -398,4 +401,4 @@ const Mypage = () => {
   );
 };
 
-export default Mypage;
+export default Mypage;  
