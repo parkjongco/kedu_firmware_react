@@ -8,8 +8,6 @@ export const BoardCategory = [
     { code: 2, name: "프로젝트 게시판" },
     { code: 3, name: "자유게시판" },
     { code: 4, name: "질문 및 답변 게시판" },
-    { code: 5, name: "자료실" },
-    { code: 6, name: "회의록 게시판" },
 ];
 
 const BoardCategoryComponent = ({ onCategoryClick }) => {
