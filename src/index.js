@@ -12,6 +12,7 @@ import Login from './components/LoginIk/Login';
 import Admin from './components/LoginIk/Admin/Admin';
 import DeleteUser from './components/LoginIk/Admin/DeleteUser'; 
 import axios from 'axios';
+import Mypage from './components/Mypage/Mypage';
 
 axios.defaults.withCredentials = true
 
@@ -27,6 +28,7 @@ root.render(
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/deleteuser" element={<DeleteUser />} /> 
         <Route path="/users/login" element={<Login />} /> 
+        <Route path="/mypage" element={<Mypage />} />
       </Routes>
     </BrowserRouter>
 )

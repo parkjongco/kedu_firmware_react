@@ -1,14 +1,14 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faList, faUser, faHome, faCalendar, faImagePortrait, faRightFromBracket, faEnvelope, faBarsStaggered, faFileInvoice, faMessage, faHardDrive } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import styles from './Sidebar.module.css';
+import { useState, useRef } from 'react';
+import styles from './SideBar.module.css';
 
-export default function SideBar({ profile_src = "", username, useremail }) {
+export default function SideBar({ profile_src, username, useremail, onProfileImageChange }) {
     const [toggle, setToggle] = useState(false);
-    const serverUrl = process.env.REACT_APP_SERVER_URL;
-    const session = sessionStorage;
-
+    const fileInputRef = useRef(null);
+    const handleProfileImageClick = () => {
+        fileInputRef.current.click();
+    };
     return (
         <div className={styles.sidebar} style={!toggle ? { width: "50px" } : {}}>
             <div className={styles.sidebar_container} style={!toggle ? { alignItems: "center" } : {}} >
@@ -16,18 +16,18 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                     <FontAwesomeIcon icon={faList} />
                 </div>
                 <div className={styles.company_name}>
-                    {toggle && <h1>이름</h1>}
+                    {toggle && <h1>Firmware</h1>}
                 </div>
                 <div className={styles.user_info} style={!toggle ? { paddingLeft: "0px" } : {}}>
                     {
                         profile_src === "" &&
-                        <div className={styles.user_img_box} style={!toggle ? { width: "21px", height: "21px" } : {}}>
+                        <div className={styles.user_img_box} style={!toggle ? { width: "21px", height: "21px" } : {}} onClick={handleProfileImageClick}>
                             <FontAwesomeIcon icon={faUser} className={styles.user_img} style={!toggle ? { width: "18px" } : {}} />
                         </div>
                     }
                     {
                         profile_src !== "" &&
-                        <img src={profile_src} className={styles.user_img_box} style={!toggle ? { width: "21px", height: "21px" } : {}} />
+                        <img src={profile_src} alt="profile" className={styles.user_img_box} style={!toggle ? { width: "21px", height: "21px" } : {}} onClick={handleProfileImageClick} />
                     }
                     {toggle &&
                         <>
@@ -35,64 +35,57 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                             <p>{useremail}</p>
                         </>
                     }
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        accept="image/*"
+                        onChange={onProfileImageChange}
+                    />
                 </div>
                 <div className={styles.side_group} style={!toggle ? { paddingLeft: "0px" } : {}}>
                     <div className={styles.side_list}>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faHome} />
-                            {toggle && (
-                                <a href={`${serverUrl}:3000/`} className={styles.link}>홈</a>
-                            )}
+                            {toggle && <h3>홈</h3>}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faEnvelope} />
-                            {toggle && (
-                                <a href={`${serverUrl}:3000/mailbox`} className={styles.link}>메일함</a>
-                            )}
+                            {toggle && <h3>메일</h3>}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faBarsStaggered} />
-                            {toggle && (
-                                <Link to={`${serverUrl}/Board`} className={styles.link}>게시판</Link>
-                            )}
+                            {toggle && <h3>게시판</h3>}
                         </div>
-
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faCalendar} />
-                            {toggle && <a href="캘린더" className={styles.link}>캘린더</a>}
+                            {toggle && <h3>캘린더</h3>}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faFileInvoice} />
-                            {toggle && <a href="전자결제" className={styles.link}>전자결제</a>}
+                            {toggle && <h3>전자결제</h3>}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faMessage} />
-                            {toggle && (
-                                <Link to={`${serverUrl}/Messenger`} className={styles.link}>메신저</Link>
-                            )}
+                            {toggle && <h3>메신저</h3>}
                         </div>
-                        
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faHardDrive} />
-                            {toggle && <a href="자료실" className={styles.link}>자료실</a>}
+                            {toggle && <h3>자료실</h3>}
                         </div>
                     </div>
                     <div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faImagePortrait} />
-
-                            {toggle && (
-                               <Link to={`${serverUrl}/mypage`} className={styles.link}>마이페이지</Link>
-                            )}
+                            {toggle && <h3>마이페이지</h3>}
                         </div>
-
                         <div className={styles.list_item}>
-                            <FontAwesomeIcon icon={faRightFromBracket} />
-                            {toggle && <a href="로그아웃" className={styles.link}>로그아웃</a>}
+                        <FontAwesomeIcon icon={faRightFromBracket} />
+                        {toggle && <a href="로그아웃" className={styles.link}>로그아웃</a>}
                         </div>
                     </div>
+                </div>
             </div>
         </div>
-    </div>
-)
+    );
 }
