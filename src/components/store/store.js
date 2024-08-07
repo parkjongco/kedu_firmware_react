@@ -27,15 +27,22 @@ export const useMailStore = create((set)=>({
         });
       },
 
-    handleGetPage: (page = 1, size = 10) => {
-    console.log(`페이지 ${page}의 메일을 ${size}개 불러옵니다`);
-    axios.get(`${serverUrl}/mail`, { params: { page, size } }).then((resp) => {
-      set({ mails: resp.data });
-    })
-    .catch((error) => {
-      console.error("데이터 가져오기 실패:", error);
-    });
-  },
+      handleGetPage: (page = 1, size = 10) => {
+        console.log(`페이지 ${page}의 메일을 ${size}개 불러옵니다`);
+        axios.get(`${serverUrl}/mail`, { params: { page, size } }).then((resp) => {
+            if (resp.data && Array.isArray(resp.data.mails)) {
+                set({ 
+                    mails: { mails: resp.data.mails, total: resp.data.total || resp.data.mails.length } 
+                });
+            } else {
+                set({ mails: { mails: [], total: 0 } });
+            }
+        })
+        .catch((error) => {
+            console.error("데이터 가져오기 실패:", error);
+            set({ mails: { mails: [], total: 0 } }); // 실패 시 상태 초기화
+        });
+    },
 
 }));
 

@@ -16,6 +16,7 @@ const MailList = () => {
   const mailsPerPage = 10; // 페이지당 메일 수
   const [currentMails, setCurrentMails] = useState([]);
   const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수 상태 관리
+  const [sortOption, setSortOption] = useState('date_desc'); // 정렬 옵션 상태
 
   // 페이지 번호 변경 시 메일 목록 업데이트
   const handlePageChange = (pageNumber) => {
@@ -32,6 +33,32 @@ const MailList = () => {
     handleGetPage(currentPage, mailsPerPage); // 페이지 및 항목 수를 전달
   }, [currentPage]); // currentPage 변경 시마다 호출
   
+  useEffect(() => {
+    if (mails && Array.isArray(mails.mails)) {
+      let sortedMails = [...mails.mails];
+
+      // 정렬 옵션에 따른 정렬 및 필터링 로직
+      switch (sortOption) {
+        case 'date_asc':
+          sortedMails.sort((a, b) => new Date(a.mail_received_date) - new Date(b.mail_received_date));
+          break;
+        case 'date_desc':
+          sortedMails.sort((a, b) => new Date(b.mail_received_date) - new Date(a.mail_received_date));
+          break;
+        case 'my_mails':
+          sortedMails = sortedMails.filter(mail => mail.mail_sender_user_seq === sessionStorage.getItem("userSeq"));
+          break;
+        default:
+          break;
+      }
+
+      setCurrentMails(sortedMails);
+      setTotalPages(Math.ceil(mails.total / mailsPerPage));
+      setSelectedMailContent([])
+    }
+  }, [mails, sortOption]);
+
+
   useEffect(() => {
     console.log("mails 상태 업데이트 감지:", mails);
     if (mails && Array.isArray(mails.mails)) { // mails가 객체이고 mails.mails가 배열인지 확인
@@ -64,10 +91,10 @@ const MailList = () => {
   return (
     <div className={styles.mailContainer}>
       <div className={styles.sortButtons}>
-        <select>
-          <option value="date">날짜순</option>
-          <option value="sender">보낸사람순</option>
-          <option value="subject">제목순</option>
+        <select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+          <option value="date_desc">최신순</option>
+          <option value="date_asc">오래된 순</option>
+          <option value="my_mails">작성한 메일</option>
         </select>
       </div>
       <div className={styles.mailList}>
