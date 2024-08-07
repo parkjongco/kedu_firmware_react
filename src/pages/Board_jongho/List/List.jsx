@@ -58,10 +58,10 @@ export const List = ({ category = {} }) => {
     };
 
     const handleRowClick = (seq) => {
-        // 1. 조회수 증가 요청
-        axios.post(`${serverUrl}/board/viewCount/${seq}`, {}, { withCredentials: true })
+        // 조회수 증가 요청 (PUT 메소드 사용)
+        axios.put(`${serverUrl}/board/viewCount`, { board_Seq: seq }, { withCredentials: true })
             .then(() => {
-                // 2. 조회수 증가 후 상세 페이지로 이동
+                // 조회수 증가 후 상세 페이지로 이동
                 navigate(`/Board/Detail/${seq}`);
             })
             .catch(error => {
@@ -70,6 +70,7 @@ export const List = ({ category = {} }) => {
                 navigate(`/Board/Detail/${seq}`);
             });
     };
+    
 
     const handleToggleSort = (order) => {
         setSortOrder(order);

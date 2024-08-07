@@ -68,7 +68,7 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faMessage} />
                             {toggle && (
-                                <a href={`${serverUrl}:3000/Messenger`} className={styles.link}>메신저</a>
+                                <Link to={`${serverUrl}/Messenger`} className={styles.link}>메신저</Link>
                             )}
                         </div>
                         
