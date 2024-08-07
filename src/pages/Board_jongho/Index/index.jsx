@@ -10,6 +10,8 @@ import BoardDetail from '../Detail/Detail';
 const BoardIndex = (host) => {
     const [selectedCategory, setSelectedCategory] = useState({});
 
+    const serverUrl = process.env.REACT_APP_SERVER_URL;
+
     return (
         <div className={styles.container}>
             <div className={styles.sub_container}>
@@ -19,11 +21,6 @@ const BoardIndex = (host) => {
                         <h1>게시판</h1>
                         <BoardCategoryComponent onCategoryClick={setSelectedCategory} />
                     </div>
-                </div>
-                <div className={styles.navigation}>
-                    <Link to="/Board">List</Link>
-                    <Link to="/Board/Edit">Edit</Link>
-                    <Link to="/Board/Detail">Detail</Link>
                 </div>
                 <div className={styles.content}>
                     <Routes>

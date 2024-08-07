@@ -11,10 +11,15 @@ import Messenger from './pages/Messenger/Messenger'; // Messenger 컴포넌트 i
 import Login from './components/LoginIk/Login';
 import Admin from './components/LoginIk/Admin/Admin';
 import DeleteUser from './components/LoginIk/Admin/DeleteUser'; 
+import axios from 'axios';
+import Mypage from './components/Mypage/Mypage';
+
+axios.defaults.withCredentials = true
 import Approval from './components/Apporoval/ApprovalMain';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} /> {/* Main homepage route */}
@@ -24,9 +29,10 @@ root.render(
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/deleteuser" element={<DeleteUser />} /> 
         <Route path="/users/login" element={<Login />} /> 
+        <Route path="/mypage" element={<Mypage />} />
         <Route path="/approval" element={<Approval/>} />
       </Routes>
     </BrowserRouter>
-);
+)
 
 reportWebVitals();

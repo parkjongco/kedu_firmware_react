@@ -4,7 +4,8 @@ import axios from 'axios';
 import { useAuthStore } from '../../store/store';
 import styles from './Login.module.css';
 
-
+// 서버 URL을 환경 변수로 설정
+const serverUrl = process.env.REACT_APP_SERVER_URL;
 
 axios.defaults.withCredentials = true;
 
@@ -24,85 +25,119 @@ const Login = ({ setIsMypage }) => {
     setAuth((prev) => ({ ...prev, [name]: value }));
   };
 
+  const fetchUserProfile = async (userCode) => {
+    try {
+      const response = await axios.get(`${serverUrl}/user-profile`, {
+        params: { userCode: userCode },
+      });
+      const { rank, employeeId, joinDate } = response.data;
+
+      sessionStorage.setItem('rank', rank || '');
+      sessionStorage.setItem('employeeId', employeeId || '');
+      sessionStorage.setItem('joinDate', joinDate || '');
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      alert('프로필 정보를 가져오는 중 오류가 발생했습니다.');
+    }
+  };
+
   const handleLogin = () => {
-    console.log("로그인 시도 중:", auth);
-
-    axios.post(`http://192.168.1.10/auth`, auth)
-
+    console.log('로그인 시도 중:', auth);
+    axios.post(`${serverUrl}/auth`, auth)
       .then((resp) => {
-        console.log("서버 응답:", resp.data);
-        const { users_code, users_is_admin } = resp.data;
-        sessionStorage.setItem("loginID", users_code);
+        console.log('서버 응답:', resp.data);
+        const { users_code, users_name, users_is_admin, users_seq } = resp.data;
+
+        sessionStorage.setItem('loginID', users_code);
+        sessionStorage.setItem('usersName', users_name); 
+        sessionStorage.setItem('usersSeq', users_seq);
+
         setLoginID(users_code);
-        setIsAdmin(users_is_admin === 1);
-        alert("로그인 성공");
-        navigate("/users/login");
+        const isAdmin = users_is_admin === 1;
+        setIsAdmin(isAdmin);
+
+        // 프로필 정보 가져오기
+        fetchUserProfile(users_code);
+
+        alert('로그인 성공');
+
+        if (isAdmin) {
+          navigate('/users/login');
+        } else {
+          navigate('/');
+        }
       })
       .catch((err) => {
-        console.error("로그인 오류:", err);
+        console.error('로그인 오류:', err);
         if (err.response && err.response.status === 401) {
-          alert("사원 코드 또는 패스워드를 다시 확인해주세요.");
+          alert('사원 코드 또는 패스워드를 다시 확인해주세요.');
         } else {
-          alert("서버 오류가 발생했습니다. 관리자에게 문의하세요.");
+          alert('서버 오류가 발생했습니다. 관리자에게 문의하세요.');
         }
       });
   };
 
   const handleLogout = () => {
-
-    axios.post(`http://192.168.1.10/auth/logout`)
-
+    axios.post(`${serverUrl}/auth/logout`)
       .then(() => {
-        console.log("로그아웃 성공");
-        sessionStorage.removeItem("loginID");
-        sessionStorage.removeItem("isAdmin");
+        console.log('로그아웃 성공');
+        sessionStorage.removeItem('loginID');
+        sessionStorage.removeItem('usersName');
+        sessionStorage.removeItem('usersSeq');
+        sessionStorage.removeItem('rank'); 
+        sessionStorage.removeItem('employeeId'); 
+        sessionStorage.removeItem('joinDate'); 
+        sessionStorage.removeItem('isAdmin');
+
         setLoginID('');
         setAuth({ users_code: '', users_password: '' });
         setIsAdmin(false);
-        alert("로그아웃 성공");
-        navigate("/users/login");
+        alert('로그아웃 성공');
+        navigate('/users/login');
       })
       .catch((err) => {
-        console.error("로그아웃 오류:", err);
-        alert("로그아웃 실패");
+        console.error('로그아웃 오류:', err);
+        alert('로그아웃 실패');
       });
   };
 
   const handleMemberout = () => {
-    if (!window.confirm("정말 탈퇴하시겠습니까?")) {
+    if (!window.confirm('정말 탈퇴하시겠습니까?')) {
       return;
     }
-
-    axios.delete(`http://192.168.1.10/users`)
-
+    axios.delete(`${serverUrl}/users`)
       .then(() => {
-        console.log("회원 탈퇴 성공");
-        sessionStorage.removeItem("loginID");
+        console.log('회원 탈퇴 성공');
+        sessionStorage.removeItem('loginID');
+        sessionStorage.removeItem('usersName');
+        sessionStorage.removeItem('usersSeq');
+        sessionStorage.removeItem('rank'); 
+        sessionStorage.removeItem('employeeId'); 
+        sessionStorage.removeItem('joinDate'); 
+        sessionStorage.removeItem('isAdmin');
+
         setLoginID('');
         setAuth({ users_code: '', users_password: '' });
         setIsAdmin(false);
-        alert("회원 탈퇴 성공");
-        navigate("/users/login");
+        alert('회원 탈퇴 성공');
+        navigate('/users/login');
       })
       .catch((err) => {
-        console.error("회원 탈퇴 오류:", err);
-        alert("회원 탈퇴 실패");
+        console.error('회원 탈퇴 오류:', err);
+        alert('회원 탈퇴 실패');
       });
   };
 
   const handleDeleteUser = () => {
-    navigate("/admin/deleteuser");
+    navigate('/admin/deleteuser');
   };
 
   const handleUserRegister = () => {
-    navigate("/admin");
+    navigate('/admin');
   };
 
-  // New function to handle external navigation
-  const handleGoToHome = () => {
-
-    window.location.href = "http://192.168.1.10:3000/"; // Directly navigate to the main homepage
-
+  const handleGoToMain = () => {
+    navigate('/');
   };
 
   return (
@@ -124,11 +159,9 @@ const Login = ({ setIsMypage }) => {
                 <>
                   <button className={styles.actionButton} onClick={handleUserRegister}>유저 & 사원 등록</button>
                   <button className={styles.actionButton} onClick={handleDeleteUser}>사원 제명</button>
+                  <button className={styles.actionButton} onClick={handleGoToMain}>메인으로 이동</button>
                 </>
               )}
-
-              <button className={styles.actionButton} onClick={handleGoToHome}>메인 페이지로 이동</button> {/* New button */}
-
             </div>
           </>
         ) : (
