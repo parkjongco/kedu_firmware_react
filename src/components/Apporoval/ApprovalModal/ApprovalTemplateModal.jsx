@@ -32,11 +32,11 @@ function SecondModal({ show, onHide, listA }) {
     );
 
     const templateSave = () =>{
-        axios.post(`192.168.1.43/ApporvalTemplate`, )
+        axios.post(`192.168.1.43/ApporvalTemplate`)
     }
 
     return (
-        <Modal show={show} onHide={onHide} centered backdrop="static">
+        <Modal show={show} onHide={onHide} size="lg" centered backdrop="static">
             <Modal.Header closeButton>
                 <Modal.Title>템플릿 추가</Modal.Title>
             </Modal.Header>

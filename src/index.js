@@ -11,6 +11,7 @@ import Messenger from './pages/Messenger/Messenger'; // Messenger 컴포넌트 i
 import Login from './components/LoginIk/Login';
 import Admin from './components/LoginIk/Admin/Admin';
 import DeleteUser from './components/LoginIk/Admin/DeleteUser'; 
+import Approval from './components/Apporoval/ApprovalMain';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -23,6 +24,7 @@ root.render(
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/deleteuser" element={<DeleteUser />} /> 
         <Route path="/users/login" element={<Login />} /> 
+        <Route path="/approval" element={<Approval/>} />
       </Routes>
     </BrowserRouter>
 );

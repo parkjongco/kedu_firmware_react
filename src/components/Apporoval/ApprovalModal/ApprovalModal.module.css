@@ -17,3 +17,18 @@
     justify-content: center;
     align-items: center;
 }
+
+.customDatePickerPortal {
+    z-index: 1051; /* 모달의 z-index보다 높은 값 */
+  }
+h2 {
+    display: flex;
+    justify-content: center;
+  }
+
+.datePickerInput{
+    width: 100%;
+}
+
+
+  

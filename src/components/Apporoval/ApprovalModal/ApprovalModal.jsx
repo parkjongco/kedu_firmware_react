@@ -11,6 +11,8 @@ import axios from 'axios';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import ApprovalTemplateModal from './ApprovalTemplateModal'; // 새롭게 추가된 컴포넌트 임포트
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 
 function ApprovalModal() {
     const [show, setShow] = useState(false);
@@ -27,10 +29,12 @@ function ApprovalModal() {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [approvalData, setApprovalData] = useState({
-        "approval_title": '', 
-        "approval_type_seq": 0, 
-        "approval_contents": '', 
-        "approval_approver_seq": []
+        "approval_title": '',
+        "approval_type_seq": 0,
+        "approval_contents": '',
+        "approval_approver_seq": [],
+        "start_date": '',
+        "end_date": ''
     });
     const [approvalTypeSeq, setApprovalTypeSeq] = useState('');
 
@@ -47,6 +51,12 @@ function ApprovalModal() {
         // 추가적인 템플릿 정의
     };
 
+    const [startDate, setStartDate] = useState(new Date());
+
+    //오늘에서부터 +30일 설정(전자결재 시한 체크)
+    const twoWeeksLater = new Date(new Date().setDate(new Date().getDate() + 30));
+    const [endDate, setEndDate] = useState(new Date());
+
     const handleClose = () => {
         approvalData.approval_type_seq = approvalTypeSeq;
         console.log(approvalData);
@@ -55,12 +65,12 @@ function ApprovalModal() {
             "data": parsedData,
             "contentType": 'application/json'
         })
-        .then(response => {
-            console.log('Response:', response);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+            .then(response => {
+                console.log('Response:', response);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
 
         setShow(false);
     };
@@ -70,12 +80,12 @@ function ApprovalModal() {
     const handleItemClick = (index) => {
         if (!filteredListA[index].disabled) {
             const selectedItem = filteredListA[index];
-            
+
             setApprovalData(prevData => ({
                 ...prevData,
                 approval_approver_seq: [...prevData.approval_approver_seq, selectedItem.text]
             }));
-    
+
             setListB(prevListB => {
                 if (!prevListB.some(item => item.text === selectedItem.text)) {
                     return [...prevListB, selectedItem];
@@ -128,7 +138,7 @@ function ApprovalModal() {
 
     const handleTemplateSelect = (templateKey) => {
         const selectedTemplate = templates[templateKey] || [];
-        
+
         setListB(prevListB => {
             // 중복 항목 제외하고 추가
             const newItems = selectedTemplate.filter(templateItem =>
@@ -137,14 +147,48 @@ function ApprovalModal() {
             return [...prevListB, ...newItems];
         });
 
-        setListA(prevListA => 
-            prevListA.map(item => 
-                selectedTemplate.some(templateItem => templateItem.text === item.text) 
-                ? { ...item, disabled: true } 
-                : item
+        setListA(prevListA =>
+            prevListA.map(item =>
+                selectedTemplate.some(templateItem => templateItem.text === item.text)
+                    ? { ...item, disabled: true }
+                    : item
             )
         );
     }
+
+    const [selectedFiles, setSelectedFiles] = useState(null);
+
+    const handleFileChange = (event) => {
+        setSelectedFiles(event.target.files);
+    };
+
+    const handleFileUpload = async (event) => {
+        event.preventDefault(); // 폼 기본 동작 방지
+        if (!selectedFiles) return;
+
+        const formData = new FormData();
+        for (let i = 0; i < selectedFiles.length; i++) {
+            formData.append('file', selectedFiles[i]);
+        }
+
+        try {
+            const response = await axios.post('http://192.168.1.43/approval/file', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then(response =>{
+                if(response.data === "true"){
+                    console.log(response.data)
+                }else if(response.data === "false"){
+                    console.log(response.data)
+                }
+            }
+
+            )
+        } catch (error) {
+            console.error('파일 업로드 오류:', error);
+        }
+    };
 
     const renderCategoryContent = () => {
         switch (selectedCategory) {
@@ -153,13 +197,25 @@ function ApprovalModal() {
                     <div>
                         <p>서류 결재를 위한 내용을 입력하세요.</p>
                         <hr />
-                        <Form.Group controlId="formFileMultiple" className="mb-3">
-                            <h5>서류 업로드</h5>
-                            <Form.Control type="file" multiple />
-                        </Form.Group>
-                        <hr />
+                        <h5>서류 업로드</h5>
+                        <div className="w-100">
+                            <Form onSubmit={handleFileUpload} className="mb-3">
+                                <Form.Group controlId="formFileMultiple" className="mb-3 d-flex" encType="multpart/form-data">
+                                    <Form.Control
+                                        type="file"
+                                        multiple
+                                        onChange={handleFileChange}
+                                        style={{ marginRight: '10px' }}
+                                    />
+                                    <Button variant="primary" type="submit" style={{ wordBreak: 'keep-all' }}>
+                                        업로드
+                                    </Button>
+                                </Form.Group>
+                            </Form>
+                        </div>
                     </div>
                 );
+
             case '[002][보고서 결재]':
                 return (
                     <div>
@@ -195,6 +251,31 @@ function ApprovalModal() {
         }
     };
 
+    const startDatePicker = () => {
+        return (
+            <DatePicker className={styles.datePickerInput}
+                selected={startDate}
+                onChange={date => setStartDate(date)}
+                minDate={new Date()}
+                maxDate={twoWeeksLater}
+                popperClassName={styles.customDatePickerPortal}
+                onClick={approvalData.start_date = startDate}
+            />
+        )
+    }
+
+    const endDatePicker = () => {
+        return (
+            <DatePicker className={styles.datePickerInput}
+                selected={endDate}
+                onChange={date => setEndDate(date)}
+                minDate={new Date()}
+                maxDate={twoWeeksLater}
+                popperClassName={styles.customDatePickerPortal}
+                onClick={approvalData.end_date = endDate}
+            />
+        )
+    }
     return (
         <>
             <Button variant="primary" style={{ display: "flex", justifyContent: "flex-end" }} onClick={handleShow}>
@@ -229,7 +310,16 @@ function ApprovalModal() {
                     <InputGroup>
                         <Form.Control name="approval_contents" as="textarea" aria-label="With textarea" placeholder="내용을 입력하세요" onChange={handleApprovalContentChange} value={approvalData.approval_contents} />
                     </InputGroup>
-
+                    <div className='d-flex align-items-center'>
+                        <div className="w-100 mb-2 mt-2 me-2 d-flex flex-column" style={{ "wordBreak": "keep-all" }}>
+                            시작일자<br></br>
+                            {startDatePicker()}
+                        </div>
+                        <div className="w-100 mb-2 mt-2 ms-2 d-flex flex-column" style={{ "wordBreak": "keep-all" }}>
+                            종료일자<br></br>
+                            {endDatePicker()}
+                        </div>
+                    </div>
                     <h5 className="m-2"> 결재권자 추가</h5>
                     <DropdownButton
                         variant="outline-secondary"
@@ -260,7 +350,7 @@ function ApprovalModal() {
                             onChange={handleSearch}
                         />
                     </InputGroup>
-                    
+
                     <div className={styles.listDiv}>
                         <ListGroup className={styles.listGroup}>
                             {filteredListA.map((item, index) => (
@@ -297,10 +387,10 @@ function ApprovalModal() {
                 </Modal.Footer>
             </Modal>
 
-            <ApprovalTemplateModal 
-                show={showSecondModal} 
-                onHide={() => setShowSecondModal(false)} 
-                listA ={listA}
+            <ApprovalTemplateModal
+                show={showSecondModal}
+                onHide={() => setShowSecondModal(false)}
+                listA={listA}
             />
         </>
     );
