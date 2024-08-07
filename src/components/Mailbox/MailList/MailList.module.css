@@ -37,6 +37,7 @@
     margin: 0 5px; /* 좌우 여백 설정 */
     cursor: pointer;
     transition: background-color 0.3s, border-color 0.3s; /* 부드러운 전환 효과 */
+    color : black;
 }
 
 .pagination button:hover {
