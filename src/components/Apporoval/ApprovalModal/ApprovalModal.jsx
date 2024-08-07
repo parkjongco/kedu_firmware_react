@@ -57,7 +57,7 @@ function ApprovalModal() {
     const twoWeeksLater = new Date(new Date().setDate(new Date().getDate() + 30));
     const [endDate, setEndDate] = useState(new Date());
 
-    const handleClose = () => {
+    const handleApprovalClose = () => {
         approvalData.approval_type_seq = approvalTypeSeq;
         console.log(approvalData);
         const parsedData = JSON.stringify(approvalData);
@@ -67,6 +67,7 @@ function ApprovalModal() {
         })
             .then(response => {
                 console.log('Response:', response);
+                axios.post(`192.168.1.43/approval/file/upload`, selectedFiles);
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -74,6 +75,10 @@ function ApprovalModal() {
 
         setShow(false);
     };
+
+    const handleClose = () => {
+        setShow(false);
+    }
 
     const handleShow = () => setShow(true);
 
@@ -157,6 +162,7 @@ function ApprovalModal() {
     }
 
     const [selectedFiles, setSelectedFiles] = useState(null);
+    const [fileInputKey, setFileInputKey] = useState(Date.now()); // 파일 입력 필드를 초기화할 키
 
     const handleFileChange = (event) => {
         setSelectedFiles(event.target.files);
@@ -176,19 +182,20 @@ function ApprovalModal() {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
-            }).then(response =>{
-                if(response.data === "true"){
-                    console.log(response.data)
-                }else if(response.data === "false"){
-                    console.log(response.data)
-                }
-            }
+            });
 
-            )
+            if (response.data === true) {
+                alert('업로드에 성공했습니다.');
+            } else if (response.data === false) {
+                alert('올바른 파일 형식을 이용해주세요. .docx, .pdf 파일만 업로드 가능합니다.');
+                setSelectedFiles(null); // 선택된 파일 초기화
+                setFileInputKey(Date.now()); // 파일 입력 필드를 초기화
+            }
         } catch (error) {
             console.error('파일 업로드 오류:', error);
         }
     };
+
 
     const renderCategoryContent = () => {
         switch (selectedCategory) {
@@ -196,14 +203,13 @@ function ApprovalModal() {
                 return (
                     <div>
                         <p>서류 결재를 위한 내용을 입력하세요.</p>
-                        <hr />
                         <h5>서류 업로드</h5>
                         <div className="w-100">
                             <Form onSubmit={handleFileUpload} className="mb-3">
                                 <Form.Group controlId="formFileMultiple" className="mb-3 d-flex" encType="multpart/form-data">
                                     <Form.Control
+                                        key={fileInputKey}
                                         type="file"
-                                        multiple
                                         onChange={handleFileChange}
                                         style={{ marginRight: '10px' }}
                                     />
@@ -381,7 +387,7 @@ function ApprovalModal() {
                     <Button variant="secondary" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={handleClose}>
+                    <Button variant="primary" onClick={handleApprovalClose}>
                         Save Changes
                     </Button>
                 </Modal.Footer>
