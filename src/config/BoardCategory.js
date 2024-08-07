@@ -3,12 +3,13 @@ import React, { useEffect, useState } from 'react';
 import styles from './BoardCategory.module.css';
 
 export const BoardCategory = [
-    { code: 0, name: "전사 게시판" },
-    { code: 1, name: "공지사항" },
-    { code: 2, name: "자유게시판" },
-    { code: 3, name: "갤러리" },
-    { code: 4, name: "메이플 갤러리" },
-    { code: 5, name: "퇴사 갤러리" }
+    { code: 0, name: "공지사항" },
+    { code: 1, name: "팀 게시판" },
+    { code: 2, name: "프로젝트 게시판" },
+    { code: 3, name: "자유게시판" },
+    { code: 4, name: "질문 및 답변 게시판" },
+    { code: 5, name: "자료실" },
+    { code: 6, name: "회의록 게시판" },
 ];
 
 const BoardCategoryComponent = ({ onCategoryClick }) => {
