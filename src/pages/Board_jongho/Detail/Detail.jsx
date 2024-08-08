@@ -21,7 +21,7 @@ const Detail = () => {
     const [newComment, setNewComment] = useState('');
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editedCommentText, setEditedCommentText] = useState('');
-    const [isBookmarked, setIsBookmarked] = useState(false);
+    const [isBookmarked, setIsBookmarked] = useState(false);  // 북마크 상태를 관리하는 상태
 
     const seq = location.pathname.split('/').pop();
     const serverUrl = process.env.REACT_APP_SERVER_URL;
@@ -46,9 +46,19 @@ const Detail = () => {
                 console.error('Error fetching data:', error);
             });
 
+        // 페이지 로드 시 북마크 상태 확인
+        axios.get(`${serverUrl}/bookmark/${seq}`)
+            .then(resp => {
+                setIsBookmarked(resp.data.isBookmarked);
+            })
+            .catch(error => {
+                console.error('Error checking bookmark status:', error);
+            });
+
     }, [seq, serverUrl]);
 
     const handleUpdate = (e) => {
+
         const updatedData = {
             board_title: updatedTitle,
             board_contents: updatedContents,
@@ -79,6 +89,7 @@ const Detail = () => {
     };
 
     const handleCommentSubmit = (e) => {
+
         const commentData = {
             reply_userName: usersName || sessionUserName,
             reply_contents: newComment,
@@ -130,7 +141,23 @@ const Detail = () => {
     };
 
     const handleBookmarkClick = () => {
-        setIsBookmarked(prev => !prev);
+        if (isBookmarked) {
+            axios.delete(`${serverUrl}/bookmark/${seq}`)
+                .then(() => {
+                    setIsBookmarked(false);
+                })
+                .catch(error => {
+                    console.error('Error removing bookmark:', error);
+                });
+        } else {
+            axios.post(`${serverUrl}/bookmark`, { board_seq: seq })
+                .then(() => {
+                    setIsBookmarked(true);
+                })
+                .catch(error => {
+                    console.error('Error adding bookmark:', error);
+                });
+        }
     };
 
     if (!board) {
@@ -154,7 +181,7 @@ const Detail = () => {
                             icon={faBookmark}
                             className={styles.bookmarkIcon}
                             style={{ color: isBookmarked ? 'blue' : '#f0a500' }}
-                            onClick={handleBookmarkClick}
+                            onClick={handleBookmarkClick} // 북마크 클릭 핸들러 연결
                         />
                     </div>
                 )}
@@ -233,7 +260,7 @@ const Detail = () => {
                     ) : (
                         <div>댓글이 없습니다.</div>
                     )}
-                    <form onSubmit={handleCommentSubmit} className={styles.comment_Form}>
+                                        <form onSubmit={handleCommentSubmit} className={styles.comment_Form}>
                         <textarea
                             className={styles.textarea}
                             value={newComment}
