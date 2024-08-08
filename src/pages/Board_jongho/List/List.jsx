@@ -189,4 +189,3 @@ export const List = ({ category = {} }) => {
 };
 
 export default List;
-
