@@ -3,13 +3,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './Detail.module.css';
 import { useAuthStore } from '../../../store/store';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBookmark } from '@fortawesome/free-solid-svg-icons';
 
 axios.defaults.withCredentials = true;
 
 const Detail = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { usersName } = useAuthStore(); // Zustand 스토어에서 사용자 이름 가져오기
+    const { usersName } = useAuthStore();
 
     const [board, setBoard] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -17,16 +19,15 @@ const Detail = () => {
     const [updatedContents, setUpdatedContents] = useState('');
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
-
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editedCommentText, setEditedCommentText] = useState('');
+    const [isBookmarked, setIsBookmarked] = useState(false);
 
     const seq = location.pathname.split('/').pop();
     const serverUrl = process.env.REACT_APP_SERVER_URL;
     const sessionUserName = sessionStorage.getItem("usersName") || "Unknown User";
 
     useEffect(() => {
-        // 게시물과 댓글 데이터 요청
         axios.get(`${serverUrl}/board/detail/${seq}`)
             .then(resp => {
                 setBoard(resp.data);
@@ -63,15 +64,25 @@ const Detail = () => {
             });
     };
 
+    const handleDeleteBoard = () => {
+        axios.delete(`${serverUrl}/board/${seq}`)
+            .then(() => {
+                navigate("/Board");
+            })
+            .catch(error => {
+                console.error('Error deleting board:', error);
+            });
+    };
+
     const toggleEditMode = () => {
         setIsEditing(prev => !prev);
     };
 
     const handleCommentSubmit = (e) => {
         const commentData = {
-            reply_userName: usersName || sessionUserName, // 사용자 이름
-            reply_contents: newComment, // 댓글 내용
-            board_seq: seq, // 부모 게시물의 seq
+            reply_userName: usersName || sessionUserName,
+            reply_contents: newComment,
+            board_seq: seq,
         };
 
         axios.post(`${serverUrl}/board_reply`, commentData)
@@ -87,13 +98,13 @@ const Detail = () => {
     const handleUpdateReply = (commentId) => {
         const updatedCommentData = {
             reply_contents: editedCommentText,
-            reply_reg_date: new Date().toISOString(), // 현재 날짜와 시간
+            reply_reg_date: new Date().toISOString(),
         };
 
-        axios.put(`${serverUrl}/board_reply/${commentId}`, updatedCommentData)
-            .then(resp => {
+        axios.put(`${serverUrl}/board_reply/${seq}/${commentId}`, updatedCommentData)
+            .then(() => {
                 setComments(prevComments => prevComments.map(comment =>
-                    comment.reply_seq === commentId ? resp.data : comment
+                    comment.reply_seq === commentId ? { ...comment, ...updatedCommentData } : comment
                 ));
                 setEditingCommentId(null);
                 setEditedCommentText('');
@@ -103,9 +114,23 @@ const Detail = () => {
             });
     };
 
+    const handleDeleteComment = (commentId) => {
+        axios.delete(`${serverUrl}/board_reply/${seq}/${commentId}`)
+            .then(() => {
+                setComments(prevComments => prevComments.filter(comment => comment.reply_seq !== commentId));
+            })
+            .catch(error => {
+                console.error('Error deleting comment:', error);
+            });
+    };
+
     const handleCommentEdit = (commentId, commentText) => {
         setEditingCommentId(commentId);
         setEditedCommentText(commentText);
+    };
+
+    const handleBookmarkClick = () => {
+        setIsBookmarked(prev => !prev);
     };
 
     if (!board) {
@@ -123,11 +148,22 @@ const Detail = () => {
                         className={styles.titleInput}
                     />
                 ) : (
-                    <div className={styles.title}>{board.board_title}</div>
+                    <div className={styles.title}>
+                        {board.board_title}
+                        <FontAwesomeIcon
+                            icon={faBookmark}
+                            className={styles.bookmarkIcon}
+                            style={{ color: isBookmarked ? 'blue' : '#f0a500' }}
+                            onClick={handleBookmarkClick}
+                        />
+                    </div>
                 )}
                 <div>
                     {!isEditing ? (
-                        <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
+                        <>
+                            <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
+                            <button onClick={handleDeleteBoard} className={styles.button}>삭제하기</button>
+                        </>
                     ) : (
                         <div className={styles.button_container}>
                             <form onSubmit={handleUpdate} className={styles.editForm}>
@@ -152,7 +188,7 @@ const Detail = () => {
                                     <textarea
                                         value={updatedContents}
                                         onChange={(e) => setUpdatedContents(e.target.value)}
-                                        className={styles.contentEditable}
+                                        className={styles.textarea}
                                     />
                                 </label>
                             </div>
@@ -176,7 +212,7 @@ const Detail = () => {
                                             <textarea
                                                 value={editedCommentText}
                                                 onChange={(e) => setEditedCommentText(e.target.value)}
-                                                className={styles.comment_Input}
+                                                className={styles.textarea}
                                             />
                                             <button onClick={() => handleUpdateReply(comment.reply_seq)} className={styles.button}>수정 완료</button>
                                             <button onClick={() => setEditingCommentId(null)} className={styles.button}>취소</button>
@@ -187,7 +223,10 @@ const Detail = () => {
                                 </div>
                                 <div>{new Date(comment.reply_reg_date).toLocaleString()}</div>
                                 {comment.reply_userName === (usersName || sessionUserName) && (
-                                    <button onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)} className={styles.button}>수정</button>
+                                    <>
+                                        <button onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)} className={styles.button}>수정</button>
+                                        <button onClick={() => handleDeleteComment(comment.reply_seq)} className={styles.button}>삭제</button>
+                                    </>
                                 )}
                             </div>
                         ))
@@ -196,7 +235,7 @@ const Detail = () => {
                     )}
                     <form onSubmit={handleCommentSubmit} className={styles.comment_Form}>
                         <textarea
-                            className={styles.comment_Input}
+                            className={styles.textarea}
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             placeholder="댓글을 작성하세요"
@@ -210,3 +249,4 @@ const Detail = () => {
 };
 
 export default Detail;
+

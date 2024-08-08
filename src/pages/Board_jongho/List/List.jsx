@@ -5,21 +5,23 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuthStore } from '../../../store/store';
 
-axios.defaults.withCredentials = true
+axios.defaults.withCredentials = true;
+
 export const List = ({ category = {} }) => {
-    const { usersName } = useAuthStore(); 
+    const { usersName } = useAuthStore();
     const [data, setData] = useState([]);
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
-    const [sortOrder, setSortOrder] = useState('default');
+    const [sortOrder, setSortOrder] = useState('latest');
+    const [selectedItems, setSelectedItems] = useState([]);
     const itemsPerPage = 10;
-    const [isUserName ,setUserName] =  useState( () =>sessionStorage.getItem("userName") ==='true' ) ;
 
     const serverUrl = process.env.REACT_APP_SERVER_URL;
-
     const session = sessionStorage.getItem("usersName");
+
+    console.log(category);
+
     useEffect(() => {
-        // console.log("현재 유저 이름:", session.getItem("usersName")); // 현재 유저 이름을 콘솔에 출력
         axios.get(`${serverUrl}/board`)
             .then(resp => {
                 setData(resp.data);
@@ -39,7 +41,6 @@ export const List = ({ category = {} }) => {
                     return b.board_view_count - a.board_view_count;
                 case 'latest':
                     return dateB - dateA;
-                case 'default':
                 default:
                     return a.board_seq - b.board_seq;
             }
@@ -57,7 +58,14 @@ export const List = ({ category = {} }) => {
     };
 
     const handleRowClick = (seq) => {
-        navigate(`/Board/Detail/${seq}`);
+        axios.put(`${serverUrl}/board/viewCount`, { board_Seq: seq }, { withCredentials: true })
+            .then(() => {
+                navigate(`/Board/Detail/${seq}`);
+            })
+            .catch(error => {
+                console.error('Error increasing view count:', error);
+                navigate(`/Board/Detail/${seq}`);
+            });
     };
 
     const handleToggleSort = (order) => {
@@ -65,42 +73,54 @@ export const List = ({ category = {} }) => {
         setCurrentPage(1);
     };
 
-    const handleDelete = (seq) => {
-        axios.delete(`${serverUrl}/board/${seq}`, { withCredentials: true })
-            .then(() => {
-                setData(data.filter(item => item.board_seq !== seq));
-            })
-            .catch(error => {
-                console.error('Error deleting data:', error);
+    const handleCheckboxChange = (seq) => {
+        setSelectedItems(prevState =>
+            prevState.includes(seq) ? prevState.filter(item => item !== seq) : [...prevState, seq]
+        );
+    };
+
+    const handleDelete = () => {
+        if (window.confirm('정말 삭제하시겠습니까?')) {
+            selectedItems.forEach(seq => {
+                axios.delete(`${serverUrl}/board/${seq}`, { withCredentials: true })
+                    .then(() => {
+                        setData(data.filter(item => item.board_seq !== seq));
+                    })
+                    .catch(error => {
+                        console.error('Error deleting data:', error);
+                    });
             });
+            setSelectedItems([]);
+        }
     };
 
     return (
         <div className={styles.container}>
-            <div className={styles.category_header}>
+            <div className={styles.categoryHeader}>
                 <div className={styles.headerLeft}>
                     <h2>{category.name || 'Default Category'}</h2>
                 </div>
-                <div className={styles.header_Right}>
+                <div className={styles.headerRight}>
                     <Link id={styles.write} to="Edit">등록하기</Link>
                     <div className={styles.sortButtons}>
-                        <button 
-                            className={sortOrder === 'default' ? styles.active : ''} 
-                            onClick={() => handleToggleSort('default')}
-                        >
-                            기본순
-                        </button>
-                        <button 
-                            className={sortOrder === 'latest' ? styles.active : ''} 
+                        <button
+                            className={sortOrder === 'latest' ? styles.active : ''}
                             onClick={() => handleToggleSort('latest')}
                         >
                             최신순
                         </button>
-                        <button 
-                            className={sortOrder === 'viewCount' ? styles.active : ''} 
+                        <button
+                            className={sortOrder === 'viewCount' ? styles.active : ''}
                             onClick={() => handleToggleSort('viewCount')}
                         >
                             조회수순
+                        </button>
+                        <button
+                            className={styles.deleteButton}
+                            onClick={handleDelete}
+                            disabled={selectedItems.length === 0}
+                        >
+                            선택된 항목 삭제
                         </button>
                     </div>
                 </div>
@@ -109,35 +129,38 @@ export const List = ({ category = {} }) => {
                 <table>
                     <thead>
                         <tr>
+                            <th>선택</th>
                             <th>제목</th>
                             <th>글쓴이</th>
                             <th>작성일자</th>
                             <th>조회수</th>
-                            <th>액션</th>
                         </tr>
                     </thead>
                     <tbody>
                         {currentItems.map((e) => (
-                            <tr key={e.board_seq} onClick={() => handleRowClick(e.board_seq)} className={styles.row}>
-                                <td>{e.board_title}</td>
-                                <td>{session || '작성자 정보 없음'}</td> {/* 사용자 이름을 표시 */}
-                                <td>{new Date(e.board_write_date).toLocaleString()}</td>
-                                <td>{e.board_view_count}</td>
-                                <td>
-                                    <button onClick={(event) => {
-                                        event.stopPropagation();
-                                        handleDelete(e.board_seq);
-                                    }}>
-                                        삭제
-                                    </button>
+                            <tr
+                                key={e.board_seq}
+                                className={styles.row}
+                            >
+                                <td className={styles.checkboxContainer}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedItems.includes(e.board_seq)}
+                                        onChange={() => handleCheckboxChange(e.board_seq)}
+                                        onClick={(event) => event.stopPropagation()}
+                                    />
                                 </td>
+                                <td onClick={() => handleRowClick(e.board_seq)}>{e.board_title}</td>
+                                <td onClick={() => handleRowClick(e.board_seq)}>{session || '작성자 정보 없음'}</td>
+                                <td onClick={() => handleRowClick(e.board_seq)}>{new Date(e.board_write_date).toLocaleString()}</td>
+                                <td onClick={() => handleRowClick(e.board_seq)}>{e.board_view_count}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
                 <div className={styles.pagination}>
-                    <button 
-                        onClick={() => handlePageChange(currentPage - 1)} 
+                    <button
+                        onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
                     >
                         이전
@@ -151,8 +174,8 @@ export const List = ({ category = {} }) => {
                             {index + 1}
                         </button>
                     ))}
-                    <button 
-                        onClick={() => handlePageChange(currentPage + 1)} 
+                    <button
+                        onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
                     >
                         다음
