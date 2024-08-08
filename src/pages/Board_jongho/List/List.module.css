@@ -4,33 +4,32 @@
     padding: 20px;
     border-radius: 8px;
     background-color: #fff;
+    position: relative; /* 버튼을 절대 위치로 배치하기 위해 상대 위치 설정 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.category_header {
+/* 카테고리 헤더 스타일 */
+.categoryHeader {
     display: flex;
     justify-content: space-between; /* 제목과 버튼들을 양 끝으로 배치 */
     align-items: center;
     border-bottom: 2px solid #f0f0f0;
     margin-bottom: 20px;
+    padding-bottom: 10px;
 }
 
-.header_Left {
+.headerLeft {
     display: flex;
     align-items: center;
 }
 
-.header_Left h2 {
+.headerLeft h2 {
     font-size: 1.5rem;
     color: #333;
     margin-right: 10px;
 }
 
-.header_Left p {
-    font-size: 1rem;
-    color: #666;
-}
-
-.header_Right {
+.headerRight {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -51,6 +50,7 @@
     color: #fff;
 }
 
+/* 정렬 버튼 스타일 */
 .sortButtons {
     display: flex;
     gap: 10px;
@@ -77,19 +77,11 @@
     color: #fff;
     border-color: #007bff;
 }
-.pagination button.active {
-    background-color: #007bff; 
-    color: #fff; 
-    border-color: #007bff; 
-}
 
-.sortButtons button.active {
-    background-color: #007bff;
-    color: #fff;
-    border-color: #007bff;
-}
+/* 내용 스타일 */
 .content {
     width: 100%;
+    position: relative; /* 삭제 버튼을 절대 위치로 배치하기 위해 상대 위치 설정 */
 }
 
 .content table {
@@ -119,6 +111,7 @@
 
 .content tr:hover {
     background-color: #f1f1f1;
+    cursor: pointer;
 }
 
 .content td {
@@ -126,15 +119,53 @@
     color: #555;
 }
 
+/* 체크박스 컨테이너 스타일 */
+.checkboxContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkboxContainer input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px; /* 체크박스와 텍스트 간의 간격 */
+}
+
+/* 선택된 항목 삭제 버튼 스타일 */
+.deleteButton {
+    padding: 8px 12px;
+    border: 1px solid #dc3545;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #dc3545;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin-left: 10px;
+}
+
+.deleteButton:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.deleteButton:disabled {
+    cursor: not-allowed;
+    color: #ccc;
+    border-color: #ccc;
+}
+
+/* 페이지네이션 스타일 */
 .pagination {
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     margin-top: 20px;
 }
 
 .pagination button {
     padding: 8px 12px;
-    margin: 0 5px; 
+    margin: 0 5px;
     border: 1px solid #007bff;
     border-radius: 5px;
     background-color: #fff;
@@ -154,3 +185,10 @@
     color: #ccc;
     border-color: #ccc;
 }
+
+.pagination button.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+

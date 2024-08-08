@@ -22,11 +22,6 @@ const BoardIndex = (host) => {
                         <BoardCategoryComponent onCategoryClick={setSelectedCategory} />
                     </div>
                 </div>
-                <div className={styles.navigation}>
-                    <Link to="/Board">List</Link>
-                    <Link to="/Board/Edit">Edit</Link>
-                    <Link to="/Board/Detail">Detail</Link>  
-                </div>
                 <div className={styles.content}>
                     <Routes>
                         <Route path='' element={<List category={selectedCategory} />} />
