@@ -140,9 +140,10 @@ const Detail = () => {
         setEditedCommentText(commentText);
     };
 
+
     const handleBookmarkClick = () => {
         if (isBookmarked) {
-            axios.delete(`${serverUrl}/bookmark/${seq}`)
+            axios.delete(`${serverUrl}/bookmark`, { data: { board_seq: seq } })
                 .then(() => {
                     setIsBookmarked(false);
                 })
@@ -150,7 +151,7 @@ const Detail = () => {
                     console.error('Error removing bookmark:', error);
                 });
         } else {
-            axios.post(`${serverUrl}/bookmark`, { board_seq: seq })
+            axios.post(`${serverUrl}/bookmark`, { board_seq: seq, user_seq: sessionUserName })
                 .then(() => {
                     setIsBookmarked(true);
                 })
@@ -159,6 +160,12 @@ const Detail = () => {
                 });
         }
     };
+    
+
+
+
+
+
 
     if (!board) {
         return <div>Loading...</div>;
