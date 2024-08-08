@@ -1,5 +1,5 @@
 // ApprovalModal.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -13,6 +13,10 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import ApprovalTemplateModal from './ApprovalTemplateModal'; // 새롭게 추가된 컴포넌트 임포트
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import SecondModal from './ApprovalTemplateModal';
+
+
+const serverUrl = process.env.REACT_APP_SERVER_URL;
 
 function ApprovalModal() {
     const [show, setShow] = useState(false);
@@ -56,24 +60,31 @@ function ApprovalModal() {
     //오늘에서부터 +30일 설정(전자결재 시한 체크)
     const twoWeeksLater = new Date(new Date().setDate(new Date().getDate() + 30));
     const [endDate, setEndDate] = useState(new Date());
+    const formData = new FormData();
 
-    const handleApprovalClose = () => {
+    const handleApprovalClose = async (e) => {
         approvalData.approval_type_seq = approvalTypeSeq;
         console.log(approvalData);
         const parsedData = JSON.stringify(approvalData);
-        axios.post('http://192.168.1.43/approval', {
-            "data": parsedData,
-            "contentType": 'application/json'
-        })
-            .then(response => {
-                console.log('Response:', response);
-                axios.post(`192.168.1.43/approval/file/upload`, selectedFiles);
+        const uploadResult = await handleFileUpload(e);
+        if (uploadResult === true) {
+            axios.post(`${serverUrl}/approval`, {
+                "data": parsedData,
+                "contentType": 'application/json'
             })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                .then(response => {
+                    console.log('Response:', response);
+                    axios.post(`${serverUrl}/approval/file/upload`, formData);
+                    //Swal(Sweet alert)로 변경 예정
+                    alert('결재 상신에 성공했습니다.');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
 
-        setShow(false);
+            setShow(false);
+        }
+
     };
 
     const handleClose = () => {
@@ -172,13 +183,12 @@ function ApprovalModal() {
         event.preventDefault(); // 폼 기본 동작 방지
         if (!selectedFiles) return;
 
-        const formData = new FormData();
         for (let i = 0; i < selectedFiles.length; i++) {
             formData.append('file', selectedFiles[i]);
         }
 
         try {
-            const response = await axios.post('http://192.168.1.43/approval/file', formData, {
+            const response = await axios.post(`${serverUrl}/approval/file`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -186,15 +196,20 @@ function ApprovalModal() {
 
             if (response.data === true) {
                 alert('업로드에 성공했습니다.');
+                return true;
             } else if (response.data === false) {
                 alert('올바른 파일 형식을 이용해주세요. .docx, .pdf 파일만 업로드 가능합니다.');
                 setSelectedFiles(null); // 선택된 파일 초기화
                 setFileInputKey(Date.now()); // 파일 입력 필드를 초기화
+                return false;
             }
         } catch (error) {
             console.error('파일 업로드 오류:', error);
+            return false;
         }
     };
+
+    const [userList, setUserList] = useState([]);
 
 
     const renderCategoryContent = () => {
@@ -270,6 +285,19 @@ function ApprovalModal() {
         )
     }
 
+
+    useEffect(() => {
+        const fetchUserList = async () => {
+            try {
+                const response = await axios.get(`${serverUrl}/ApprovalTemplate`);
+                setUserList(response.data);
+            } catch (error) {
+                console.error('사용자 목록을 가져오는 중 오류 발생:', error);
+            }
+        };
+
+        fetchUserList();
+    }, []);
     const endDatePicker = () => {
         return (
             <DatePicker className={styles.datePickerInput}
@@ -342,9 +370,19 @@ function ApprovalModal() {
                             </Dropdown.Item>
                         ))}
                         <hr></hr>
-                        <Dropdown.Item onClick={() => setShowSecondModal(true)}>
-                            템플릿 추가
-                        </Dropdown.Item>
+                        <div>
+                            <Dropdown.Item onClick={() => setShowSecondModal(true)}>
+                                템플릿 추가
+                            </Dropdown.Item>
+                            {showSecondModal && (
+                                <SecondModal
+                                    show={showSecondModal}
+                                    onHide={() => setShowSecondModal(false)}
+                                    listA={userList}
+                                />
+                            )}
+                        </div>
+
                     </DropdownButton>
 
                     <InputGroup className="mb-3">
@@ -393,11 +431,6 @@ function ApprovalModal() {
                 </Modal.Footer>
             </Modal>
 
-            <ApprovalTemplateModal
-                show={showSecondModal}
-                onHide={() => setShowSecondModal(false)}
-                listA={listA}
-            />
         </>
     );
 }
