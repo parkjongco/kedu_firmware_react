@@ -1,0 +1,41 @@
+.CardDiv {
+    display: flex;
+    gap: 0; /* 카드 간의 간격을 0으로 설정 */
+    justify-content: space-between; /* 카드들을 균등하게 분배 */
+    width: 100%;
+    border-radius: 8px; /* 전체 카드 모음에 둥근 모서리 추가 */
+    overflow: hidden; /* 둥근 모서리를 유지하기 위해 overflow를 hidden으로 설정 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 카드 모음에 그림자 추가 */
+}
+
+.Card {
+    flex: 1; /* 모든 카드가 동일한 너비를 갖도록 설정 */
+    margin: 0; /* 카드 간의 간격을 제거 */
+    border: none; /* 개별 카드의 기본 테두리를 제거 */
+    border-right: 1px solid #ddd; /* 카드 사이의 구분선을 추가 */
+}
+
+.Card:last-child {
+    border-right: none; /* 마지막 카드의 구분선을 제거 */
+}
+
+.CardBody {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 20px;
+}
+
+.CardText {
+    text-align: center;
+}
+
+.Card h6 {
+    margin-bottom: 0.5rem;
+}
+
+.Card h3 {
+    margin: 0;
+}

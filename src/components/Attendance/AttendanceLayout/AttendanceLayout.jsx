@@ -4,6 +4,7 @@ import SideBar from '../../Sidebar/Sidebar';
 import styles from './AttendanceLayout.module.css';
 import AttendanceManagement from '../AttendanceManagement/AttendanceManagement';
 import AttendanceManagementAction from '../AttendanceManagementAction/AttendanceManagementAction';
+import AttendanceCardBox from '../AttendanceCardBox/AttendanceCardBox';
 
 const AttendanceLayout = () => {
     return (
@@ -22,7 +23,12 @@ const AttendanceLayout = () => {
                         </div>
                         <div>
                             <Routes>
-                                <Route path="/" element={<AttendanceManagement />} />
+                                <Route path="/" element={
+                                    <>
+                                    <AttendanceCardBox />
+                                    <AttendanceManagement />
+                                    </>
+                                    } />
                                 {/* <Route path="deptSchedule" element={}></Route> */}
                             </Routes>
                         </div>
@@ -31,6 +37,6 @@ const AttendanceLayout = () => {
             </div>
         </div>
     );
-}
+};
 
 export default AttendanceLayout;
