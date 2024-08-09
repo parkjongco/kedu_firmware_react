@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styles from './AttendanceManagement.module.css';
-import axios from 'axios';
+import { useAttendanceStore } from '../../../store/attendance_store';
 
 const AttendanceManagement = () => {
-  const [currentDate, setCurrentDate] = useState(new Date('2024-08-07'));
-  const [selectedDate, setSelectedDate] = useState('2024-08-07');
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [dates, setDates] = useState([]);
-  const [events, setEvents] = useState([]);
+  const { fetchEvents, events, fetchAttendanceStatus } = useAttendanceStore(); // 스토어에서 직접 events 사용
 
   useEffect(() => {
     updateDates(currentDate);
@@ -14,9 +14,23 @@ const AttendanceManagement = () => {
 
   useEffect(() => {
     if (dates.length > 0) {
-      fetchEvents();
+      const usersSeq = sessionStorage.getItem("usersSeq");
+      if (usersSeq) {
+        fetchEvents(usersSeq, dates[0], dates[dates.length - 1]);
+      }
     }
   }, [dates]);
+
+  // 출석 확인 여부 체크 - 수정된 부분
+  useEffect(() => {
+    const usersSeq = sessionStorage.getItem("usersSeq");
+    if (usersSeq) {
+      fetchAttendanceStatus(usersSeq).then((result) => {
+        console.log("Check-In Time:", result.checkIn);
+        console.log("Check-Out Time:", result.checkOut);
+      });
+    }
+  }, []);
 
   const updateDates = (date) => {
     const startOfWeek = new Date(date);
@@ -32,24 +46,6 @@ const AttendanceManagement = () => {
     }
 
     setDates(datesArray);
-  };
-
-  const fetchEvents = async () => {
-    // 실제 API 엔드포인트로 변경 필요
-    // const response = await axios.get('/api/events', {
-    //   params: {
-    //     start: dates[0],
-    //     end: dates[dates.length - 1],
-    //   },
-    // });
-    // setEvents(response.data);
-
-    // 임의의 이벤트 추가
-    const mockEvents = [
-      { date: '2024-08-06', title: '근무', startTime: 9, endTime: 18 },
-      { date: '2024-08-07', title: '회의', startTime: 9, endTime: 11 }
-    ];
-    setEvents(mockEvents);
   };
 
   const handlePrevWeek = () => {
@@ -117,7 +113,7 @@ const AttendanceManagement = () => {
           <div className={styles.dateRow} key={date}>
             <div className={styles.dayCell}>{formatDayAndDate(date)}</div>
             {workHours.map(time => {
-              const event = events.find(event => event.date === date && isEventInTimeRange(event, time));
+              const event = events.find(event => event.attendance_date === date && isEventInTimeRange(event, time));
               if (event && event.startTime === time) {
                 return (
                   <div key={time} className={styles.selected} style={{ gridColumnEnd: `span ${getColSpan(event)}` }}>

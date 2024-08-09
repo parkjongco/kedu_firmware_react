@@ -4,81 +4,105 @@ import axios from 'axios';
 const serverUrl = process.env.REACT_APP_SERVER_URL;
 
 export const useAttendanceStore = create((set) => ({
-
-
     attendance: {
-        checkIn: null, // 출근 시간 상태
-        checkOut: null // 퇴근 시간 상태
+        checkIn: null,
+        checkOut: null,
     },
+    events: [],  // 이벤트 데이터를 관리
 
     setAttendance: (attendance) => set({ attendance }),
+    setEvents: (events) => set({ events }),  // 이벤트 데이터를 설정
 
-    hasCheckedIn: false, //출석이 눌려졌는지?
+    hasCheckedIn: false,
 
+    fetchAttendanceStatus: async (usersSeq) => {
+        try {
+            const response = await axios.get(`${serverUrl}/attendance/check`, {
+                params: { users_seq: usersSeq }
+            });
 
-    // 이 시점에서 Attendance테이블의 check_in_time에 데이터 삽입
-    handleCheckIn: () => {
-        const now = new Date().toLocaleTimeString();
-        set((state) => ({
-            attendance: {
-                ...state.attendance,
-                checkIn: now,
-            },
-            hasCheckedIn: true, // 출석 체크 완료
-        }));
-        console.log("now");
-        // axios.post(`${serverUrl}/api/attendance/checkin`, { time: now })
-        //   .then(response => console.log('Check-in recorded:', response))
-        //   .catch(error => console.error('Error recording check-in:', error));
+            const { checkIn, checkOut } = response.data;
+
+            set({
+                attendance: {
+                    checkIn: checkIn,  // 서버에서 받아온 값을 그대로 설정
+                    checkOut: checkOut,  
+                },
+                hasCheckedIn: !!checkIn,  // checkIn 값이 있으면 true로 설정
+            });
+
+            return { checkIn, checkOut };
+
+        } catch (error) {
+            console.error('Error fetching attendance status:', error);
+            return { checkIn: null, checkOut: null };
+        }
     },
 
-    // 이 시점에서 Attendance테이블의 check_out_time에 데이터 삽입
+    fetchEvents: async (usersSeq, startDate, endDate) => {  // 이벤트 가져오는 함수
+        try {
+            const response = await axios.get(`${serverUrl}/attendance/events`, {
+                params: { users_seq: usersSeq, start_date: startDate, end_date: endDate }
+            });
+
+            // 서버에서 받아온 이벤트 데이터를 상태에 저장
+            const events = response.data.map(event => ({
+                ...event,
+                title: event.status === '출근' ? '출근' : '퇴근',
+                startTime: new Date(event.check_in_time).getHours(),
+                endTime: event.check_out_time ? new Date(event.check_out_time).getHours() : 18,
+                date: event.attendance_date.split('T')[0]
+            }));
+
+            set({ events });
+            console.log(events);
+        } catch (error) {
+            console.error('Error fetching events:', error);
+        }
+    },
+
+
+
+    handleCheckIn: () => {
+        const now = new Date();  
+        const usersSeq = sessionStorage.getItem("usersSeq");
+        
+        if (window.confirm(`현재 시간 ${now.toLocaleTimeString()}입니다. 출석하시겠습니까?`)) {
+            set((state) => ({
+                attendance: {
+                    ...state.attendance,
+                    checkIn: now.toISOString(),  // ISO 8601 형식으로 전송
+                },
+                hasCheckedIn: true,
+            }));
+    
+            axios.post(`${serverUrl}/attendance`, { 
+                users_seq: usersSeq,  
+                check_in_time: now.toISOString()  // ISO 8601 형식으로 전송
+            })
+              .then(response => console.log('Check-in recorded:', response))
+              .catch(error => console.error('Error recording check-in:', error));
+        }
+    },
+
     handleCheckOut: () => {
-        const now = new Date().toLocaleTimeString();
-        set((state) => ({
-            attendance: {
-                ...state.attendance,
-                checkOut: now,
-            }
-        }));
-        console.log("now");
-        // axios.post(`${serverUrl}/api/attendance/checkout`, { time: now })
-        //   .then(response => console.log('Check-out recorded:', response))
-        //   .catch(error => console.error('Error recording check-out:', error));
+        const now = new Date();  
+        const usersSeq = sessionStorage.getItem("usersSeq");
+    
+        if (window.confirm(`현재 시간 ${now.toLocaleTimeString()}입니다. 퇴근하시겠습니까?`)) {
+            set((state) => ({
+                attendance: {
+                    ...state.attendance,
+                    checkOut: now.toISOString(),  // ISO 8601 형식으로 전송
+                }
+            }));
+    
+            axios.post(`${serverUrl}/attendance`, { 
+                users_seq: usersSeq,  
+                check_out_time: now.toISOString()  // ISO 8601 형식으로 전송
+            })
+              .then(response => console.log('Check-out recorded:', response))
+              .catch(error => console.error('Error recording check-out:', error));
+        }
     }
-
-
-
-
-
-    
-    // const [attendance, setAttendance] = useState({
-    //     checkIn: null, //출근 시간 상태
-    //     checkOut: null //퇴근 시간 상태
-    //   });
-    
-    
-    //   // 이 시점에서 Attendance테이블의 check_in_time에 데이터 삽입
-    //   const handleCheckIn = () => {
-    //     const now = new Date().toLocaleTimeString();
-    //     setAttendance((prev) => ({ ...prev, checkIn: now }));
-    
-    
-    //     console.log("now");
-    //     // axios.post('/api/attendance/checkin', { time: now })
-    //     //   .then(response => console.log('Check-in recorded:', response))
-    //     //   .catch(error => console.error('Error recording check-in:', error));
-    //   };
-    
-    //   // 이 시점에서 Attendance테이블의 check_out_time에 데이터 삽입
-    //   const handleCheckOut = () => {
-    //     const now = new Date().toLocaleTimeString();
-    //     setAttendance((prev) => ({ ...prev, checkOut: now }));
-    
-    //     console.log("now");
-    //     // axios.post('/api/attendance/checkout', { time: now })
-    //     //   .then(response => console.log('Check-out recorded:', response))
-    //     //   .catch(error => console.error('Error recording check-out:', error));
-    //   };
-
 }));
