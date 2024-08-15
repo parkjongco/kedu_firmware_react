@@ -4,9 +4,7 @@ import { useAttendanceStore } from '../../../store/attendance_store';
 
 const AttendanceManagement = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-  const [dates, setDates] = useState([]);
-  const { fetchEvents, events, fetchAttendanceStatus } = useAttendanceStore(); // 스토어에서 직접 events 사용
+  const { fetchEvents, events, fetchAttendanceStatus, dates, setDates } = useAttendanceStore(); // 스토어에서 직접 events 사용
 
   useEffect(() => {
     updateDates(currentDate);
@@ -21,7 +19,7 @@ const AttendanceManagement = () => {
     }
   }, [dates]);
 
-  // 출석 확인 여부 체크 - 수정된 부분
+  // 출석 확인 여부 체크
   useEffect(() => {
     const usersSeq = sessionStorage.getItem("usersSeq");
     if (usersSeq) {
@@ -35,8 +33,9 @@ const AttendanceManagement = () => {
   const updateDates = (date) => {
     const startOfWeek = new Date(date);
     const day = startOfWeek.getDay();
-    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
-    startOfWeek.setDate(diff);
+    const diff = day === 0 ? -6 : 1 - day; // 월요일이 주의 시작이 되도록 설정
+
+    startOfWeek.setDate(startOfWeek.getDate() + diff);
 
     const datesArray = [];
     for (let i = 0; i < 7; i++) {
@@ -85,52 +84,60 @@ const AttendanceManagement = () => {
   const workHours = Array.from({ length: 24 }, (_, i) => i); // 0부터 23까지의 시간 배열
 
   const isEventInTimeRange = (event, time) => {
-    return event.startTime <= time && event.endTime > time;
+    return event.startTime <= time && event.endTime > time || event.startTime === event.endTime && event.startTime === time;
+  };
+
+  const formatTime = (dateTime) => {
+    const date = new Date(dateTime);
+    return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
   };
 
   const getColSpan = (event) => {
-    return event.endTime - event.startTime; // 종료 시간을 포함하지 않도록
+    const span = event.endTime - event.startTime;
+    return span >= 1 ? span : 1; // 간격이 1시간 이하라도 최소 1시간 표시
   };
 
   return (
-    <div className={styles.app}>
-      <div className={styles.header}>
-        <button onClick={handlePrevWeek}>{"<"}</button>
-        <span>{getFormattedDateRange()}</span>
-        <button onClick={handleNextWeek}>{">"}</button>
-        <button onClick={handleToday}>오늘</button>
-      </div>
-      <div className={styles.calendar}>
-        <div className={styles.timeRow}>
-          <div className={styles.dayCell}></div>
-          {workHours.map(time => (
-            <div key={time} className={`${styles.timeCell} ${time >= 9 && time <= 18 ? styles.workHour : ''}`}>
-              {time}
+    <div className={styles.Container}>
+      <div className={styles.app}>
+        <div className={styles.header}>
+          <button onClick={handlePrevWeek}>{"<"}</button>
+          <span>{getFormattedDateRange()}</span>
+          <button onClick={handleNextWeek}>{">"}</button>
+          <button onClick={handleToday}>오늘</button>
+        </div>
+        <div className={styles.calendar}>
+          <div className={styles.timeRow}>
+            <div className={styles.dayCell}></div>
+            {workHours.map(time => (
+              <div key={time} className={`${styles.timeCell} ${time >= 9 && time <= 18 ? styles.workHour : ''}`}>
+                {time}
+              </div>
+            ))}
+          </div>
+          {dates.map(date => (
+            <div className={styles.dateRow} key={date}>
+              <div className={styles.dayCell}>{formatDayAndDate(date)}</div>
+              {workHours.map(time => {
+                const event = events.find(event => event.attendance_date === date && isEventInTimeRange(event, time));
+                if (event && event.startTime === time) {
+                  return (
+                    <div key={time} className={styles.selected} style={{ gridColumnEnd: `span ${getColSpan(event)}` }}>
+                      <div className={styles.event}>
+                        {event.title} <br />
+                        {formatTime(event.check_in_time)} - {formatTime(event.check_out_time)}
+                      </div>
+                    </div>
+                  );
+                }
+                if (event && event.startTime < time && event.endTime > time) {
+                  return null;
+                }
+                return <div key={time} className={styles.cell}></div>;
+              })}
             </div>
           ))}
         </div>
-        {dates.map(date => (
-          <div className={styles.dateRow} key={date}>
-            <div className={styles.dayCell}>{formatDayAndDate(date)}</div>
-            {workHours.map(time => {
-              const event = events.find(event => event.attendance_date === date && isEventInTimeRange(event, time));
-              if (event && event.startTime === time) {
-                return (
-                  <div key={time} className={styles.selected} style={{ gridColumnEnd: `span ${getColSpan(event)}` }}>
-                    <div className={styles.event}>
-                      {event.title} <br />
-                      {event.startTime}:00 - {event.endTime}:00
-                    </div>
-                  </div>
-                );
-              }
-              if (event && event.startTime < time && event.endTime > time) {
-                return null;
-              }
-              return <div key={time} className={styles.cell}></div>;
-            })}
-          </div>
-        ))}
       </div>
     </div>
   );

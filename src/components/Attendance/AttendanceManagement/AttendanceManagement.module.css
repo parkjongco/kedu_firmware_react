@@ -1,3 +1,7 @@
+.Container {
+  padding-left: 10px;
+}
+
 .app {
     max-width: 1200px;
     margin: 20px auto;
@@ -91,14 +95,31 @@
     border: none;
     color: #333;
     border-radius: 4px;
-    padding: 2px 5px; /* 패딩 값을 줄여서 높이 감소 */
+    padding: 2px 5px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    font-size: 12px; /* 이벤트 텍스트 크기 조정 */
-    height: 80%; /* 높이를 100%에서 80%로 조정 */
+    height: 80%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 2px; /* 선과 겹치지 않도록 여백 추가 */
-    margin-bottom: 2px; /* 선과 겹치지 않도록 여백 추가 */
-  }
+    margin-top: 2px;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-align: center;
+    width: 100%;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.event span {
+    font-size: calc(10px + 0.4vw); /* 텍스트 크기가 부모 요소에 맞게 조정되도록 설정 */
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+    line-height: 1.2;
+}
+
