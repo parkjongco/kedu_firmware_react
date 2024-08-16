@@ -1,6 +1,8 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFile } from '@fortawesome/free-regular-svg-icons';
 import styles from './MailItem.module.css';
 
-const MailItem = ({ mail, onClick }) => {
+const MailItem = ({ mail, attachments, onClick }) => {
     const formatDate = (dateString) => {
         const date = new Date(dateString);
     
@@ -21,9 +23,13 @@ const MailItem = ({ mail, onClick }) => {
           minute: '2-digit',
           hour12: false // 24시간 형식 사용
         });
+        
     
         return `${formattedDate} ${formattedTime}`; // 최종 형식 "YYYY-MM-DD HH:MM"
       };
+
+      
+      
 
   return (
     <div className={styles.mailItem} onClick={() => onClick(mail.mail_seq)}>
@@ -37,6 +43,10 @@ const MailItem = ({ mail, onClick }) => {
       </div>
       <div className={styles.mailSubject}>
         <span>{mail.mail_title}</span> {/* 메일 제목 */}
+        
+        {mail.has_attachments === true && (
+          <FontAwesomeIcon icon={faFile} className={styles.attachmentIcon} alt="첨부 파일" />
+        )}
       </div>
     </div>
   );

@@ -104,6 +104,12 @@ const MailListActions = () => {
     });
   };
 
+
+  const stripHtmlTags = (str) => {
+    // HTML 태그를 제거하는 정규식
+    return str.replace(/<[^>]*>?/gm, '');
+  };
+
     return (
         <div className={styles.mailListActions}>
             <input type="text" className={styles.searchInput} placeholder="메일검색" autoComplete="off" maxLength="100" value={searchTerm}
@@ -119,7 +125,7 @@ const MailListActions = () => {
                             onClick={() => handlePreviewClick(mail.mail_seq)} // 미리보기 항목 클릭 시 메일 목록 업데이트
                         >
                             <div className={styles.previewTitle}>{mail.mail_title}</div>
-                            <div className={styles.previewContent}>{mail.mail_content}</div>
+                            <div className={styles.previewContent}>{stripHtmlTags(mail.mail_content)}</div>
                         </div>
                     ))}
                 </div>

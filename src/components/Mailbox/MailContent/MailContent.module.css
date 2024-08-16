@@ -113,3 +113,66 @@
     background-color: #f2f2f2;
     text-align: left;
 }
+
+/* 첨부파일 */
+/* 기존 CSS 유지 */
+
+/* 첨부파일 섹션 */
+/* 첨부파일 버튼을 mailHeader 아래, mailContent 위에 위치시키고 우측 정렬 */
+/* 첨부파일 버튼을 mailHeader 아래, mailContent 위에 위치시키고 우측 정렬 */
+.attachmentsSection {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* 우측 정렬 */
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.attachmentToggle {
+    padding: 6px 14px;
+    border: 1px solid #ccc;
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.attachmentToggle:hover {
+    background-color: #e0e0e0;
+    border-color: #b0b0b0;
+}
+
+/* 기존 CSS 유지 */
+.attachmentsList {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column; /* 수직 배열 */
+    width: 100%; /* 목록의 너비를 버튼과 동일하게 */
+    border: 1px solid #d9d9d9;;
+    
+}
+
+.attachmentItem {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.attachmentItem a {
+    text-decoration: none;
+    color: #1e1e23;
+}
+
+.attachmentItem button {
+    border: none;
+    background: none;
+    color: red;
+    cursor: pointer;
+}
+
+.attachmentItem a:hover {
+    color: #007bff; /* 링크에 마우스를 올렸을 때 색상 변경 */
+}
+
+.attachmentItem button:hover {
+    color: darkred; /* 버튼에 마우스를 올렸을 때 색상 변경 */
+}

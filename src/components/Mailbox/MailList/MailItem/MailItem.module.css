@@ -10,32 +10,27 @@
     border-color: #b0b0b0;
 }
 
-.mailInfo{
+.mailInfo {
     display: flex;
+    justify-content: space-between;
 }
 
-.mailSender{
-    flex:1;
-}
-
-.mailSender span{
+.mailSender {
+    flex: 1;
     display: flex;
     justify-content: flex-start;
 }
 
-.mailDate{
-    flex:1;
-}
-
-.mailDate{
+.mailDate {
+    flex: 1;
     display: flex;
     justify-content: flex-end;
+    align-items: center; /* 아이콘을 텍스트와 수직으로 정렬 */
 }
 
-
-.mailSubject{
-    display: flex;
-    margin-top: 6px;
+.attachmentIcon {
+    width: 16px;
+    height: 16px;
+    margin-left: 8px;
+    vertical-align: middle;
 }
-
-

@@ -17,7 +17,7 @@ const AttendanceLayout = () => {
                     <SideBar />
                 </div>
                 <div className={styles.contentArea}>
-                    <div>
+                    <div className={styles.contents}>
                         <div>
                             <AttendanceManagementAction/>
                         </div>
