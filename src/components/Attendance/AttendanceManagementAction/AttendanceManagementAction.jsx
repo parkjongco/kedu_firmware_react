@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Modal } from 'react-bootstrap';
 import styles from './AttendanceManagementAction.module.css';
 import { useAttendanceStore } from '../../../store/attendance_store';
@@ -10,6 +11,15 @@ const AttendanceManagementAction = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [isAfter6PM, setIsAfter6PM] = useState(false);
 
+    const navi = useNavigate();
+
+    const handleAttendanceManagement = () => {
+        navi('/attendance');
+    };
+
+    const handleDeptSchedule = () => {
+        navi('deptschedule');
+    };
 
     const handleToggle = (option) => {
         setSelected(option);
@@ -47,13 +57,13 @@ const AttendanceManagementAction = () => {
             <div className={styles.toggleGroup}>
                 <button
                     className={`${styles.toggleButton} ${selected === '내 근무' ? styles.selected : ''}`}
-                    onClick={() => handleToggle('내 근무')}
+                    onClick={() => {handleToggle('내 근무'); handleAttendanceManagement();}}
                 >
                     근태 현황
                 </button>
                 <button
                     className={`${styles.toggleButton} ${selected === '구성원 근무' ? styles.selected : ''}`}
-                    onClick={() => handleToggle('구성원 근무')}
+                    onClick={() => {handleToggle('구성원 근무'); handleDeptSchedule();}}
                 >
                     구성원 근무
                 </button>

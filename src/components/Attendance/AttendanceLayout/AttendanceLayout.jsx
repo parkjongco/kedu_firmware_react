@@ -5,6 +5,7 @@ import styles from './AttendanceLayout.module.css';
 import AttendanceManagement from '../AttendanceManagement/AttendanceManagement';
 import AttendanceManagementAction from '../AttendanceManagementAction/AttendanceManagementAction';
 import AttendanceCardBox from '../AttendanceCardBox/AttendanceCardBox';
+import DeptSchedule from '../DeptSchedule/DeptSchedule';
 
 const AttendanceLayout = () => {
     return (
@@ -29,7 +30,9 @@ const AttendanceLayout = () => {
                                     <AttendanceManagement />
                                     </>
                                     } />
-                                {/* <Route path="deptSchedule" element={}></Route> */}
+                                <Route path="deptschedule" element={
+                                    <DeptSchedule/>
+                                }/>
                             </Routes>
                         </div>
                     </div>

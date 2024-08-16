@@ -9,6 +9,9 @@ export const useAttendanceStore = create((set, get) => ({
         checkOut: null,
     },
     events: [],  // 이벤트 데이터를 관리
+    departmentEvents: [],  // 부서 이벤트 데이터를 관리
+    departmentMembers: [],  // 부서원 정보를 관리
+
     attendanceData: {  // 출석 요약 데이터를 관리
         daysPresent: 0,
         daysLate: 0,
@@ -22,6 +25,61 @@ export const useAttendanceStore = create((set, get) => ({
 
     dates: [],
     setDates: (dates) => set({ dates }),
+
+     // 부서 일정 가져오기 - usersSeq와 날짜를 기반으로
+     fetchDepartmentEvents: async (usersSeq, date) => {
+        try {
+            const response = await axios.get(`${serverUrl}/attendance/departmentEvents`, {
+                params: { users_seq: usersSeq, date: date }
+            });
+            console.log(date);
+            console.log('Department events response:', response.data);  // 응답 데이터 구조 확인
+    
+            if (response.data && Array.isArray(response.data)) {
+                const events = response.data.map(event => ({
+                    ...event,
+                    title: event.status === '출근' ? '출근' : '퇴근',
+                    startTime: new Date(event.check_in_time).getHours(),
+                    endTime: event.check_out_time ? new Date(event.check_out_time).getHours() : 18,
+                    date: event.attendance_date.split('T')[0],
+                    memberId: event.users_seq  // 이벤트와 부서원 연결
+                }));
+    
+                set({ departmentEvents: events });
+            } else {
+                console.error('Department events 데이터가 배열이 아닙니다:', response.data);
+                set({ departmentEvents: [] });
+            }
+        } catch (error) {
+            console.error('Error fetching department events:', error);
+        }
+    },
+    
+    
+    
+
+    // 부서원 정보 가져오기 - loginID를 이용
+    fetchDepartmentMembers: async () => {
+        const loginID = sessionStorage.getItem("loginID"); // loginID를 가져옴
+        if (loginID) {
+            try {
+                const response = await axios.get(`${serverUrl}/users/${loginID}/deptprofile`);
+                if (Array.isArray(response.data)) {
+                    set({ departmentMembers: response.data });
+                    console.log(response.data);
+                } else {
+                    console.error("departmentMembers 데이터가 배열이 아닙니다:", response.data);
+                    set({ departmentMembers: [] });  // 배열이 아닌 경우 빈 배열로 설정
+                }
+            } catch (error) {
+                console.error('Error fetching department members:', error);
+                set({ departmentMembers: [] });  // 에러 발생 시 빈 배열로 설정
+            }
+        } else {
+            console.error('loginID가 세션 스토리지에 없습니다.');
+            set({ departmentMembers: [] });
+        }
+    },
 
     fetchAttendanceStatus: async (usersSeq) => {
         try {
