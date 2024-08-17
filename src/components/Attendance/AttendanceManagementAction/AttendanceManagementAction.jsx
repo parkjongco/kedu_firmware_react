@@ -7,7 +7,7 @@ import { useAttendanceStore } from '../../../store/attendance_store';
 const AttendanceManagementAction = () => {
 
     const {fetchAttendanceSummary, attendance, handleCheckIn, handleCheckOut } = useAttendanceStore();
-    const [selected, setSelected] = useState('내 근무');
+    const [selected, setSelected] = useState(sessionStorage.getItem('selectedOption') || '내 근무');
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [isAfter6PM, setIsAfter6PM] = useState(false);
 
@@ -23,6 +23,7 @@ const AttendanceManagementAction = () => {
 
     const handleToggle = (option) => {
         setSelected(option);
+        sessionStorage.setItem('selectedOption', option);
     }
 
     const openModal = () => {

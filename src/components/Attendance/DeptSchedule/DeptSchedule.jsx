@@ -35,10 +35,12 @@ const DeptSchedule = () => {
 
     const formatDayAndDate = (dateStr) => {
         const date = new Date(dateStr);
-        const day = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];  // 요일 이름
-        const dayNum = date.getDate();  // 날짜 숫자
-        return `${day} ${dayNum}`;  // 요일과 날짜 형식으로 반환
+        const year = date.getFullYear();  // 년도
+        const month = String(date.getMonth() + 1).padStart(2, '0');  // 월 (1월은 0이므로 1을 더함)
+        const day = String(date.getDate()).padStart(2, '0');  // 날짜
+        return `${year}.${month}.${day}`;  // "년.월.일" 형식으로 반환
     };
+    
 
     const workHours = Array.from({ length: 24 }, (_, i) => i);
 
