@@ -168,7 +168,8 @@ export const useAttendanceStore = create((set, get) => ({
                         : '기타',
                     startTime: new Date(event.check_in_time).getHours(),
                     endTime: event.check_out_time ? new Date(event.check_out_time).getHours() : 18,
-                    date: event.attendance_date.split('T')[0]
+                    date: event.attendance_date.split('T')[0],
+                    vacation_application_status: event.vacation_application_status
                 };
             });
         

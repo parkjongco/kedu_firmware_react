@@ -1,14 +1,21 @@
 .Container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* 왼쪽 정렬 */
-    width: 100%; /* Container의 너비를 100%로 설정 */
-    margin-bottom: 20px; /* 아래 카드와 간격을 둠 */
-    padding-left: 10px; /* 왼쪽에 약간의 패딩 추가 */
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 20px;
+    padding-left: 10px;
+}
+
+.Header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
 }
 
 .MonthInput {
-    width: 200px; /* Input 요소의 너비를 설정 */
+    width: 200px;
     padding: 5px;
     font-size: 14px;
     border-radius: 4px;
@@ -17,45 +24,78 @@
     margin-bottom: 15px;
 }
 
+.VacationButton {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.VacationButton:hover {
+    background-color: #0056b3;
+}
 
 .CardDiv {
     display: flex;
-    gap: 0; /* 카드 간의 간격을 0으로 설정 */
-    justify-content: space-between; /* 카드들을 균등하게 분배 */
+    gap: 0;
+    justify-content: space-between;
     width: 100%;
-    border-radius: 8px; /* 전체 카드 모음에 둥근 모서리 추가 */
-    overflow: hidden; /* 둥근 모서리를 유지하기 위해 overflow를 hidden으로 설정 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 카드 모음에 그림자 추가 */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .Card {
-    flex: 1; /* 모든 카드가 동일한 너비를 갖도록 설정 */
-    margin: 0; /* 카드 간의 간격을 제거 */
-    border: none; /* 개별 카드의 기본 테두리를 제거 */
-    border-right: 1px solid #ddd; /* 카드 사이의 구분선을 추가 */
+    flex: 1;
+    margin: 0;
+    border: none;
+    border-right: 1px solid #ddd;
 }
 
 .Card:last-child {
-    border-right: none; /* 마지막 카드의 구분선을 제거 */
+    border-right: none;
 }
 
-.CardBody {
+/* 추가된 CSS */
+.TableContainer {
+    overflow-x: auto;  /* 가로 스크롤 추가 */
+}
+
+.ModalBody {
+    max-height: 400px;
+    overflow-y: auto;  /* 세로 스크롤 */
+}
+
+.TableHeader,
+.TableRow {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    padding: 20px;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid #ddd;
+    min-width: 800px;  /* 테이블의 최소 너비를 설정하여 스크롤 유도 */
 }
 
-.CardText {
+.TableHeader {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.TableCell {
+    flex: 1;
     text-align: center;
+    padding: 8px;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
-.Card h6 {
-    margin-bottom: 0.5rem;
+.TableCell:last-child {
+    flex: 0.5;
 }
 
-.Card h3 {
-    margin: 0;
-}
+
+
+

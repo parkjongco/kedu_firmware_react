@@ -9,6 +9,7 @@
 
 .attendanceBody{
     display: flex;
+    overflow-x: auto;
 }
 
 .contentArea {

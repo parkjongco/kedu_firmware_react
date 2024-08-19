@@ -103,56 +103,81 @@ const getColSpan = (event) => {
   return span >= 1 ? span : 1; // 1시간 이상일 경우 해당 칸 수, 그렇지 않으면 1칸만 차지
 };
 
+const getEventStyle = (event) => {
+  if (event.status === '연차') {
+    const styleClass = event.vacation_application_status === 'A'
+      ? styles.approvedLeave
+      : styles.pendingLeave;
+    console.log('Event Style Class:', styleClass);  // 클래스 이름 확인 로그
+    return `${styles.selected} ${styleClass}`;  // selected와 결합된 클래스 반환
+  }
+  return styles.selected;  // 기본 스타일 반환
+};
 
-  return (
-    <div className={styles.Container}>
-      <div className={styles.app}>
-        <div className={styles.header}>
-          <button onClick={handlePrevWeek}>{"<"}</button>
-          <span>{getFormattedDateRange()}</span>
-          <button onClick={handleNextWeek}>{">"}</button>
-          <button onClick={handleToday}>오늘</button>
-        </div>
-        <div className={styles.calendar}>
-  {/* 시간 열 (헤더) */}
-  <div className={styles.timeRow}>
-    <div className={styles.dayCell}></div> {/* 요일이 들어갈 공간 */}
-    {workHours.map(time => (
-      <div key={time} className={`${styles.timeCell} ${time >= 9 && time <= 18 ? styles.workHour : ''}`}>
-        {time}
+
+
+
+const getEventTitle = (event) => {
+  // 연차인 경우 텍스트 변경 (승인 여부에 따라 텍스트 다르게 설정)
+  console.log(event.vacation_application_status);
+  if (event.status === '연차') {
+    return event.vacation_application_status === 'A'
+      ? '연차 (승인)'  // 승인된 경우
+      : '연차 (미승인)';  // 미승인된 경우
+  }
+  return event.title;  // 기본 텍스트
+};
+
+
+return (
+  <div className={styles.Container}>
+    <div className={styles.app}>
+      <div className={styles.header}>
+        <button onClick={handlePrevWeek}>{"<"}</button>
+        <span>{getFormattedDateRange()}</span>
+        <button onClick={handleNextWeek}>{">"}</button>
+        <button onClick={handleToday}>오늘</button>
       </div>
-    ))}
-  </div>
-
-  {/* 날짜와 이벤트 */}
-  {dates.map(date => (
-    <div className={styles.dateRow} key={date}>
-      <div className={styles.dayCell}>{formatDayAndDate(date)}</div> {/* 요일 */}
-      {workHours.map(time => {
-        const event = events.find(event => event.attendance_date === date && isEventInTimeRange(event, time));
-        if (event && event.startTime === time) {
-          return (
-            <div key={time} className={styles.selected} style={{ gridColumnEnd: `span ${getColSpan(event)}` }}>
-              <div className={styles.event}>
-                {event.title} <br />
-                {formatTime(event.check_in_time)} 
-                {event.check_out_time && ` - ${formatTime(event.check_out_time)}`}
-              </div>
+      <div className={styles.calendar}>
+        {/* 시간 열 (헤더) */}
+        <div className={styles.timeRow}>
+          <div className={styles.dayCell}></div> {/* 요일이 들어갈 공간 */}
+          {workHours.map(time => (
+            <div key={time} className={`${styles.timeCell} ${time >= 9 && time <= 18 ? styles.workHour : ''}`}>
+              {time}
             </div>
-          );
-        }
-        if (event && event.startTime < time && event.endTime > time) {
-          return null;
-        }
-        return <div key={time} className={styles.cell}></div>;
-      })}
-    </div>
-  ))}
+          ))}
+        </div>
+
+        {/* 날짜와 이벤트 */}
+        {dates.map(date => (
+          <div className={styles.dateRow} key={date}>
+            <div className={styles.dayCell}>{formatDayAndDate(date)}</div> {/* 요일 */}
+            {workHours.map(time => {
+              const event = events.find(event => event.attendance_date === date && isEventInTimeRange(event, time));
+              if (event && event.startTime === time) {
+                return (
+                  <div key={time} className={getEventStyle(event)} style={{ gridColumnEnd: `span ${getColSpan(event)}` }}>
+  <div className={event.status !== '연차' ? styles.event : ''}>
+    {getEventTitle(event)} <br />
+    {formatTime(event.check_in_time)} 
+    {event.check_out_time && ` - ${formatTime(event.check_out_time)}`}
+  </div>
 </div>
 
+                );
+              }
+              if (event && event.startTime < time && event.endTime > time) {
+                return null;
+              }
+              return <div key={time} className={styles.cell}></div>;
+            })}
+          </div>
+        ))}
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default AttendanceManagement;

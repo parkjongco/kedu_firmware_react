@@ -93,20 +93,17 @@
   background-color: #eaf7ff;
 }
 
-.event {
-  background-color: #ffcc00;
+.event, .approvedLeave, .pendingLeave {
   border: none;
   color: #333;
   border-radius: 4px;
   padding: 2px 5px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  height: 80%;
+  height: 90%; /* 높이를 조금 더 키워 빈 공간 최소화 */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 2px;
-  margin-bottom: 2px;
+  margin: 0; /* 여백 초기화 */
   overflow: hidden;
   text-align: center;
   width: 100%;
@@ -114,9 +111,14 @@
   line-height: 1.2;
   white-space: nowrap;
   text-overflow: ellipsis;
+  box-shadow: none; /* 그림자 제거 */
 }
 
-.event span {
+.event::before, .approvedLeave::before, .pendingLeave::before {
+  content: none; /* 가상 요소로 추가된 그림자 제거 */
+}
+
+.event span, .approvedLeave span, .pendingLeave span {
   font-size: calc(10px + 0.4vw); /* 텍스트 크기가 부모 요소에 맞게 조정되도록 설정 */
   display: block;
   overflow: hidden;
@@ -126,3 +128,12 @@
   line-height: 1.2;
 }
 
+.approvedLeave {
+  background-color: #007bff; /* 파란색 */
+  color: white;
+}
+
+.pendingLeave {
+  background-color: #87CEFA; /* 하늘색 */
+  color: black;
+}
