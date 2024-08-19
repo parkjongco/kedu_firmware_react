@@ -16,7 +16,11 @@ const AttendanceManagementAction = () => {
         endDate: '',
         reason: ''
     });
-
+    const [annualVacationInfo, setAnnualVacationInfo] = useState({
+        total_annual_vacation_days: 0,  
+        used_annual_vacation_days: 0,   
+        remain_annual_vacation_days: 0  
+    });  // 연차 정보 상태
     const [isAfter6PM, setIsAfter6PM] = useState(false);
 
     const navi = useNavigate();
@@ -42,9 +46,19 @@ const AttendanceManagementAction = () => {
         setModalIsOpen(false);
     }
 
-    const openVacationModal = () => {
+    const openVacationModal = async () => {
+        const usersSeq = sessionStorage.getItem('usersSeq');
+        try {
+            const response = await axios.get(`/vacation/annual/${usersSeq}`);
+            console.log('Fetched vacation info:', response.data); 
+            setAnnualVacationInfo(response.data);  // 서버에서 가져온 연차 정보를 상태에 저장
+        } catch (error) {
+            console.error("연차 정보 가져오기 오류:", error);
+        }
+    
         setVacationModalOpen(true);
-    }
+    };
+    
 
     const closeVacationModal = () => {
         setVacationModalOpen(false);
@@ -92,11 +106,20 @@ const AttendanceManagementAction = () => {
             alert("휴가 시작일이 종료일보다 늦을 수 없습니다.");
             return;  // 휴가 신청 중단
         }
+
+        // 휴가 기간 계산
+        const startDate = new Date(vacationData.startDate);
+        const endDate = new Date(vacationData.endDate);
+        const timeDiff = endDate.getTime() - startDate.getTime();
+        const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // 하루 포함
     
+        // 남은 연차보다 휴가 기간이 길 경우 제한
+        if (dayDiff > annualVacationInfo.remain_annual_vacation_days) {
+            alert(`남은 연차 일수(${annualVacationInfo.remain_annual_vacation_days}일)보다 긴 휴가는 신청할 수 없습니다.`);
+            return;
+        }
+
         try {
-            const startDate = new Date(vacationData.startDate);
-            const endDate = new Date(vacationData.endDate);
-    
             // 종료일에 시간을 23:59:59로 설정
             endDate.setHours(23, 59, 59, 999);
     
@@ -189,6 +212,13 @@ const AttendanceManagementAction = () => {
                     <Modal.Title>휴가 신청</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {/* 연차 정보 표시 */}
+                    <div className={styles.vacationInfo}>
+                    <p>총 연차: {annualVacationInfo.total_annual_vacation_days}일</p>  
+                        <p>사용한 연차: {annualVacationInfo.used_annual_vacation_days}일</p>
+                        <p>남은 연차: {annualVacationInfo.remain_annual_vacation_days}일</p>
+                    </div>
+
                     <Form>
                         <Form.Group controlId="startDate">
                             <Form.Label>휴가 시작일</Form.Label>
