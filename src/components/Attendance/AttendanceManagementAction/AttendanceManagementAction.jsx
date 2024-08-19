@@ -81,40 +81,51 @@ const AttendanceManagementAction = () => {
 
     // 휴가 신청 API 호출 함수
     const handleApplyVacation = async () => {
-
         // 해당 날짜에 이미 이벤트가 있는지 확인
         if (isEventExistsOnDate(vacationData.startDate, vacationData.endDate)) {
             alert('해당 날짜에 이미 일정이 존재합니다. 휴가를 신청할 수 없습니다.');
             return;
         }
-
+    
         // 시작일이 종료일보다 이후일 경우 경고 메시지 출력
         if (new Date(vacationData.startDate) > new Date(vacationData.endDate)) {
             alert("휴가 시작일이 종료일보다 늦을 수 없습니다.");
             return;  // 휴가 신청 중단
         }
-
+    
         try {
+            const startDate = new Date(vacationData.startDate);
+            const endDate = new Date(vacationData.endDate);
+    
+            // 종료일에 시간을 23:59:59로 설정
+            endDate.setHours(23, 59, 59, 999);
+    
             const response = await axios.post('/vacation/apply', {
                 vacation_drafter_user_seq: sessionStorage.getItem('usersSeq'), // 사용자 ID
                 vacation_type_seq: 1, // 휴가 유형 ID (예: 1은 연차 휴가로 설정)
-                vacation_start_date: vacationData.startDate + "T00:00:00", // Timestamp 형식에 맞게 수정
-                vacation_end_date: vacationData.endDate + "T23:59:59", // Timestamp 형식에 맞게 수정
+                vacation_start_date: startDate.toISOString(), // Timestamp 형식에 맞게 수정
+                vacation_end_date: endDate.toISOString(), // 입력한 종료일에 시간 설정
                 vacation_application_reason: vacationData.reason, // 휴가 사유
                 vacation_application_status: 'P' // 신청 상태 ('P'는 Pending 상태로 가정)
             });
+    
             alert(response.data);  // 서버 응답 메시지를 사용자에게 표시
             closeVacationModal();  // 모달 닫기
-            
+    
             // 이벤트 갱신
             const usersSeq = sessionStorage.getItem('usersSeq');
             await fetchEvents(usersSeq, dates[0], dates[dates.length - 1]); // 휴가 신청 후 이벤트 갱신
-
+    
         } catch (error) {
             console.error("휴가 신청 중 오류 발생:", error);
             alert('휴가 신청에 실패했습니다.');
         }
-    }
+    };
+    
+
+
+
+    
 
 
     return (
