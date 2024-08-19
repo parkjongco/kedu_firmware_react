@@ -36,14 +36,29 @@ export const useAttendanceStore = create((set, get) => ({
             console.log('Department events response:', response.data);  // 응답 데이터 구조 확인
     
             if (response.data && Array.isArray(response.data)) {
-                const events = response.data.map(event => ({
-                    ...event,
-                    title: event.status === '출근' ? '출근' : (event.status === '조퇴' ? '조퇴' : '퇴근'),
-                    startTime: new Date(event.check_in_time).getHours(),
-                    endTime: event.check_out_time ? new Date(event.check_out_time).getHours() : 18,
-                    date: event.attendance_date.split('T')[0],
-                    memberId: event.users_seq  // 이벤트와 부서원 연결
-                }));
+                const events = response.data.map(event => {
+                    // 퇴근 시간이 18시 이전이면 조퇴로 처리
+                    const isEarlyLeave = event.check_out_time && new Date(event.check_out_time).getHours() < 18;
+    
+                    return {
+                        ...event,
+                        title: event.status === '출근' 
+                            ? '출근' 
+                            : isEarlyLeave 
+                            ? '조퇴' 
+                            : event.status === '지각' 
+                            ? '지각' 
+                            : event.status === '퇴근' 
+                            ? '퇴근' 
+                            : event.status === '연차' 
+                            ? '연차'
+                            : '기타',
+                        startTime: new Date(event.check_in_time).getHours(),
+                        endTime: event.check_out_time ? new Date(event.check_out_time).getHours() : 18,
+                        date: event.attendance_date.split('T')[0],
+                        memberId: event.users_seq  // 이벤트와 부서원 연결
+                    };
+                });
     
                 set({ departmentEvents: events });
             } else {
@@ -134,13 +149,28 @@ export const useAttendanceStore = create((set, get) => ({
             
             console.log('Fetched events:', response.data); // 서버에서 받은 데이터 확인
         
-            const events = response.data.map(event => ({
-                ...event,
-                title: event.status, 
-                startTime: new Date(event.check_in_time).getHours(),
-                endTime: event.check_out_time ? new Date(event.check_out_time).getHours() : 18,
-                date: event.attendance_date.split('T')[0]
-            }));
+            const events = response.data.map(event => {
+                // 퇴근 시간이 18시 이전이면 조퇴로 처리
+                const isEarlyLeave = event.check_out_time && new Date(event.check_out_time).getHours() < 18;
+    
+                return {
+                    ...event,
+                    title: event.status === '출근' 
+                        ? '출근' 
+                        : isEarlyLeave 
+                        ? '조퇴' 
+                        : event.status === '지각' 
+                        ? '지각' 
+                        : event.status === '퇴근' 
+                        ? '퇴근' 
+                        : event.status === '연차' 
+                        ? '연차'
+                        : '기타',
+                    startTime: new Date(event.check_in_time).getHours(),
+                    endTime: event.check_out_time ? new Date(event.check_out_time).getHours() : 18,
+                    date: event.attendance_date.split('T')[0]
+                };
+            });
         
             set({ events }); // 기존 이벤트 덮어쓰기
             console.log('Processed events:', events); // 상태에 저장된 이벤트 확인

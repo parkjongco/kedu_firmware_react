@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal, Form } from 'react-bootstrap';
 import styles from './AttendanceManagementAction.module.css';
 import { useAttendanceStore } from '../../../store/attendance_store';
+import axios from 'axios';
 
 const AttendanceManagementAction = () => {
 
-    const {fetchAttendanceSummary, attendance, handleCheckIn, handleCheckOut } = useAttendanceStore();
+    const {fetchAttendanceSummary, fetchEvents, events, attendance, handleCheckIn, handleCheckOut, dates } = useAttendanceStore();
     const [selected, setSelected] = useState(sessionStorage.getItem('selectedOption') || '내 근무');
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [vacationModalOpen, setVacationModalOpen] = useState(false);  // 휴가 신청 모달 상태 추가
+    const [vacationData, setVacationData] = useState({
+        startDate: '',
+        endDate: '',
+        reason: ''
+    });
+
     const [isAfter6PM, setIsAfter6PM] = useState(false);
 
     const navi = useNavigate();
@@ -34,6 +42,14 @@ const AttendanceManagementAction = () => {
         setModalIsOpen(false);
     }
 
+    const openVacationModal = () => {
+        setVacationModalOpen(true);
+    }
+
+    const closeVacationModal = () => {
+        setVacationModalOpen(false);
+    }
+
     const checkIfAfter6PM = () => {
         const currentHour = new Date().getHours();
         setIsAfter6PM(currentHour >= 18);  // 오후 6시 이후인지 여부를 상태로 저장
@@ -53,25 +69,76 @@ const AttendanceManagementAction = () => {
         fetchAttendanceSummary(usersSeq, currentMonth);
     }
 
+    // 이벤트가 해당 날짜에 존재하는지 확인하는 함수
+    const isEventExistsOnDate = (startDate, endDate) => {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        return events.some(event => {
+            const eventDate = new Date(event.attendance_date);
+            return eventDate >= start && eventDate <= end;
+        });
+    };
+
+    // 휴가 신청 API 호출 함수
+    const handleApplyVacation = async () => {
+
+        // 해당 날짜에 이미 이벤트가 있는지 확인
+        if (isEventExistsOnDate(vacationData.startDate, vacationData.endDate)) {
+            alert('해당 날짜에 이미 일정이 존재합니다. 휴가를 신청할 수 없습니다.');
+            return;
+        }
+
+        // 시작일이 종료일보다 이후일 경우 경고 메시지 출력
+        if (new Date(vacationData.startDate) > new Date(vacationData.endDate)) {
+            alert("휴가 시작일이 종료일보다 늦을 수 없습니다.");
+            return;  // 휴가 신청 중단
+        }
+
+        try {
+            const response = await axios.post('/vacation/apply', {
+                vacation_drafter_user_seq: sessionStorage.getItem('usersSeq'), // 사용자 ID
+                vacation_type_seq: 1, // 휴가 유형 ID (예: 1은 연차 휴가로 설정)
+                vacation_start_date: vacationData.startDate + "T00:00:00", // Timestamp 형식에 맞게 수정
+                vacation_end_date: vacationData.endDate + "T23:59:59", // Timestamp 형식에 맞게 수정
+                vacation_application_reason: vacationData.reason, // 휴가 사유
+                vacation_application_status: 'P' // 신청 상태 ('P'는 Pending 상태로 가정)
+            });
+            alert(response.data);  // 서버 응답 메시지를 사용자에게 표시
+            closeVacationModal();  // 모달 닫기
+            
+            // 이벤트 갱신
+            const usersSeq = sessionStorage.getItem('usersSeq');
+            await fetchEvents(usersSeq, dates[0], dates[dates.length - 1]); // 휴가 신청 후 이벤트 갱신
+
+        } catch (error) {
+            console.error("휴가 신청 중 오류 발생:", error);
+            alert('휴가 신청에 실패했습니다.');
+        }
+    }
+
+
     return (
         <div className={styles.container}>
-            <div className={styles.toggleGroup}>
-                <button
-                    className={`${styles.toggleButton} ${selected === '내 근무' ? styles.selected : ''}`}
-                    onClick={() => {handleToggle('내 근무'); handleAttendanceManagement();}}
-                >
-                    근태 현황
-                </button>
-                <button
-                    className={`${styles.toggleButton} ${selected === '구성원 근무' ? styles.selected : ''}`}
-                    onClick={() => {handleToggle('구성원 근무'); handleDeptSchedule();}}
-                >
-                    구성원 근무
-                </button>
-            </div>
-            
-            <Button className={styles.registerButton} onClick={openModal}>출석체크</Button>
-
+        <div className={styles.toggleGroup}>
+            <button
+                className={`${styles.toggleButton} ${selected === '내 근무' ? styles.selected : ''}`}
+                onClick={() => {handleToggle('내 근무'); handleAttendanceManagement();}}
+            >
+                근태 현황
+            </button>
+            <button
+                className={`${styles.toggleButton} ${selected === '구성원 근무' ? styles.selected : ''}`}
+                onClick={() => {handleToggle('구성원 근무'); handleDeptSchedule();}}
+            >
+                구성원 근무
+            </button>
+        </div>
+        
+        <div className={styles.buttonContainer}> {/* 새로운 버튼 컨테이너 */}
+            <Button className={styles.leftButton} onClick={openVacationModal}>휴가 신청</Button> {/* 왼쪽 버튼 */}
+            <Button className={styles.rightButton} onClick={openModal}>출석체크</Button> {/* 오른쪽 버튼 */}
+        </div>
+        
             <Modal show={modalIsOpen} onHide={closeModal}>
                 <Modal.Header closeButton>
                     <Modal.Title>출석 체크</Modal.Title>
@@ -102,6 +169,46 @@ const AttendanceManagementAction = () => {
                 <Modal.Footer>
                     <Button variant="secondary" onClick={closeModal}>닫기</Button>
                     <Button variant="primary" onClick={closeModal}>확인</Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* 휴가 신청 모달 */}
+            <Modal show={vacationModalOpen} onHide={closeVacationModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>휴가 신청</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group controlId="startDate">
+                            <Form.Label>휴가 시작일</Form.Label>
+                            <Form.Control
+                                type="date"
+                                value={vacationData.startDate}
+                                onChange={(e) => setVacationData({ ...vacationData, startDate: e.target.value })}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="endDate">
+                            <Form.Label>휴가 종료일</Form.Label>
+                            <Form.Control
+                                type="date"
+                                value={vacationData.endDate}
+                                onChange={(e) => setVacationData({ ...vacationData, endDate: e.target.value })}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="reason">
+                            <Form.Label>휴가 사유</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                value={vacationData.reason}
+                                onChange={(e) => setVacationData({ ...vacationData, reason: e.target.value })}
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={closeVacationModal}>취소</Button>
+                    <Button variant="primary" onClick={handleApplyVacation}>신청</Button>
                 </Modal.Footer>
             </Modal>
         </div>
