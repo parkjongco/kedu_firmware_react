@@ -38,7 +38,7 @@ export const useAttendanceStore = create((set, get) => ({
             if (response.data && Array.isArray(response.data)) {
                 const events = response.data.map(event => ({
                     ...event,
-                    title: event.status === '출근' ? '출근' : '퇴근',
+                    title: event.status === '출근' ? '출근' : (event.status === '조퇴' ? '조퇴' : '퇴근'),
                     startTime: new Date(event.check_in_time).getHours(),
                     endTime: event.check_out_time ? new Date(event.check_out_time).getHours() : 18,
                     date: event.attendance_date.split('T')[0],
@@ -126,27 +126,30 @@ export const useAttendanceStore = create((set, get) => ({
         }
     },
 
-    fetchEvents: async (usersSeq, startDate, endDate) => {  // 이벤트 가져오는 함수
+    fetchEvents: async (usersSeq, startDate, endDate) => {
         try {
             const response = await axios.get(`${serverUrl}/attendance/events`, {
                 params: { users_seq: usersSeq, start_date: startDate, end_date: endDate }
             });
-
-            // 서버에서 받아온 이벤트 데이터를 상태에 저장
+            
+            console.log('Fetched events:', response.data); // 서버에서 받은 데이터 확인
+        
             const events = response.data.map(event => ({
                 ...event,
-                title: event.status === '출근' ? '출근' : '퇴근',
+                title: event.status, 
                 startTime: new Date(event.check_in_time).getHours(),
                 endTime: event.check_out_time ? new Date(event.check_out_time).getHours() : 18,
                 date: event.attendance_date.split('T')[0]
             }));
-
-            set({ events });
-            console.log(events);
+        
+            set({ events }); // 기존 이벤트 덮어쓰기
+            console.log('Processed events:', events); // 상태에 저장된 이벤트 확인
         } catch (error) {
             console.error('Error fetching events:', error);
         }
     },
+    
+    
 
     handleCheckIn: async () => {
         const now = new Date();

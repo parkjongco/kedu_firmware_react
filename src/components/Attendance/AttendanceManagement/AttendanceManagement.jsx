@@ -90,12 +90,19 @@ const AttendanceManagement = () => {
   const formatTime = (dateTime) => {
     const date = new Date(dateTime);
     return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
-  };
+};
 
-  const getColSpan = (event) => {
-    const span = event.endTime - event.startTime;
-    return span >= 1 ? span : 1; // 간격이 1시간 이하라도 최소 1시간 표시
-  };
+const getColSpan = (event) => {
+  if (!event.check_out_time) return 1; // 퇴근 시간이 없으면 한 칸만 표시
+
+  const startTime = new Date(event.check_in_time).getHours();
+  const endTime = new Date(event.check_out_time).getHours();
+
+  const span = endTime - startTime;
+
+  return span >= 1 ? span : 1; // 1시간 이상일 경우 해당 칸 수, 그렇지 않으면 1칸만 차지
+};
+
 
   return (
     <div className={styles.Container}>
@@ -107,37 +114,42 @@ const AttendanceManagement = () => {
           <button onClick={handleToday}>오늘</button>
         </div>
         <div className={styles.calendar}>
-          <div className={styles.timeRow}>
-            <div className={styles.dayCell}></div>
-            {workHours.map(time => (
-              <div key={time} className={`${styles.timeCell} ${time >= 9 && time <= 18 ? styles.workHour : ''}`}>
-                {time}
+  {/* 시간 열 (헤더) */}
+  <div className={styles.timeRow}>
+    <div className={styles.dayCell}></div> {/* 요일이 들어갈 공간 */}
+    {workHours.map(time => (
+      <div key={time} className={`${styles.timeCell} ${time >= 9 && time <= 18 ? styles.workHour : ''}`}>
+        {time}
+      </div>
+    ))}
+  </div>
+
+  {/* 날짜와 이벤트 */}
+  {dates.map(date => (
+    <div className={styles.dateRow} key={date}>
+      <div className={styles.dayCell}>{formatDayAndDate(date)}</div> {/* 요일 */}
+      {workHours.map(time => {
+        const event = events.find(event => event.attendance_date === date && isEventInTimeRange(event, time));
+        if (event && event.startTime === time) {
+          return (
+            <div key={time} className={styles.selected} style={{ gridColumnEnd: `span ${getColSpan(event)}` }}>
+              <div className={styles.event}>
+                {event.title} <br />
+                {formatTime(event.check_in_time)} 
+                {event.check_out_time && ` - ${formatTime(event.check_out_time)}`}
               </div>
-            ))}
-          </div>
-          {dates.map(date => (
-            <div className={styles.dateRow} key={date}>
-              <div className={styles.dayCell}>{formatDayAndDate(date)}</div>
-              {workHours.map(time => {
-                const event = events.find(event => event.attendance_date === date && isEventInTimeRange(event, time));
-                if (event && event.startTime === time) {
-                  return (
-                    <div key={time} className={styles.selected} style={{ gridColumnEnd: `span ${getColSpan(event)}` }}>
-                      <div className={styles.event}>
-                        {event.title} <br />
-                        {formatTime(event.check_in_time)} - {formatTime(event.check_out_time)}
-                      </div>
-                    </div>
-                  );
-                }
-                if (event && event.startTime < time && event.endTime > time) {
-                  return null;
-                }
-                return <div key={time} className={styles.cell}></div>;
-              })}
             </div>
-          ))}
-        </div>
+          );
+        }
+        if (event && event.startTime < time && event.endTime > time) {
+          return null;
+        }
+        return <div key={time} className={styles.cell}></div>;
+      })}
+    </div>
+  ))}
+</div>
+
       </div>
     </div>
   );
