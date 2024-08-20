@@ -376,6 +376,10 @@ const Mypage = () => {
               </div>
             )}
           </section>
+          <div className={styles.bookmark}>
+            bookmark
+          </div>
+
         </div>
         <div className={styles.content}>
           <section className={styles.details}>
@@ -419,7 +423,7 @@ const Mypage = () => {
                 <label htmlFor="applicationStatus">처리 결과</label>
                 <input type="text" id="applicationStatus" name="applicationStatus" value={userInfo.applicationStatus || ''} readOnly />
               </div>
-              <button type="submit" disabled={userInfo.applicationStatus === '대기 중'}>수정 신청</button>
+              <button type="submit"className={styles['mypage-button']} disabled={userInfo.applicationStatus === '대기 중'}> 수정 신청 </button>
             </form>
             {isAdmin && (
               <div className={styles.adminActions}>
