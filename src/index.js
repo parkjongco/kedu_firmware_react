@@ -14,6 +14,8 @@ import DeleteUser from './components/LoginIk/Admin/DeleteUser';
 import axios from 'axios';
 import Mypage from './components/Mypage/Mypage';
 
+
+
 axios.defaults.withCredentials = true
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -22,7 +24,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} /> {/* Main homepage route */}
-        <Route path="/Board/*" element={<BoardIndex />} />
+        <Route path="/Board" element={<BoardIndex />} />
         <Route path="/mailbox/*" element={<Mailbox />} />
         <Route path="/messenger" element={<Messenger />} />
         <Route path="/admin" element={<Admin />} />
