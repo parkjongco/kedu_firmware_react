@@ -25,15 +25,21 @@
 }
 
 .VacationButton {
-    margin-top: 15px;
-    margin-bottom: 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none !important; /* border를 제거 */
+    background-color: #87CEEB !important; /* 하늘색 */
+    color: white !important;
+    transition: background-color 0.3s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%; /* 버튼을 컨테이너의 전체 너비로 설정 */
+    max-width: 120px; /* 최대 너비 설정 */
+    
+    
 }
+
 
 .VacationButton:hover {
     background-color: #0056b3;

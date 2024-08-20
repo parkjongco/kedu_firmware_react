@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Modal, Form } from 'react-bootstrap';
+import { Button, Modal, Form, Card, ButtonGroup } from 'react-bootstrap';
 import styles from './AttendanceManagementAction.module.css';
 import { useAttendanceStore } from '../../../store/attendance_store';
 import axios from 'axios';
@@ -163,100 +163,106 @@ const AttendanceManagementAction = () => {
 
     return (
         <div className={styles.container}>
-        <div className={styles.toggleGroup}>
-            <button
-                className={`${styles.toggleButton} ${selected === '내 근무' ? styles.selected : ''}`}
-                onClick={() => {handleToggle('내 근무'); handleAttendanceManagement();}}
-            >
-                근태 현황
-            </button>
-            <button
-                className={`${styles.toggleButton} ${selected === '구성원 근무' ? styles.selected : ''}`}
-                onClick={() => {handleToggle('구성원 근무'); handleDeptSchedule();}}
-            >
-                구성원 근무
-            </button>
-        </div>
+            <div className={styles.toggleGroup}>
+                <button
+                    className={`${styles.toggleButton} ${selected === '내 근무' ? styles.selected : ''}`}
+                    onClick={() => {handleToggle('내 근무'); handleAttendanceManagement();}}
+                >
+                    근태 현황
+                </button>
+                <button
+                    className={`${styles.toggleButton} ${selected === '구성원 근무' ? styles.selected : ''}`}
+                    onClick={() => {handleToggle('구성원 근무'); handleDeptSchedule();}}
+                >
+                    구성원 근무
+                </button>
+            </div>
         
-        <div className={styles.buttonContainer}> {/* 새로운 버튼 컨테이너 */}
-            <Button className={styles.leftButton} onClick={openVacationModal}>휴가 신청</Button> {/* 왼쪽 버튼 */}
-            <Button className={styles.rightButton} onClick={openModal}>출석체크</Button> {/* 오른쪽 버튼 */}
-        </div>
+            <div className={styles.buttonContainer}>
+            <Button className={styles.leftButton} onClick={openVacationModal}>휴가 신청</Button>
+            <Button className={styles.rightButton} onClick={openModal}>출석체크</Button>
+
+            </div>
         
-            <Modal show={modalIsOpen} onHide={closeModal}>
+            <Modal show={modalIsOpen} onHide={closeModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>출석 체크</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <h2>출석 확인</h2>
-                    <div className={styles.buttonContainer}>
-                        {attendance.checkIn ? ( // checkIn 값이 있을 경우 퇴근 버튼을 보여줌
-                            !attendance.checkOut ? ( // checkOut 값이 없을 경우 퇴근 버튼을 보여줌
-                                <button className={styles.button} onClick={handleCheckOutAndUpdate}>퇴근</button>
-                            ) : (
-                                <p>이미 퇴근했습니다.</p> // checkOut 값이 있으면 퇴근한 상태임을 표시
-                            )
-                        ) : (
-                            // 출석 버튼을 오후 6시 이전에만 활성화
-                            !isAfter6PM ? (
-                                <button className={styles.button} onClick={handleCheckIn}>출석</button>
-                            ) : (
-                                <p>오후 6시 이후에는 출석할 수 없습니다.</p>
-                            )
-                        )}
-                    </div>
-                    <div className={styles.status}>
-                        <p>출근 시간: {attendance.checkIn ? new Date(attendance.checkIn).toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '출근 한 상태가 아닙니다.'}</p>
-                        <p>퇴근 시간: {attendance.checkOut ? new Date(attendance.checkOut).toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '퇴근 하지 않았습니다.'}</p>
-                    </div>
+                    <Card>
+                        <Card.Body>
+                            <Card.Title>출석 확인</Card.Title>
+                            <ButtonGroup className="d-flex justify-content-between">
+                                {attendance.checkIn ? (
+                                    !attendance.checkOut ? (
+                                        <Button variant="danger" onClick={handleCheckOutAndUpdate}>퇴근</Button>
+                                    ) : (
+                                        <p className="text-success">이미 퇴근했습니다.</p>
+                                    )
+                                ) : (
+                                    !isAfter6PM ? (
+                                        <Button variant="success" onClick={handleCheckIn}>출석</Button>
+                                    ) : (
+                                        <p className="text-danger">오후 6시 이후에는 출석할 수 없습니다.</p>
+                                    )
+                                )}
+                            </ButtonGroup>
+                            <div className="mt-3">
+                                <p>출근 시간: {attendance.checkIn ? new Date(attendance.checkIn).toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '출근 한 상태가 아닙니다.'}</p>
+                                <p>퇴근 시간: {attendance.checkOut ? new Date(attendance.checkOut).toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '퇴근 하지 않았습니다.'}</p>
+                            </div>
+                        </Card.Body>
+                    </Card>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={closeModal}>닫기</Button>
-                    <Button variant="primary" onClick={closeModal}>확인</Button>
                 </Modal.Footer>
             </Modal>
 
-            {/* 휴가 신청 모달 */}
-            <Modal show={vacationModalOpen} onHide={closeVacationModal}>
+            <Modal show={vacationModalOpen} onHide={closeVacationModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>휴가 신청</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {/* 연차 정보 표시 */}
-                    <div className={styles.vacationInfo}>
-                    <p>총 연차: {annualVacationInfo.total_annual_vacation_days}일</p>  
-                        <p>사용한 연차: {annualVacationInfo.used_annual_vacation_days}일</p>
-                        <p>남은 연차: {annualVacationInfo.remain_annual_vacation_days}일</p>
-                    </div>
+                    <Card>
+                        <Card.Body>
+                            <Card.Title>연차 정보</Card.Title>
+                            <div className={styles.vacationInfo}>
+                                <p>총 연차: {annualVacationInfo.total_annual_vacation_days}일</p>
+                                <p>사용한 연차: {annualVacationInfo.used_annual_vacation_days}일</p>
+                                <p>남은 연차: {annualVacationInfo.remain_annual_vacation_days}일</p>
+                            </div>
 
-                    <Form>
-                        <Form.Group controlId="startDate">
-                            <Form.Label>휴가 시작일</Form.Label>
-                            <Form.Control
-                                type="date"
-                                value={vacationData.startDate}
-                                onChange={(e) => setVacationData({ ...vacationData, startDate: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="endDate">
-                            <Form.Label>휴가 종료일</Form.Label>
-                            <Form.Control
-                                type="date"
-                                value={vacationData.endDate}
-                                onChange={(e) => setVacationData({ ...vacationData, endDate: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="reason">
-                            <Form.Label>휴가 사유 (최대 15글자)</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={3}
-                                value={vacationData.reason}
-                                onChange={handleReasonChange}
-                                placeholder="휴가 사유를 입력하세요."
-                            />
-                        </Form.Group>
-                    </Form>
+                            <Form>
+                                <Form.Group controlId="startDate">
+                                    <Form.Label>휴가 시작일</Form.Label>
+                                    <Form.Control
+                                        type="date"
+                                        value={vacationData.startDate}
+                                        onChange={(e) => setVacationData({ ...vacationData, startDate: e.target.value })}
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="endDate" className="mt-3">
+                                    <Form.Label>휴가 종료일</Form.Label>
+                                    <Form.Control
+                                        type="date"
+                                        value={vacationData.endDate}
+                                        onChange={(e) => setVacationData({ ...vacationData, endDate: e.target.value })}
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="reason" className="mt-3">
+                                    <Form.Label>휴가 사유 (최대 30글자)</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        rows={3}
+                                        value={vacationData.reason}
+                                        onChange={handleReasonChange}
+                                        placeholder="휴가 사유를 입력하세요."
+                                    />
+                                </Form.Group>
+                            </Form>
+                        </Card.Body>
+                    </Card>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={closeVacationModal}>취소</Button>
