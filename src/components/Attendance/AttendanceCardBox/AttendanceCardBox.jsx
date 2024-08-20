@@ -53,6 +53,7 @@ const fetchVacationList = async () => {
         if (isAdmin) {
             // 관리자인 경우 모든 유저의 휴가 기록을 가져옴
             response = await axios.get(`/vacation/applications`);
+            console.log(response.data);
         } else {
             // 일반 유저의 경우 자신의 휴가 기록만 가져옴
             response = await axios.get(`/vacation/applications/${usersSeq}`);
@@ -116,20 +117,21 @@ const fetchVacationList = async () => {
         if (window.confirm("정말 해당 휴가 일정을 승인하시겠습니까?")) {
             try {
                 await axios.post(`/vacation/approve/${vacationId}`);
-                // 승인 후 휴가 리스트를 업데이트하거나 다시 가져옵니다.
-                const updatedList = vacationList.map(vacation => 
-                    vacation.vacation_application_seq === vacationId 
-                    ? { ...vacation, vacation_application_status: '승인됨' }
-                    : vacation
-                );
-                setVacationList(updatedList);
                 alert('휴가가 승인되었습니다.');
+                
+                // 승인 후 휴가 리스트를 갱신합니다.
+                await fetchVacationList();
+                
+                // 승인 후 출석 데이터를 갱신합니다.
+                const usersSeq = sessionStorage.getItem("usersSeq");
+                await fetchEvents(usersSeq, dates[0], dates[dates.length - 1]);
             } catch (error) {
                 console.error("휴가 승인 중 오류 발생:", error);
                 alert('휴가 승인이 실패했습니다.');
             }
         }
     };
+
     
 
     const formatDate = (dateString) => {
@@ -238,17 +240,22 @@ const fetchVacationList = async () => {
                             <div className={styles.TableCell}>{formatDate(vacation.vacation_end_date)}</div>
                             <div className={styles.TableCell}>{vacation.vacation_application_reason}</div>
                             <div className={styles.TableCell}>{vacation.vacation_application_status}</div>
-                            <div className={styles.TableCell}>{vacation.vacation_permission_user_seq || '미확인'}</div>
+                            <div className={styles.TableCell}>
+                                {vacation.vacation_permission_user_seq 
+                                    ? (vacation.vacation_permission_user_seq === 1 ? 'admin' : vacation.vacation_permission_user_seq)
+                                    : '미확인'}
+                            </div>
                             <div className={styles.TableCell}>
                                 <Button variant="danger" size="sm" onClick={() => handleDeleteVacation(vacation.vacation_application_seq)}>삭제</Button>
                             </div>
-                            {isAdmin && (
-                                <div className={styles.TableCell}> {/* 관리자는 승인 열 추가 됌 */}
+                            {isAdmin && vacation.vacation_application_status !== 'A' && (  // 승인 상태가 "A"이 아닌 경우에만 버튼 표시
+                                <div className={styles.TableCell}>
                                     <Button variant="success" size="sm" onClick={() => handleApproveVacation(vacation.vacation_application_seq)}>승인</Button>
                                 </div>
                             )}
                         </div>
                     ))}
+
                 </div>
 
                 </Modal.Body>
