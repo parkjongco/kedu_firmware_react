@@ -156,7 +156,7 @@ export const List = ({ category = {} }) => {
                                     />
                                 </td>
                                 <td>{e.board_title}</td>
-                                <td>{session || '작성자 정보 없음'}</td>
+                                <td>{e.users_name || '작성자 정보 없음'}</td>
                                 <td>{new Date(e.board_write_date).toLocaleString()}</td>
                                 <td>{e.board_view_count}</td>
                             </tr>
