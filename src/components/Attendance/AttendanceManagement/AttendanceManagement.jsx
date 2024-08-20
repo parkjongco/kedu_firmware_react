@@ -14,10 +14,10 @@ const AttendanceManagement = () => {
     if (dates.length > 0) {
       const usersSeq = sessionStorage.getItem("usersSeq");
       if (usersSeq) {
-        fetchEvents(usersSeq, dates[0], dates[dates.length - 1]);
+        fetchEvents(usersSeq, dates[0], dates[dates.length - 1]); // 이벤트 데이터 갱신 되는 부분
       }
     }
-  }, [dates]);
+  }, [dates, fetchEvents]); // fetchEvent가 일어나야 할때마다 (일정이 수정될때) 실행되도록한다.
 
   // 출석 확인 여부 체크
   useEffect(() => {
@@ -157,14 +157,13 @@ return (
               const event = events.find(event => event.attendance_date === date && isEventInTimeRange(event, time));
               if (event && event.startTime === time) {
                 return (
-                  <div key={time} className={getEventStyle(event)} style={{ gridColumnEnd: `span ${getColSpan(event)}` }}>
-  <div className={event.status !== '연차' ? styles.event : ''}>
-    {getEventTitle(event)} <br />
-    {formatTime(event.check_in_time)} 
-    {event.check_out_time && ` - ${formatTime(event.check_out_time)}`}
-  </div>
-</div>
-
+                  <div key={time} className={`${styles.selected} ${getEventStyle(event)}`} style={{ gridColumnEnd: `span ${getColSpan(event)}` }}>
+                    <div className={styles.event}>
+                      {getEventTitle(event)} <br />
+                      {formatTime(event.check_in_time)} 
+                      {event.check_out_time && ` - ${formatTime(event.check_out_time)}`}
+                    </div>
+                  </div>
                 );
               }
               if (event && event.startTime < time && event.endTime > time) {

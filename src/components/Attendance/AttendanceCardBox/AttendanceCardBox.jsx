@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Modal, Button } from 'react-bootstrap';
 import styles from './AttendanceCardBox.module.css';
-import { useAttendanceStore } from '../../../store/attendance_store';
 import axios from 'axios';
+import { useAttendanceStore } from '../../../store/attendance_store';
 
 const serverUrl = process.env.REACT_APP_SERVER_URL;
 
@@ -10,25 +10,32 @@ const AttendanceCardBox = () => {
     // 현재 선택된 월을 관리하는 state, 초기값은 현재 년-월로 설정
     const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
 
+    const { fetchEvents, dates } = useAttendanceStore();
+
     // 출석 데이터 상태를 관리
-    const { attendanceData, fetchAttendanceSummary, events, fetchEvents, dates } = useAttendanceStore();
+    // 기존 zustand의 상태 대신 컴포넌트 자체에서 상태 관리로 변경**
+    const [attendanceData, setAttendanceData] = useState({ daysPresent: 0, daysLate: 0, daysAbsent: 0, earlyLeave: 0 });
     const [vacationList, setVacationList] = useState([]); // 휴가 기록을 저장할 상태
     const [showModal, setShowModal] = useState(false); // 모달 상태 관리
-
+    const [events, setEvents] = useState([]); // 이벤트 상태 관리
 
     // 선택된 월이 변경될 때마다 출석 데이터를 서버에서 가져옴
     useEffect(() => {
         const fetchAttendanceData = async () => {
             try {
                 const usersSeq = sessionStorage.getItem("usersSeq"); // 사용자 ID를 세션에서 가져옴
-                await fetchAttendanceSummary(usersSeq, selectedMonth); // 상태 업데이트 호출
+                // 기존 fetchAttendanceSummary 대신 axios로 직접 데이터 가져오기**
+                const response = await axios.get(`${serverUrl}/attendance/checkAttendanceSummary`, {
+                    params: { usersSeq, month: selectedMonth }
+                });
+                setAttendanceData(response.data); // 상태 업데이트 호출
             } catch (error) {
                 console.error('Error fetching attendance data:', error); // 에러 발생 시 콘솔에 출력
             }
         };
 
         fetchAttendanceData(); // 데이터 가져오는 함수 호출
-    }, [selectedMonth, fetchAttendanceSummary]); // 선택된 월이 변경될 때마다 useEffect 재실행
+    }, [selectedMonth]); // 선택된 월이 변경될 때마다 useEffect 재실행
 
     // 휴가 기록을 가져오는 함수
     const fetchVacationList = async () => {
@@ -40,7 +47,6 @@ const AttendanceCardBox = () => {
             console.error('Error fetching vacation list:', error);
         }
     };
-
 
     // 월 선택을 변경하는 함수
     const handleMonthChange = (e) => {
@@ -64,11 +70,10 @@ const AttendanceCardBox = () => {
                 await axios.delete(`/vacation/delete/${vacationId}`);
                 setVacationList(vacationList.filter(vacation => vacation.vacation_application_seq !== vacationId));
                 alert('휴가 일정이 삭제되었습니다.');
-
-                // 삭제 후 출석 이벤트 데이터를 다시 불러오는 부분
+    
+                // 삭제 후 출석 이벤트 데이터를 zustand store에서 다시 불러옴
                 const usersSeq = sessionStorage.getItem("usersSeq");
-                await fetchEvents(usersSeq, dates[0], dates[dates.length - 1]); // 이벤트 데이터를 다시 불러옴
-
+                await fetchEvents(usersSeq, dates[0], dates[dates.length - 1]);
             } catch (error) {
                 console.error("휴가 삭제 중 오류 발생:", error);
                 alert('휴가 삭제에 실패했습니다.');
@@ -128,7 +133,6 @@ const AttendanceCardBox = () => {
                 {/* 휴가 기록 버튼 */}
                 <Button onClick={handleShowModal} className={styles.VacationButton}>휴가 기록</Button>
             </div>
-
 
             {/* 출석 정보 카드들 */}
             <div className={styles.CardDiv}>
@@ -194,9 +198,6 @@ const AttendanceCardBox = () => {
                     <Button variant="secondary" onClick={handleCloseModal}>닫기</Button>
                 </Modal.Footer>
             </Modal>
-
-
-
         </div>
     );
 }
