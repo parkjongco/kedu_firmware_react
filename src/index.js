@@ -25,7 +25,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} /> {/* Main homepage route */}
-        <Route path="/Board" element={<BoardIndex />} />
+        <Route path="/Board/*" element={<BoardIndex />} />
         <Route path="/mailbox/*" element={<Mailbox />} />
         <Route path="/messenger" element={<Messenger />} />
         <Route path="/admin" element={<Admin />} />

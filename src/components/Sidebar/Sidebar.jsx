@@ -53,7 +53,7 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faBarsStaggered} />
                             {toggle && (
-                                <Link to={`${serverUrl}/Board`} className={styles.link}>게시판</Link>
+                                <Link to={`${serverUrl}:3000/Board`} className={styles.link}>게시판</Link>
                             )}
                         </div>
 

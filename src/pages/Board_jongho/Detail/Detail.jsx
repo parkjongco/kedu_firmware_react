@@ -32,7 +32,7 @@ const Detail = ({category = {}} ) => {
 
 
         // Board 데이터 로드
-        axios.get(`${serverUrl}/board/detail/${seq}`)
+        axios.get(`${serverUrl}:3000/board/detail/${seq}`)
             .then(resp => {
                 setBoard(resp.data);
                 setUpdatedTitle(resp.data.board_title);
@@ -43,7 +43,7 @@ const Detail = ({category = {}} ) => {
             });
     
         // Comments 데이터 로드
-        axios.get(`${serverUrl}/board_reply/${seq}`)
+        axios.get(`${serverUrl}:3000/board_reply/${seq}`)
             .then(resp => {
                 setComments(resp.data || []);
             })
@@ -52,7 +52,7 @@ const Detail = ({category = {}} ) => {
             });
     
         // 북마크 상태 확인
-        axios.get(`${serverUrl}/bookmark/${seq}`)
+        axios.get(`${serverUrl}:3000/bookmark/${seq}`)
             .then(resp => {
                 setIsBookmarked(resp.data);
                 console.log("bookmarks : " + resp.data);
@@ -81,7 +81,7 @@ const Detail = ({category = {}} ) => {
             board_contents: updatedContents,
         };
 
-        axios.put(`${serverUrl}/board/${seq}`, updatedData)
+        axios.put(`${serverUrl}:3000/board/${seq}`, updatedData)
             .then(resp => {
                 setBoard(resp.data);
                 setIsEditing(false);
@@ -95,7 +95,7 @@ const Detail = ({category = {}} ) => {
         const isConfirmed = window.confirm('정말로 이 게시물을 삭제하시겠습니까?');
     
         if (isConfirmed) {
-            axios.delete(`${serverUrl}/board/${seq}`)
+            axios.delete(`${serverUrl}:3000/board/${seq}`)
                 .then(() => {
                     navigate("/Board");
                 })
@@ -118,7 +118,7 @@ const Detail = ({category = {}} ) => {
             board_seq: seq,
         };
 
-        axios.post(`${serverUrl}/board_reply`, commentData)
+        axios.post(`${serverUrl}:3000/board_reply`, commentData)
             .then(resp => {
                 setComments(prevComments => [...prevComments, resp.data]);
                 setNewComment('');
@@ -134,7 +134,7 @@ const Detail = ({category = {}} ) => {
             reply_reg_date: new Date().toISOString(),
         };
 
-        axios.put(`${serverUrl}/board_reply/${seq}/${commentId}`, updatedCommentData)
+        axios.put(`${serverUrl}:3000/board_reply/${seq}/${commentId}`, updatedCommentData)
             .then(() => {
                 setComments(prevComments => prevComments.map(comment =>
                     comment.reply_seq === commentId ? { ...comment, ...updatedCommentData } : comment
@@ -148,7 +148,7 @@ const Detail = ({category = {}} ) => {
     };
 
     const handleDeleteComment = (commentId) => {
-        axios.delete(`${serverUrl}/board_reply/${seq}/${commentId}`)
+        axios.delete(`${serverUrl}:3000/board_reply/${seq}/${commentId}`)
             .then(() => {
                 setComments(prevComments => prevComments.filter(comment => comment.reply_seq !== commentId));
             })
@@ -167,9 +167,9 @@ const Detail = ({category = {}} ) => {
     
         if (isBookmarked) {
             // 북마크 해제 요청
-            axios.delete(`${serverUrl}/bookmark/${seq}`)
+            axios.delete(`${serverUrl}:3000/bookmark/${seq}`)
                 .then(response => {
-                    return axios.get(`${serverUrl}/bookmark/${seq}`);
+                    return axios.get(`${serverUrl}:3000/bookmark/${seq}`);
                 })
                 .then(resp => {
                     setIsBookmarked(false);
@@ -179,9 +179,9 @@ const Detail = ({category = {}} ) => {
                 });
         } else {
             // 북마크 추가 요청
-            axios.post(`${serverUrl}/bookmark`, { board_seq: seq })
+            axios.post(`${serverUrl}:3000/bookmark`, { board_seq: seq })
                 .then(response => {
-                    return axios.get(`${serverUrl}/bookmark/${seq}`);
+                    return axios.get(`${serverUrl}:3000/bookmark/${seq}`);
                 })
                 .then(resp => {
                     setIsBookmarked(true);

@@ -10,20 +10,20 @@ axios.defaults.withCredentials = true;
 export const List = ({ category = {} }) => {
     const { usersName } = useAuthStore();
     const [data, setData] = useState([]);
-    const [currentCategory, setCurrentCategory] = useState({ category_seq: 0, category_name: '공지사항' }); // 기본 카테고리 설정
+    const [currentCategory, setCurrentCategory] = useState({category_seq: 0, category_name: '공지사항'}); // 기본 카테고리 설정
+
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [sortOrder, setSortOrder] = useState('latest');
     const [selectedItems, setSelectedItems] = useState([]);
     const itemsPerPage = 10;
     const serverUrl = process.env.REACT_APP_SERVER_URL;
-    const session = sessionStorage.getItem("usersName");
 
     useEffect(() => {
-        // Determine the category to fetch based on whether a category prop is provided
-        const fetchCategory = category.category_seq ? category : currentCategory;
+        // 초기 로드 또는 카테고리 변경 시 데이터 로드
+        const fetchCategory = category.category_seq ? category : { category_seq: 0, category_name: '공지사항' };
 
-        axios.get(`${serverUrl}/board/${fetchCategory.category_seq}`)
+        axios.get(`${serverUrl}:3000/board/${fetchCategory.category_seq}`)
             .then(response => {
                 setCurrentCategory(fetchCategory);
                 setData(response.data);
@@ -33,7 +33,7 @@ export const List = ({ category = {} }) => {
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
-    }, [serverUrl, category, currentCategory]);
+    }, [serverUrl, category]); // 'category' 변경 시에도 실행되도록
 
     const sortedData = () => {
         return [...data].sort((a, b) => {
@@ -62,7 +62,7 @@ export const List = ({ category = {} }) => {
     };
 
     const handleRowClick = (seq) => {
-        axios.put(`${serverUrl}/board/viewCount`, { board_Seq: seq })
+        axios.put(`${serverUrl}:3000/board/viewCount`, { board_Seq: seq })
             .then(() => {
                 navigate(`/Board/Detail/${seq}`);
             })
@@ -86,7 +86,7 @@ export const List = ({ category = {} }) => {
     const handleDelete = () => {
         if (window.confirm('정말 삭제하시겠습니까?')) {
             selectedItems.forEach(seq => {
-                axios.delete(`${serverUrl}/board/${seq}`)
+                axios.delete(`${serverUrl}:3000/board/${seq}`)
                     .then(() => {
                         setData(data.filter(item => item.board_seq !== seq));
                         setSelectedItems(prevItems => prevItems.filter(item => item !== seq));
