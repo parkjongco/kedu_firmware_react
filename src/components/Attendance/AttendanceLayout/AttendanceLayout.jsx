@@ -24,13 +24,13 @@ const AttendanceLayout = () => {
                         </div>
                         <div>
                             <Routes>
-                                <Route path="/" element={
+                                <Route path="/" element={ //근태 현황
                                     <>
                                     <AttendanceCardBox />
                                     <AttendanceManagement />
                                     </>
                                     } />
-                                <Route path="deptschedule" element={
+                                <Route path="deptschedule" element={ //구성원 근무
                                     <DeptSchedule/>
                                 }/>
                             </Routes>

@@ -13,11 +13,19 @@ const AttendanceCardBox = () => {
     const { fetchEvents, dates } = useAttendanceStore();
 
     // 출석 데이터 상태를 관리
-    // 기존 zustand의 상태 대신 컴포넌트 자체에서 상태 관리로 변경**
+    // 기존 zustand의 상태 대신 컴포넌트 자체에서 상태 관리로 변경
     const [attendanceData, setAttendanceData] = useState({ daysPresent: 0, daysLate: 0, daysAbsent: 0, earlyLeave: 0 });
     const [vacationList, setVacationList] = useState([]); // 휴가 기록을 저장할 상태
     const [showModal, setShowModal] = useState(false); // 모달 상태 관리
     const [events, setEvents] = useState([]); // 이벤트 상태 관리
+
+    // 입사월보다 이전의 데이터는 '없음'으로 처리하기위해 입사일을 가져옴
+    const joinDate = new Date(sessionStorage.getItem('joinDate'));
+
+    // 휴가 승인을 위한 isAdmin
+    const [isAdmin, setIsAdmin] = useState(() => sessionStorage.getItem('isAdmin') === 'true'); 
+
+    
 
     // 선택된 월이 변경될 때마다 출석 데이터를 서버에서 가져옴
     useEffect(() => {
@@ -38,20 +46,42 @@ const AttendanceCardBox = () => {
     }, [selectedMonth]); // 선택된 월이 변경될 때마다 useEffect 재실행
 
     // 휴가 기록을 가져오는 함수
-    const fetchVacationList = async () => {
-        const usersSeq = sessionStorage.getItem("usersSeq");
-        try {
-            const response = await axios.get(`/vacation/applications/${usersSeq}`);
-            setVacationList(response.data);
-        } catch (error) {
-            console.error('Error fetching vacation list:', error);
+const fetchVacationList = async () => {
+    const usersSeq = sessionStorage.getItem("usersSeq");
+    try {
+        let response;
+        if (isAdmin) {
+            // 관리자인 경우 모든 유저의 휴가 기록을 가져옴
+            response = await axios.get(`/vacation/applications`);
+        } else {
+            // 일반 유저의 경우 자신의 휴가 기록만 가져옴
+            response = await axios.get(`/vacation/applications/${usersSeq}`);
         }
-    };
+        setVacationList(response.data);
+    } catch (error) {
+        console.error('Error fetching vacation list:', error);
+    }
+};
+
 
     // 월 선택을 변경하는 함수
     const handleMonthChange = (e) => {
-        setSelectedMonth(e.target.value); // 선택된 월을 state에 반영
+        const selectedMonthDate = new Date(e.target.value);
+        const currentMonthDate = new Date(); // 현재 날짜
+    
+        // 선택한 월이 입사월 이전이거나 현재 월 이후인 경우
+        if ((joinDate && selectedMonthDate < new Date(joinDate.getFullYear(), joinDate.getMonth(), 1)) ||
+            (selectedMonthDate > new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth(), 1))) {
+            setAttendanceData({ daysPresent: 0, daysLate: 0, daysAbsent: 0, earlyLeave: 0 });
+            setSelectedMonth(e.target.value);  // input에 선택한 월 표시
+        } else {
+            // 정상적으로 데이터를 불러옴
+            setSelectedMonth(e.target.value);
+        }
     };
+    
+    
+    
 
     // 모달 열기
     const handleShowModal = () => {
@@ -80,6 +110,27 @@ const AttendanceCardBox = () => {
             }
         }
     };
+
+    // 휴가 승인 (어드민만)
+    const handleApproveVacation = async (vacationId) => {
+        if (window.confirm("정말 해당 휴가 일정을 승인하시겠습니까?")) {
+            try {
+                await axios.post(`/vacation/approve/${vacationId}`);
+                // 승인 후 휴가 리스트를 업데이트하거나 다시 가져옵니다.
+                const updatedList = vacationList.map(vacation => 
+                    vacation.vacation_application_seq === vacationId 
+                    ? { ...vacation, vacation_application_status: '승인됨' }
+                    : vacation
+                );
+                setVacationList(updatedList);
+                alert('휴가가 승인되었습니다.');
+            } catch (error) {
+                console.error("휴가 승인 중 오류 발생:", error);
+                alert('휴가 승인이 실패했습니다.');
+            }
+        }
+    };
+    
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -118,7 +169,8 @@ const AttendanceCardBox = () => {
 
     const totalDaysPresent = attendanceData.daysPresent + attendanceData.daysLate + attendanceData.earlyLeave;
     const daysAbsent = calculateAbsenceDays();
-
+    const currentMonth = new Date().toISOString().slice(0, 7); // 현재 월
+    
     return (
         <div className={styles.Container}>
             
@@ -139,25 +191,25 @@ const AttendanceCardBox = () => {
                 <Card className={styles.Card}>
                     <Card.Body>
                         <h6>출석 일수</h6>
-                        <h3>{totalDaysPresent}일</h3> {/* 출석 일수 표시 */}
+                        <h3>{(joinDate && new Date(selectedMonth) < new Date(joinDate.getFullYear(), joinDate.getMonth(), 1)) || (selectedMonth > currentMonth) ? '없음' : `${totalDaysPresent}일`}</h3>
                     </Card.Body>
                 </Card>
                 <Card className={styles.Card}>
                     <Card.Body>
                         <h6>지각</h6>
-                        <h3>{attendanceData.daysLate}회</h3> {/* 지각 일수 표시 */}
+                        <h3>{(joinDate && new Date(selectedMonth) < new Date(joinDate.getFullYear(), joinDate.getMonth(), 1)) || (selectedMonth > currentMonth) ? '없음' : `${attendanceData.daysLate}회`}</h3>
                     </Card.Body>
                 </Card>
                 <Card className={styles.Card}>
                     <Card.Body>
                         <h6>결근</h6>
-                        <h3>{daysAbsent}일</h3> {/* 결근 일수 표시 */}
+                        <h3>{(joinDate && new Date(selectedMonth) < new Date(joinDate.getFullYear(), joinDate.getMonth(), 1)) || (selectedMonth > currentMonth) ? '없음' : `${daysAbsent}일`}</h3>
                     </Card.Body>
                 </Card>
                 <Card className={styles.Card}>
                     <Card.Body>
                         <h6>조퇴</h6>
-                        <h3>{attendanceData.earlyLeave > 0 ? `${attendanceData.earlyLeave}회` : '없음'}</h3> {/* 조퇴 일수 표시 */}
+                        <h3>{(joinDate && new Date(selectedMonth) < new Date(joinDate.getFullYear(), joinDate.getMonth(), 1)) || (selectedMonth > currentMonth) ? '없음' : (attendanceData.earlyLeave > 0 ? `${attendanceData.earlyLeave}회` : '없음')}</h3>
                     </Card.Body>
                 </Card>
             </div>
@@ -168,30 +220,37 @@ const AttendanceCardBox = () => {
                     <Modal.Title>휴가 기록</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <div className={styles.TableContainer}>  {/* 추가된 부분 */}
-                        <div className={styles.TableHeader}>
-                            <div className={styles.TableCell}>번호</div>
-                            <div className={styles.TableCell}>휴가 시작일</div>
-                            <div className={styles.TableCell}>휴가 종료일</div>
-                            <div className={styles.TableCell}>휴가 사유</div>
-                            <div className={styles.TableCell}>승인 상태</div>
-                            <div className={styles.TableCell}>승인자</div>
-                            <div className={styles.TableCell}>삭제</div>
-                        </div>
-                        {vacationList.map((vacation, index) => (
-                            <div className={styles.TableRow} key={vacation.vacation_application_seq}>
-                                <div className={styles.TableCell}>{index + 1}</div>
-                                <div className={styles.TableCell}>{formatDate(vacation.vacation_start_date)}</div>
-                                <div className={styles.TableCell}>{formatDate(vacation.vacation_end_date)}</div>
-                                <div className={styles.TableCell}>{vacation.vacation_application_reason}</div>
-                                <div className={styles.TableCell}>{vacation.vacation_application_status}</div>
-                                <div className={styles.TableCell}>{vacation.vacation_permission_user_seq || '미확인'}</div>
-                                <div className={styles.TableCell}>
-                                    <Button variant="danger" size="sm" onClick={() => handleDeleteVacation(vacation.vacation_application_seq)}>삭제</Button>
-                                </div>
+                <div className={styles.TableContainer}>
+                    <div className={styles.TableHeader}>
+                        <div className={styles.TableCell}>번호</div>
+                        <div className={styles.TableCell}>휴가 시작일</div>
+                        <div className={styles.TableCell}>휴가 종료일</div>
+                        <div className={styles.TableCell}>휴가 사유</div>
+                        <div className={styles.TableCell}>승인 상태</div>
+                        <div className={styles.TableCell}>승인자</div>
+                        <div className={styles.TableCell}>삭제</div>
+                        {isAdmin && <div className={styles.TableCell}>승인</div>} {/* 관리자인 경우 승인 열 추가 */}
+                    </div>
+                    {vacationList.map((vacation, index) => (
+                        <div className={styles.TableRow} key={vacation.vacation_application_seq}>
+                            <div className={styles.TableCell}>{index + 1}</div>
+                            <div className={styles.TableCell}>{formatDate(vacation.vacation_start_date)}</div>
+                            <div className={styles.TableCell}>{formatDate(vacation.vacation_end_date)}</div>
+                            <div className={styles.TableCell}>{vacation.vacation_application_reason}</div>
+                            <div className={styles.TableCell}>{vacation.vacation_application_status}</div>
+                            <div className={styles.TableCell}>{vacation.vacation_permission_user_seq || '미확인'}</div>
+                            <div className={styles.TableCell}>
+                                <Button variant="danger" size="sm" onClick={() => handleDeleteVacation(vacation.vacation_application_seq)}>삭제</Button>
                             </div>
-                        ))}
-                    </div>  {/* 추가된 부분 */}
+                            {isAdmin && (
+                                <div className={styles.TableCell}> {/* 관리자는 승인 열 추가 됌 */}
+                                    <Button variant="success" size="sm" onClick={() => handleApproveVacation(vacation.vacation_application_seq)}>승인</Button>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
                 </Modal.Body>
 
                 <Modal.Footer>

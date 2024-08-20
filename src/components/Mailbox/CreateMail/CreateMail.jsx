@@ -104,7 +104,7 @@ const CreateMail = () => {
     setAttachments(files);
   };
 
-  // 제목 길이 제어 로직 추가
+  // 제목 길이 제어 로직
   // 제목 길이가 100자가 넘어가면 제한에 걸리고, 초과된 부분은 잘라내어 저장함
   const handleSubjectChange = (e) => {
     let inputSubject = e.target.value;

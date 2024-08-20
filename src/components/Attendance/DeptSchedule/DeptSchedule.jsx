@@ -77,8 +77,8 @@ const DeptSchedule = () => {
                         ))}
                     </div>
                     {Array.isArray(departmentMembers) && departmentMembers.map((member, index) => (
-                    <div className={styles.dateRow} key={`member-${member.USERSSEQ || index}`}> {/* USERSSEQ 대문자로 변경 */}
-                        <div className={styles.memberCell}>{member.USERSNAME || member.name}</div>  {/* USERSNAME 대문자로 변경 */}
+                    <div className={styles.dateRow} key={`member-${member.USERSSEQ || index}`}>
+                        <div className={styles.memberCell}>{member.USERSNAME || member.name}</div> 
                         {workHours.map((time) => {
                             const event = departmentEvents.find(
                                 (event) => event.memberId === member.USERSSEQ && isEventInTimeRange(event, time)
@@ -96,7 +96,7 @@ const DeptSchedule = () => {
                             if (event && event.startTime < time && event.endTime > time) {
                                 return null;
                             }
-                            return <div key={`cell-${member.USERSSEQ || index}-${time}`} className={styles.cell}></div>;  // USERSSEQ 대문자로 변경
+                            return <div key={`cell-${member.USERSSEQ || index}-${time}`} className={styles.cell}></div>;
                         })}
                     </div>
                 ))}

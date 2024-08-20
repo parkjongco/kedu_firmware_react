@@ -1,36 +1,35 @@
 .mailItem {
     display: flex;
     flex-direction: column;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+    padding: 15px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #d1d5da;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .mailItem:hover {
-    background-color: #e0e0e0; 
-    border-color: #b0b0b0;
+    background-color: #f1f3f5; /* Light hover effect */
 }
 
 .mailInfo {
     display: flex;
     justify-content: space-between;
+    font-size: 14px;
+    color: #606770;
 }
 
 .mailSender {
-    flex: 1;
-    display: flex;
-    justify-content: flex-start;
+    font-weight: bold;
 }
 
 .mailDate {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center; /* 아이콘을 텍스트와 수직으로 정렬 */
+    color: #9098a0;
+    font-size: 12px;
 }
 
 .attachmentIcon {
     width: 16px;
     height: 16px;
-    margin-left: 8px;
-    vertical-align: middle;
+    margin-left: 5px;
 }
