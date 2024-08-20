@@ -53,7 +53,7 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faBarsStaggered} />
                             {toggle && (
-                                <Link to={`${serverUrl}:3000/Board`} className={styles.link}>게시판</Link>
+                                <Link to={`${serverUrl}/Board`} className={styles.link}>게시판</Link>
                             )}
                         </div>
 
@@ -71,7 +71,7 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faMessage} />
                             {toggle && (
-                               <Link to={`${serverUrl}:3000/messenger`} className={styles.link}>메신저</Link>
+                               <Link to={`${serverUrl}:3000/messenger`} className={styles.link}>메신저 </Link>
                             )}
                         </div>
                         
@@ -85,14 +85,19 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faImagePortrait} />
                             {toggle && (
-                              <Link to={`${serverUrl}:3000/mypage`} className={styles.link}>마이페이지</Link>
+                               <Link to={`${serverUrl}:3000/mypage`} className={styles.link}>마이페이지</Link>
                             )}
                         </div>
 
                         <div className={styles.list_item}>
-                            <FontAwesomeIcon icon={faRightFromBracket} />
-                            {toggle && <a href="로그아웃" className={styles.link}>로그아웃</a>}
-                        </div>
+              <FontAwesomeIcon icon={faRightFromBracket} />
+              {toggle && (
+               
+                <Link to="/users/login" className={styles.link}>
+                  로그인 메뉴
+                </Link>
+              )}
+            </div>
                     </div>
             </div>
         </div>
