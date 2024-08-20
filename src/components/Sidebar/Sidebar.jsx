@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faUser, faHome, faCalendar, faImagePortrait, faRightFromBracket, faEnvelope, faBarsStaggered, faFileInvoice, faMessage, faHardDrive } from '@fortawesome/free-solid-svg-icons';
+import { faList, faUser, faHome, faCalendar, faImagePortrait, faRightFromBracket, faEnvelope, faBarsStaggered, faFileInvoice, faMessage, faHardDrive, faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Sidebar.module.css';
@@ -45,6 +45,12 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                             )}
                         </div>
                         <div className={styles.list_item}>
+                            <FontAwesomeIcon icon={faCalendarCheck} />
+                            {toggle && (
+                                <a href={`${serverUrl}:3000/attendance`} className={styles.link}>근태관리</a>
+                            )}
+                        </div>
+                        <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faEnvelope} />
                             {toggle && (
                                 <a href={`${serverUrl}:3000/mailbox`} className={styles.link}>메일함</a>
@@ -61,14 +67,17 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                             <FontAwesomeIcon icon={faCalendar} />
                             {toggle && <a href="캘린더" className={styles.link}>캘린더</a>}
                         </div>
+                        
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faFileInvoice} />
                             {toggle && <a href="전자결제" className={styles.link}>전자결제</a>}
                         </div>
+
+
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faMessage} />
                             {toggle && (
-                                <Link to={`${serverUrl}/Messenger`} className={styles.link}>메신저</Link>
+                               <Link to={`${serverUrl}:3000/messenger`} className={styles.link}>메신저 </Link>
                             )}
                         </div>
                         
@@ -78,18 +87,23 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                         </div>
                     </div>
                     <div>
+
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faImagePortrait} />
-
                             {toggle && (
-                               <Link to={`${serverUrl}/mypage`} className={styles.link}>마이페이지</Link>
+                               <Link to={`${serverUrl}:3000/mypage`} className={styles.link}>마이페이지</Link>
                             )}
                         </div>
 
                         <div className={styles.list_item}>
-                            <FontAwesomeIcon icon={faRightFromBracket} />
-                            {toggle && <a href="로그아웃" className={styles.link}>로그아웃</a>}
-                        </div>
+              <FontAwesomeIcon icon={faRightFromBracket} />
+              {toggle && (
+               
+                <Link to="/users/login" className={styles.link}>
+                  로그인 메뉴
+                </Link>
+              )}
+            </div>
                     </div>
             </div>
         </div>

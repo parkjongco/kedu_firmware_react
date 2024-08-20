@@ -376,6 +376,10 @@ const Mypage = () => {
               </div>
             )}
           </section>
+          <div className={styles.bookmark}>
+            bookmark
+          </div>
+
         </div>
         <div className={styles.content}>
           <section className={styles.details}>

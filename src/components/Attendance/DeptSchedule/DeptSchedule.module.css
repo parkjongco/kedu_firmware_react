@@ -1,6 +1,10 @@
 .container {
     padding-left: 10px;
+    min-height: 80vh; /* 화면 전체 높이를 차지하도록 설정 */
+    display: flex;
+    flex-direction: column;
 }
+
 
 .app {
     max-width: 1200px;
