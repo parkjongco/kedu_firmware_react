@@ -146,8 +146,18 @@ const AttendanceManagementAction = () => {
     };
     
 
+    // 휴가 사유를 30글자로 제한하는 함수
+    const handleReasonChange = (e) => {
+        const input = e.target.value;
+        const maxLength = 30;
 
-
+        if (input.length > maxLength) {
+            alert(`휴가 사유는 최대 ${maxLength}글자까지 입력 가능합니다.`);
+            setVacationData({ ...vacationData, reason: input.slice(0, maxLength) });
+        } else {
+            setVacationData({ ...vacationData, reason: input });
+        }
+    };
     
 
 
@@ -237,12 +247,13 @@ const AttendanceManagementAction = () => {
                             />
                         </Form.Group>
                         <Form.Group controlId="reason">
-                            <Form.Label>휴가 사유</Form.Label>
+                            <Form.Label>휴가 사유 (최대 15글자)</Form.Label>
                             <Form.Control
                                 as="textarea"
                                 rows={3}
                                 value={vacationData.reason}
-                                onChange={(e) => setVacationData({ ...vacationData, reason: e.target.value })}
+                                onChange={handleReasonChange}
+                                placeholder="휴가 사유를 입력하세요."
                             />
                         </Form.Group>
                     </Form>
