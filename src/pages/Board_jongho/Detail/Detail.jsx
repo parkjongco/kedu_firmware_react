@@ -8,7 +8,7 @@ import { faBookmark } from '@fortawesome/free-solid-svg-icons';
 
 axios.defaults.withCredentials = true;
 
-const Detail = () => {
+const Detail = ({category = {}} ) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { usersName } = useAuthStore();
@@ -22,40 +22,57 @@ const Detail = () => {
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editedCommentText, setEditedCommentText] = useState('');
     const [isBookmarked, setIsBookmarked] = useState(false);  // 북마크 상태를 관리하는 상태
+    const [data, setData] = useState([]);
 
     const seq = location.pathname.split('/').pop();
     const serverUrl = process.env.REACT_APP_SERVER_URL;
     const sessionUserName = sessionStorage.getItem("usersName") || "Unknown User";
 
     useEffect(() => {
-        axios.get(`${serverUrl}/board/detail/${seq}`)
+
+
+        // Board 데이터 로드
+        axios.get(`${serverUrl}:3000/board/detail/${seq}`)
             .then(resp => {
                 setBoard(resp.data);
                 setUpdatedTitle(resp.data.board_title);
                 setUpdatedContents(resp.data.board_contents);
             })
             .catch(error => {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching board data:', error);
             });
-
-        axios.get(`${serverUrl}/board_reply/${seq}`)
+    
+        // Comments 데이터 로드
+        axios.get(`${serverUrl}:3000/board_reply/${seq}`)
             .then(resp => {
                 setComments(resp.data || []);
             })
             .catch(error => {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching comments data:', error);
             });
-
-        // 페이지 로드 시 북마크 상태 확인
-        axios.get(`${serverUrl}/bookmark/${seq}`)
+    
+        // 북마크 상태 확인
+        axios.get(`${serverUrl}:3000/bookmark/${seq}`)
             .then(resp => {
-                setIsBookmarked(resp.data.isBookmarked);
+                setIsBookmarked(resp.data);
+                console.log("bookmarks : " + resp.data);
             })
             .catch(error => {
                 console.error('Error checking bookmark status:', error);
             });
 
-    }, [seq, serverUrl]);
+
+            // axios.get(`${serverUrl}/board/${category.category_seq}`)
+            // .then(resp => {
+            //     setData(resp.data);
+            // })
+            // .catch(error => {
+            //     console.error('Error fetching data:', error);
+            // });
+    
+    
+    }, [seq, serverUrl, setIsBookmarked , category.category_seq]);
+    
 
     const handleUpdate = (e) => {
 
@@ -64,7 +81,7 @@ const Detail = () => {
             board_contents: updatedContents,
         };
 
-        axios.put(`${serverUrl}/board/${seq}`, updatedData)
+        axios.put(`${serverUrl}:3000/board/${seq}`, updatedData)
             .then(resp => {
                 setBoard(resp.data);
                 setIsEditing(false);
@@ -75,14 +92,19 @@ const Detail = () => {
     };
 
     const handleDeleteBoard = () => {
-        axios.delete(`${serverUrl}/board/${seq}`)
-            .then(() => {
-                navigate("/Board");
-            })
-            .catch(error => {
-                console.error('Error deleting board:', error);
-            });
+        const isConfirmed = window.confirm('정말로 이 게시물을 삭제하시겠습니까?');
+    
+        if (isConfirmed) {
+            axios.delete(`${serverUrl}:3000/board/${seq}`)
+                .then(() => {
+                    navigate("/Board");
+                })
+                .catch(error => {
+                    console.error('Error deleting board:', error);
+                });
+        }
     };
+    
 
     const toggleEditMode = () => {
         setIsEditing(prev => !prev);
@@ -96,7 +118,7 @@ const Detail = () => {
             board_seq: seq,
         };
 
-        axios.post(`${serverUrl}/board_reply`, commentData)
+        axios.post(`${serverUrl}:3000/board_reply`, commentData)
             .then(resp => {
                 setComments(prevComments => [...prevComments, resp.data]);
                 setNewComment('');
@@ -112,7 +134,7 @@ const Detail = () => {
             reply_reg_date: new Date().toISOString(),
         };
 
-        axios.put(`${serverUrl}/board_reply/${seq}/${commentId}`, updatedCommentData)
+        axios.put(`${serverUrl}:3000/board_reply/${seq}/${commentId}`, updatedCommentData)
             .then(() => {
                 setComments(prevComments => prevComments.map(comment =>
                     comment.reply_seq === commentId ? { ...comment, ...updatedCommentData } : comment
@@ -126,7 +148,7 @@ const Detail = () => {
     };
 
     const handleDeleteComment = (commentId) => {
-        axios.delete(`${serverUrl}/board_reply/${seq}/${commentId}`)
+        axios.delete(`${serverUrl}:3000/board_reply/${seq}/${commentId}`)
             .then(() => {
                 setComments(prevComments => prevComments.filter(comment => comment.reply_seq !== commentId));
             })
@@ -140,19 +162,28 @@ const Detail = () => {
         setEditedCommentText(commentText);
     };
 
-
     const handleBookmarkClick = () => {
+        console.log(`Current bookmark state: ${isBookmarked}`);
+    
         if (isBookmarked) {
-            axios.delete(`${serverUrl}/bookmark`, { data: { board_seq: seq } })
-                .then(() => {
+            // 북마크 해제 요청
+            axios.delete(`${serverUrl}:3000/bookmark/${seq}`)
+                .then(response => {
+                    return axios.get(`${serverUrl}:3000/bookmark/${seq}`);
+                })
+                .then(resp => {
                     setIsBookmarked(false);
                 })
                 .catch(error => {
                     console.error('Error removing bookmark:', error);
                 });
         } else {
-            axios.post(`${serverUrl}/bookmark`, { board_seq: seq, user_seq: sessionUserName })
-                .then(() => {
+            // 북마크 추가 요청
+            axios.post(`${serverUrl}:3000/bookmark`, { board_seq: seq })
+                .then(response => {
+                    return axios.get(`${serverUrl}:3000/bookmark/${seq}`);
+                })
+                .then(resp => {
                     setIsBookmarked(true);
                 })
                 .catch(error => {
@@ -161,11 +192,7 @@ const Detail = () => {
         }
     };
     
-
-
-
-
-
+    
 
     if (!board) {
         return <div>Loading...</div>;
@@ -267,7 +294,7 @@ const Detail = () => {
                     ) : (
                         <div>댓글이 없습니다.</div>
                     )}
-                                        <form onSubmit={handleCommentSubmit} className={styles.comment_Form}>
+                    <form onSubmit={handleCommentSubmit} className={styles.comment_Form}>
                         <textarea
                             className={styles.textarea}
                             value={newComment}
