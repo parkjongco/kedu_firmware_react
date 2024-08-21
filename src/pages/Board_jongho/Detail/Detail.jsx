@@ -237,9 +237,9 @@ const Detail = ({category = {}} ) => {
                 </div>
             </div>
             <div className={styles.body}>
-                <div><strong>글쓴이:</strong> {board.board_userName || sessionUserName}</div>
-                <div><strong>작성일자:</strong> {new Date(board.board_write_date).toLocaleString()}</div>
-                <div><strong>조회수:</strong> {board.board_view_count}</div>
+                <div><strong>글쓴이:</strong> {board.board_userName || sessionUserName} / 작성일자 : {new Date(board.board_write_date).toLocaleString()} / 조회수 : {board.board_view_count}</div>
+                {/* <div><strong>작성일자:</strong> {new Date(board.board_write_date).toLocaleString()}</div> */}
+                {/* <div><strong>조회수:</strong> {board.board_view_count}</div> */}
                 <div className={styles.content}>
                     {isEditing ? (
                         <form onSubmit={handleUpdate} className={styles.editForm}>

@@ -10,25 +10,24 @@ axios.defaults.withCredentials = true;
 export const List = ({ category = {} }) => {
     const { usersName } = useAuthStore();
     const [data, setData] = useState([]);
-    const [currentCategory, setCurrentCategory] = useState({ category_seq: 0, category_name: '공지사항' }); // 기본 카테고리 설정
+    const [currentCategory, setCurrentCategory] = useState({ category_seq: 0, category_name: '공지사항' });
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [sortOrder, setSortOrder] = useState('latest');
     const [selectedItems, setSelectedItems] = useState([]);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const itemsPerPage = 10;
     const serverUrl = process.env.REACT_APP_SERVER_URL;
-    const session = sessionStorage.getItem("usersName");
 
     useEffect(() => {
-        // 카테고리가 변경되었을 때 데이터를 다시 가져옴
         const fetchCategory = category.category_seq || category.category_seq === 0 ? category : currentCategory;
 
-        axios.get(`${serverUrl}/board/${fetchCategory.category_seq}`)
+        axios.get(`${serverUrl}:3000/board/${fetchCategory.category_seq}`)
             .then(response => {
                 setCurrentCategory(fetchCategory);
                 setData(response.data);
-                setSelectedItems([]); // Clear selected items on category change
-                setCurrentPage(1); // Reset to first page
+                setSelectedItems([]);
+                setCurrentPage(1);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -62,7 +61,7 @@ export const List = ({ category = {} }) => {
     };
 
     const handleRowClick = (seq) => {
-        axios.put(`${serverUrl}/board/viewCount`, { board_Seq: seq })
+        axios.put(`${serverUrl}:3000/board/viewCount`, { board_Seq: seq })
             .then(() => {
                 navigate(`/Board/Detail/${seq}`);
             })
@@ -75,6 +74,7 @@ export const List = ({ category = {} }) => {
     const handleToggleSort = (order) => {
         setSortOrder(order);
         setCurrentPage(1);
+        setIsDropdownOpen(false); // 드롭다운 닫기
     };
 
     const handleCheckboxChange = (seq) => {
@@ -86,7 +86,7 @@ export const List = ({ category = {} }) => {
     const handleDelete = () => {
         if (window.confirm('정말 삭제하시겠습니까?')) {
             selectedItems.forEach(seq => {
-                axios.delete(`${serverUrl}/board/${seq}`)
+                axios.delete(`${serverUrl}:3000/board/${seq}`)
                     .then(() => {
                         setData(data.filter(item => item.board_seq !== seq));
                         setSelectedItems(prevItems => prevItems.filter(item => item !== seq));
@@ -96,6 +96,7 @@ export const List = ({ category = {} }) => {
                     });
             });
         }
+        setIsDropdownOpen(false); // 드롭다운 닫기
     };
 
     const handleCategoryClick = () => {
@@ -104,74 +105,80 @@ export const List = ({ category = {} }) => {
 
     return (
         <>
-        <>
-                <div className={styles.categoryHeader}>
-                    <div className={styles.headerLeft}>
-                        <h2 onClick={handleCategoryClick} style={{ cursor: 'pointer' }}>
-                            {currentCategory.category_name || '공지사항'}
-                        </h2>
-                    </div>
-                    <div className={styles.headerRight}>
-                        <Link id={styles.write} to="Edit">등록하기</Link>
-                        <div className={styles.sortButtons}>
-                            <button
-                                className={sortOrder === 'latest' ? styles.active : ''}
-                                onClick={() => handleToggleSort('latest')}
-                            >
-                                최신순
-                            </button>
-                            <button
-                                className={sortOrder === 'viewCount' ? styles.active : ''}
-                                onClick={() => handleToggleSort('viewCount')}
-                            >
-                                조회수순
-                            </button>
-                            <button
-                                className={styles.deleteButton}
-                                onClick={handleDelete}
-                                disabled={selectedItems.length === 0}
-                            >
-                                선택된 항목 삭제
-                            </button>
-                        </div>
+            <div className={styles.categoryHeader}>
+                <div className={styles.headerLeft}>
+                    <h2 onClick={handleCategoryClick} style={{ cursor: 'pointer' }}>
+                        {currentCategory.category_name || '공지사항'}
+                    </h2>
+                </div>
+                <div className={styles.headerRight}>
+                    <div className={styles.dropdownContainer}>
+                        <button
+                            className={styles.dropdownToggle}
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        >
+                            메뉴 ▼
+                        </button>
+                        {isDropdownOpen && (
+                            <ul className={styles.dropdownMenu}>
+                                <li>
+                                    <Link id={styles.write} to="Edit" onClick={() => setIsDropdownOpen(false)}>등록하기</Link>
+                                </li>
+                                <li onClick={() => handleToggleSort('latest')}>
+                                    최신순
+                                </li>
+                                <li onClick={() => handleToggleSort('viewCount')}>
+                                    조회수순
+                                </li>
+                                <li>
+                                    <button
+                                        className={styles.deleteButton}
+                                        onClick={handleDelete}
+                                        disabled={selectedItems.length === 0}
+                                    >
+                                        선택된 항목 삭제
+                                    </button>
+                                </li>
+                            </ul>
+                        )}
                     </div>
                 </div>
-                <div className={styles.content}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>선택</th>
-                                <th>제목</th>
-                                <th>글쓴이</th>
-                                <th>작성일자</th>
-                                <th>조회수</th>
+            </div>
+            <div className={styles.content}>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>선택</th>
+                            <th>제목</th>
+                            <th>글쓴이</th>
+                            <th>작성일자</th>
+                            <th>조회수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {currentItems.map(e => (
+                            <tr
+                                key={e.board_seq}
+                                className={styles.row}
+                                onClick={() => handleRowClick(e.board_seq)}
+                            >
+                                <td className={styles.checkboxContainer}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedItems.includes(e.board_seq)}
+                                        onChange={() => handleCheckboxChange(e.board_seq)}
+                                        onClick={(event) => event.stopPropagation()}
+                                    />
+                                </td>
+                                <td>{e.board_title}</td>
+                                <td>{e.users_name || '작성자 정보 없음'}</td>
+                                <td>{new Date(e.board_write_date).toLocaleString()}</td>
+                                <td>{e.board_view_count}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {currentItems.map(e => (
-                                <tr
-                                    key={e.board_seq}
-                                    className={styles.row}
-                                    onClick={() => handleRowClick(e.board_seq)}
-                                >
-                                    <td className={styles.checkboxContainer}>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedItems.includes(e.board_seq)}
-                                            onChange={() => handleCheckboxChange(e.board_seq)}
-                                            onClick={(event) => event.stopPropagation()}
-                                        />
-                                    </td>
-                                    <td>{e.board_title}</td>
-                                    <td>{e.users_name || '작성자 정보 없음'}</td>
-                                    <td>{new Date(e.board_write_date).toLocaleString()}</td>
-                                    <td>{e.board_view_count}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-                </>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
             <div className={styles.pagination}>
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
@@ -200,4 +207,3 @@ export const List = ({ category = {} }) => {
 };
 
 export default List;
-
