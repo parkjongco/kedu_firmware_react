@@ -5,6 +5,7 @@ import { useAuthStore } from '../../../store/store';
 import styles from './List.module.css';
 import { Link } from 'react-router-dom';
 
+
 axios.defaults.withCredentials = true;
 
 export const List = ({ category = {} }) => {

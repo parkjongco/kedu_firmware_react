@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styles from './index.module.css';
-import SideBar from '../../../components/Jongho/SideBar';
+// import SideBar from '../../../components/Jongho/SideBar';
+import SideBar from '../../../components/Sidebar/Sidebar';
+
 import BoardPage from '../../../config/BoardCategory';
 import { Link, Route, Routes, useNavigate } from 'react-router-dom';
 import List from '../List/List';
