@@ -20,8 +20,8 @@ export const List = ({ category = {} }) => {
     const session = sessionStorage.getItem("usersName");
 
     useEffect(() => {
-        // Determine the category to fetch based on whether a category prop is provided
-        const fetchCategory = category.category_seq ? category : currentCategory;
+        // 카테고리가 변경되었을 때 데이터를 다시 가져옴
+        const fetchCategory = category.category_seq || category.category_seq === 0 ? category : currentCategory;
 
         axios.get(`${serverUrl}/board/${fetchCategory.category_seq}`)
             .then(response => {
@@ -98,97 +98,106 @@ export const List = ({ category = {} }) => {
         }
     };
 
+    const handleCategoryClick = () => {
+        setCurrentCategory({ category_seq: 0, category_name: '공지사항' });
+    };
+
     return (
-        <div className={styles.container}>
-            <div className={styles.categoryHeader}>
-                <div className={styles.headerLeft}>
-                    <h2>{currentCategory.category_name || '공지사항'}</h2>
-                </div>
-                <div className={styles.headerRight}>
-                    <Link id={styles.write} to="Edit">등록하기</Link>
-                    <div className={styles.sortButtons}>
-                        <button
-                            className={sortOrder === 'latest' ? styles.active : ''}
-                            onClick={() => handleToggleSort('latest')}
-                        >
-                            최신순
-                        </button>
-                        <button
-                            className={sortOrder === 'viewCount' ? styles.active : ''}
-                            onClick={() => handleToggleSort('viewCount')}
-                        >
-                            조회수순
-                        </button>
-                        <button
-                            className={styles.deleteButton}
-                            onClick={handleDelete}
-                            disabled={selectedItems.length === 0}
-                        >
-                            선택된 항목 삭제
-                        </button>
+        <>
+        <>
+                <div className={styles.categoryHeader}>
+                    <div className={styles.headerLeft}>
+                        <h2 onClick={handleCategoryClick} style={{ cursor: 'pointer' }}>
+                            {currentCategory.category_name || '공지사항'}
+                        </h2>
+                    </div>
+                    <div className={styles.headerRight}>
+                        <Link id={styles.write} to="Edit">등록하기</Link>
+                        <div className={styles.sortButtons}>
+                            <button
+                                className={sortOrder === 'latest' ? styles.active : ''}
+                                onClick={() => handleToggleSort('latest')}
+                            >
+                                최신순
+                            </button>
+                            <button
+                                className={sortOrder === 'viewCount' ? styles.active : ''}
+                                onClick={() => handleToggleSort('viewCount')}
+                            >
+                                조회수순
+                            </button>
+                            <button
+                                className={styles.deleteButton}
+                                onClick={handleDelete}
+                                disabled={selectedItems.length === 0}
+                            >
+                                선택된 항목 삭제
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className={styles.content}>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>선택</th>
-                            <th>제목</th>
-                            <th>글쓴이</th>
-                            <th>작성일자</th>
-                            <th>조회수</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentItems.map(e => (
-                            <tr
-                                key={e.board_seq}
-                                className={styles.row}
-                                onClick={() => handleRowClick(e.board_seq)}
-                            >
-                                <td className={styles.checkboxContainer}>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedItems.includes(e.board_seq)}
-                                        onChange={() => handleCheckboxChange(e.board_seq)}
-                                        onClick={(event) => event.stopPropagation()}
-                                    />
-                                </td>
-                                <td>{e.board_title}</td>
-                                <td>{e.users_name || '작성자 정보 없음'}</td>
-                                <td>{new Date(e.board_write_date).toLocaleString()}</td>
-                                <td>{e.board_view_count}</td>
+                <div className={styles.content}>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>선택</th>
+                                <th>제목</th>
+                                <th>글쓴이</th>
+                                <th>작성일자</th>
+                                <th>조회수</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <div className={styles.pagination}>
-                    <button
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        이전
-                    </button>
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index + 1}
-                            onClick={() => handlePageChange(index + 1)}
-                            className={currentPage === index + 1 ? styles.active : ''}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-                    <button
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                    >
-                        다음
-                    </button>
+                        </thead>
+                        <tbody>
+                            {currentItems.map(e => (
+                                <tr
+                                    key={e.board_seq}
+                                    className={styles.row}
+                                    onClick={() => handleRowClick(e.board_seq)}
+                                >
+                                    <td className={styles.checkboxContainer}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedItems.includes(e.board_seq)}
+                                            onChange={() => handleCheckboxChange(e.board_seq)}
+                                            onClick={(event) => event.stopPropagation()}
+                                        />
+                                    </td>
+                                    <td>{e.board_title}</td>
+                                    <td>{e.users_name || '작성자 정보 없음'}</td>
+                                    <td>{new Date(e.board_write_date).toLocaleString()}</td>
+                                    <td>{e.board_view_count}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
+                </>
+            <div className={styles.pagination}>
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                >
+                    이전
+                </button>
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        className={currentPage === index + 1 ? styles.active : ''}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                >
+                    다음
+                </button>
             </div>
-        </div>
+        </>
     );
 };
 
 export default List;
+
