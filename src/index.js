@@ -13,7 +13,7 @@ import Admin from './components/LoginIk/Admin/Admin';
 import DeleteUser from './components/LoginIk/Admin/DeleteUser'; 
 import axios from 'axios';
 import Mypage from './components/Mypage/Mypage';
-import Approval from './components/Apporoval/ApprovalMain';
+// import Approval from './components/Apporoval/ApprovalMain';
 
 
 
@@ -32,7 +32,7 @@ root.render(
         <Route path="/admin/deleteuser" element={<DeleteUser />} /> 
         <Route path="/users/login" element={<Login />} /> 
         <Route path="/mypage" element={<Mypage />} />
-        <Route path="/approval" element={<Approval/>} />
+        {/* <Route path="/approval" element={<Approval/>} /> */}
       </Routes>
     </BrowserRouter>
 )
