@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faUser, faHome, faCalendar, faImagePortrait, faRightFromBracket, faEnvelope, faBarsStaggered, faFileInvoice, faMessage, faHardDrive } from '@fortawesome/free-solid-svg-icons';
+import { faList, faUser, faHome, faCalendar, faImagePortrait, faRightFromBracket, faEnvelope, faBarsStaggered, faFileInvoice, faMessage, faHardDrive, faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Sidebar.module.css';
@@ -42,6 +42,12 @@ export default function SideBar({ profile_src = "", username, useremail }) {
                             <FontAwesomeIcon icon={faHome} />
                             {toggle && (
                                 <a href={`${serverUrl}:3000/`} className={styles.link}>홈</a>
+                            )}
+                        </div>
+                        <div className={styles.list_item}>
+                            <FontAwesomeIcon icon={faCalendarCheck} />
+                            {toggle && (
+                                <a href={`${serverUrl}:3000/attendance`} className={styles.link}>근태관리</a>
                             )}
                         </div>
                         <div className={styles.list_item}>
