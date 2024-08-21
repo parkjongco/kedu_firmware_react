@@ -8,9 +8,9 @@ import { Link } from 'react-router-dom';
 axios.defaults.withCredentials = true;
 
 export const List = ({ category = {} }) => {
-    const { usersName } = useAuthStore();
+    const { usersName, isAdmin } = useAuthStore();
     const [data, setData] = useState([]);
-    const [currentCategory, setCurrentCategory] = useState({category_seq: 0, category_name: '공지사항'}); // 기본 카테고리 설정
+    const [currentCategory, setCurrentCategory] = useState({ category_seq: 0, category_name: '공지사항' }); // 기본 카테고리 설정
 
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
@@ -105,7 +105,9 @@ export const List = ({ category = {} }) => {
                     <h2>{currentCategory.category_name || '공지사항'}</h2>
                 </div>
                 <div className={styles.headerRight}>
-                    <Link id={styles.write} to="Edit">등록하기</Link>
+                    {isAdmin && (
+                        <Link id={styles.write} to="Edit">등록하기</Link>
+                    )}
                     <div className={styles.sortButtons}>
                         <button
                             className={sortOrder === 'latest' ? styles.active : ''}
@@ -119,13 +121,15 @@ export const List = ({ category = {} }) => {
                         >
                             조회수순
                         </button>
-                        <button
-                            className={styles.deleteButton}
-                            onClick={handleDelete}
-                            disabled={selectedItems.length === 0}
-                        >
-                            선택된 항목 삭제
-                        </button>
+                        {isAdmin && (
+                            <button
+                                className={styles.deleteButton}
+                                onClick={handleDelete}
+                                disabled={selectedItems.length === 0}
+                            >
+                                선택된 항목 삭제
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -133,7 +137,7 @@ export const List = ({ category = {} }) => {
                 <table>
                     <thead>
                         <tr>
-                            <th>선택</th>
+                            {isAdmin && <th>선택</th>}
                             <th>제목</th>
                             <th>글쓴이</th>
                             <th>작성일자</th>
@@ -147,14 +151,16 @@ export const List = ({ category = {} }) => {
                                 className={styles.row}
                                 onClick={() => handleRowClick(e.board_seq)}
                             >
-                                <td className={styles.checkboxContainer}>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedItems.includes(e.board_seq)}
-                                        onChange={() => handleCheckboxChange(e.board_seq)}
-                                        onClick={(event) => event.stopPropagation()}
-                                    />
-                                </td>
+                                {isAdmin && (
+                                    <td className={styles.checkboxContainer}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedItems.includes(e.board_seq)}
+                                            onChange={() => handleCheckboxChange(e.board_seq)}
+                                            onClick={(event) => event.stopPropagation()}
+                                        />
+                                    </td>
+                                )}
                                 <td>{e.board_title}</td>
                                 <td>{e.users_name || '작성자 정보 없음'}</td>
                                 <td>{new Date(e.board_write_date).toLocaleString()}</td>
@@ -180,7 +186,7 @@ export const List = ({ category = {} }) => {
                         </button>
                     ))}
                     <button
-                        onClick={() => handlePageChange(currentPage + 1)}
+                        onClick={() => handlePageChange(currentPage + 1)}   
                         disabled={currentPage === totalPages}
                     >
                         다음
