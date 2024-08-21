@@ -1,6 +1,7 @@
+
 import React, { useState, useRef, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faList, faUser, faHome, faCalendar, faImagePortrait, faRightFromBracket, faEnvelope, faBarsStaggered, faFileInvoice, faMessage, faHardDrive } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faList, faUser, faHome, faCalendar, faImagePortrait, faRightFromBracket, faEnvelope, faBarsStaggered, faFileInvoice, faMessage, faHardDrive, faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import profileImagePlaceholder from '../../assets/image.png'; // 기본 프로필 이미지 경로
@@ -116,6 +117,12 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
                             )}
                         </div>
                         <div className={styles.list_item}>
+                            <FontAwesomeIcon icon={faCalendarCheck} />
+                            {toggle && (
+                                <a href={`${serverUrl}:3000/attendance`} className={styles.link}>근태관리</a>
+                            )}
+                        </div>
+                        <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faEnvelope} />
                             {toggle && (
                                 <a href={`${serverUrl}:3000/mailbox`} className={styles.link}>메일함</a>
@@ -124,13 +131,15 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faBarsStaggered} />
                             {toggle && (
-                                <Link to={`${serverUrl}/Board`} className={styles.link}>게시판</Link>
+                                <Link to={`${serverUrl}:3000/Board`} className={styles.link}>게시판</Link>
                             )}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faCalendar} />
                             {toggle && (
-                                <a href={`${serverUrl}:3000/Calendar`} className={styles.link}>캘린더</a>
+
+                                <Link to={`${serverUrl}:3000/Calendar`} className={styles.link}>캘린더</Link>
+
                             )}
                         </div>
                         <div className={styles.list_item}>

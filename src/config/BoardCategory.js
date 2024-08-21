@@ -27,6 +27,7 @@ const BoardPostComponent = ({ category }) => {
 
     useEffect(() => {
         if (category) {
+            console.log(category);
             axios.get(`${serverUrl}/board/${category.category_seq}`)
                 .then(resp => {
                     setPosts(resp.data);
@@ -39,8 +40,8 @@ const BoardPostComponent = ({ category }) => {
 
     return (
         <div className={styles.posts}>
-            {posts.map(post => (
-                <div key={post.id} className={styles.post}>
+            {posts && posts.map(post => (
+                <div key={post.board_seq} className={styles.post}>
                     <h3>{post.title}</h3>
                     <p>{post.content}</p>
                 </div>

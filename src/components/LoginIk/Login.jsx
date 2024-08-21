@@ -41,6 +41,25 @@ const Login = ({ setIsMypage }) => {
     }
   };
 
+  // 휴가 상태 확인 및 필요시 지급
+  const checkVacationStatus = (users_seq) => {
+    const joinDate = sessionStorage.getItem('joinDate');  // 입사일 가져오기
+
+    axios.post(`${serverUrl}/vacation/check`, { users_seq, joinDate })  // 입사일 함께 전송
+      .then((response) => {
+        if (response.data.message === "휴가가 지급되었습니다") {
+          console.log("최초 로그인 유저에게 휴가 지급 됌");
+        } else if (response.data.message === "잔여 휴가 체크 완료") {
+          console.log("잔여 휴가 상태 확인 완료:", response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("휴가 체크 중 오류 발생:", error);
+        alert("휴가 상태 확인 중 오류가 발생했습니다.");
+      });
+  };
+
+
   const handleLogin = () => {
     console.log('로그인 시도 중:', auth);
     axios.post(`${serverUrl}/auth`, auth)
@@ -58,6 +77,9 @@ const Login = ({ setIsMypage }) => {
 
         // 프로필 정보 가져오기
         fetchUserProfile(users_code);
+
+        // 로그인 성공 후 휴가 상태 확인
+        checkVacationStatus(users_seq);
 
         alert('로그인 성공');
 
