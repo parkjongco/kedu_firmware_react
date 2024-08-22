@@ -133,9 +133,12 @@ const Category = ({ openScheduleDialog = () => {}, onSelectCalendar = () => {}, 
   };
 
   const handleAddDragEvent = () => {
+    const currentDate = new Date();
     const newDragEvent = {
       title: dragEventTitle,
       color: dragEventColor,
+      start: currentDate.toISOString(), // 현재 날짜로 시작
+      end: currentDate.toISOString(),   // 종료 날짜를 시작 날짜와 동일하게 설정하여 1일 이벤트로 설정
       id: String(Date.now()),
     };
     setDragEvents([...dragEvents, newDragEvent]);
@@ -666,4 +669,3 @@ const Category = ({ openScheduleDialog = () => {}, onSelectCalendar = () => {}, 
 };
 
 export default Category;
-
