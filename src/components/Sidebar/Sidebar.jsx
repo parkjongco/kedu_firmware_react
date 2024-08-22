@@ -65,7 +65,9 @@ export default function SideBar({ profile_src = "", username, useremail }) {
 
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faCalendar} />
-                            {toggle && <a href="캘린더" className={styles.link}>캘린더</a>}
+                            {toggle && (
+                                <Link to={`${serverUrl}:3000/Calendar`} className={styles.link}>캘린더</Link>
+                            )}
                         </div>
                         
                         <div className={styles.list_item}>
