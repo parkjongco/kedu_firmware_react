@@ -16,6 +16,7 @@ export const List = ({ category = {} }) => {
     const [sortOrder, setSortOrder] = useState('latest');
     const [selectedItems, setSelectedItems] = useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태 추가
     const itemsPerPage = 10;
     const serverUrl = process.env.REACT_APP_SERVER_URL;
 
@@ -34,8 +35,11 @@ export const List = ({ category = {} }) => {
             });
     }, [serverUrl, category, currentCategory]);
 
-    const sortedData = () => {
-        return [...data].sort((a, b) => {
+    const filteredData = () => {
+        const filtered = data.filter(item =>
+            item.board_title.toLowerCase().includes(searchQuery.toLowerCase()) // 검색어 필터링
+        );
+        return filtered.sort((a, b) => {
             const dateA = new Date(a.board_write_date);
             const dateB = new Date(b.board_write_date);
 
@@ -52,7 +56,7 @@ export const List = ({ category = {} }) => {
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = sortedData().slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = filteredData().slice(indexOfFirstItem, indexOfLastItem);
 
     const totalPages = Math.ceil(data.length / itemsPerPage);
 
@@ -112,6 +116,15 @@ export const List = ({ category = {} }) => {
                     </h2>
                 </div>
                 <div className={styles.headerRight}>
+                    <div className={styles.searchContainer}>
+                        <input
+                            type="text"
+                            placeholder="게시글 제목 검색"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)} // 검색어 변경 시 상태 업데이트
+                        />
+                        {/* <button onClick={() => setSearchQuery('')}>초기화</button>  */}
+                    </div>
                     <div className={styles.dropdownContainer}>
                         <button
                             className={styles.dropdownToggle}

@@ -242,3 +242,27 @@ button.active {
     color: #ccc;
     cursor: not-allowed;
 }
+
+.searchContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.searchContainer input {
+    padding: var(--padding);
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+    font-size: var(--font-size);
+}
+
+.searchContainer button {
+    padding: var(--padding);
+    border: 1px solid var(--secondary-color);
+    border-radius: var(--border-radius);
+    background-color: var(--background-color);
+    color: var(--secondary-color);
+    font-size: var(--font-size);
+    cursor: pointer;
+}
+
