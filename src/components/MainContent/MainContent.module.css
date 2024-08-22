@@ -27,54 +27,20 @@
   gap: 20px;
 }
 
-.calendar, .notice, .attendance, .vacation {
+.notice, .attendance, .vacation {
   background-color: #fafafa;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.calendar {
-  height: 100%;
-  min-height: 300px;
-  overflow-y: auto;
-}
-
-.calendar h2, .notice h2, .attendance h2, .vacation h2 {
+.notice h2, .attendance h2, .vacation h2 {
   font-size: 1.5rem;
   margin-bottom: 10px;
 }
 
-/* 캘린더 항목 스타일 */
-.calendar_item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #ddd;
-}
-
-.calendar_item:last-child {
-  border-bottom: none;
-}
-
-.date {
-  flex-basis: 30%;
-  font-weight: bold;
-}
-
-.event {
-  flex-basis: 40%;
-  text-align: left;
-}
-
-.time {
-  flex-basis: 30%;
-  text-align: right;
-  color: #888;
-}
-
 /* 공지사항 항목 스타일 */
-.notice{
+.notice {
   height: 100%;
   min-height: 300px;
   overflow-y: auto;
