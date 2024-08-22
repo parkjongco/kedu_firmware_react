@@ -4,11 +4,11 @@ import axios from 'axios';
 import styles from './Detail.module.css';
 import { useAuthStore } from '../../../store/store';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookmark } from '@fortawesome/free-solid-svg-icons';
+import { faBookmark, faCheck, faPenToSquare, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
 
 axios.defaults.withCredentials = true;
 
-const Detail = ({category = {}} ) => {
+const Detail = ({ category = {} }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { usersName } = useAuthStore();
@@ -21,17 +21,14 @@ const Detail = ({category = {}} ) => {
     const [newComment, setNewComment] = useState('');
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editedCommentText, setEditedCommentText] = useState('');
-    const [isBookmarked, setIsBookmarked] = useState(false);  // 북마크 상태를 관리하는 상태
-    const [data, setData] = useState([]);
+    const [isBookmarked, setIsBookmarked] = useState(false);
+    const [dropdownId, setDropdownId] = useState(null);
 
     const seq = location.pathname.split('/').pop();
     const serverUrl = process.env.REACT_APP_SERVER_URL;
     const sessionUserName = sessionStorage.getItem("usersName") || "Unknown User";
 
     useEffect(() => {
-
-
-        // Board 데이터 로드
         axios.get(`${serverUrl}:3000/board/detail/${seq}`)
             .then(resp => {
                 setBoard(resp.data);
@@ -41,8 +38,7 @@ const Detail = ({category = {}} ) => {
             .catch(error => {
                 console.error('Error fetching board data:', error);
             });
-    
-        // Comments 데이터 로드
+
         axios.get(`${serverUrl}:3000/board_reply/${seq}`)
             .then(resp => {
                 setComments(resp.data || []);
@@ -50,32 +46,18 @@ const Detail = ({category = {}} ) => {
             .catch(error => {
                 console.error('Error fetching comments data:', error);
             });
-    
-        // 북마크 상태 확인
+
         axios.get(`${serverUrl}:3000/bookmark/${seq}`)
             .then(resp => {
                 setIsBookmarked(resp.data);
-                console.log("bookmarks : " + resp.data);
             })
             .catch(error => {
                 console.error('Error checking bookmark status:', error);
             });
 
-
-            // axios.get(`${serverUrl}/board/${category.category_seq}`)
-            // .then(resp => {
-            //     setData(resp.data);
-            // })
-            // .catch(error => {
-            //     console.error('Error fetching data:', error);
-            // });
-    
-    
-    }, [seq, serverUrl, setIsBookmarked , category.category_seq]);
-    
+    }, [seq, serverUrl]);
 
     const handleUpdate = (e) => {
-
         const updatedData = {
             board_title: updatedTitle,
             board_contents: updatedContents,
@@ -93,7 +75,7 @@ const Detail = ({category = {}} ) => {
 
     const handleDeleteBoard = () => {
         const isConfirmed = window.confirm('정말로 이 게시물을 삭제하시겠습니까?');
-    
+
         if (isConfirmed) {
             axios.delete(`${serverUrl}:3000/board/${seq}`)
                 .then(() => {
@@ -104,14 +86,12 @@ const Detail = ({category = {}} ) => {
                 });
         }
     };
-    
 
     const toggleEditMode = () => {
         setIsEditing(prev => !prev);
     };
 
     const handleCommentSubmit = (e) => {
-
         const commentData = {
             reply_userName: usersName || sessionUserName,
             reply_contents: newComment,
@@ -148,13 +128,17 @@ const Detail = ({category = {}} ) => {
     };
 
     const handleDeleteComment = (commentId) => {
-        axios.delete(`${serverUrl}:3000/board_reply/${seq}/${commentId}`)
-            .then(() => {
-                setComments(prevComments => prevComments.filter(comment => comment.reply_seq !== commentId));
-            })
-            .catch(error => {
-                console.error('Error deleting comment:', error);
-            });
+        const isConfirmed = window.confirm('정말로 이 댓글을 삭제하시겠습니까?');
+
+        if (isConfirmed) {
+            axios.delete(`${serverUrl}:3000/board_reply/${seq}/${commentId}`)
+                .then(() => {
+                    setComments(prevComments => prevComments.filter(comment => comment.reply_seq !== commentId));
+                })
+                .catch(error => {
+                    console.error('Error deleting comment:', error);
+                });
+        }
     };
 
     const handleCommentEdit = (commentId, commentText) => {
@@ -163,27 +147,17 @@ const Detail = ({category = {}} ) => {
     };
 
     const handleBookmarkClick = () => {
-        console.log(`Current bookmark state: ${isBookmarked}`);
-    
         if (isBookmarked) {
-            // 북마크 해제 요청
             axios.delete(`${serverUrl}:3000/bookmark/${seq}`)
-                .then(response => {
-                    return axios.get(`${serverUrl}:3000/bookmark/${seq}`);
-                })
-                .then(resp => {
+                .then(() => {
                     setIsBookmarked(false);
                 })
                 .catch(error => {
                     console.error('Error removing bookmark:', error);
                 });
         } else {
-            // 북마크 추가 요청
             axios.post(`${serverUrl}:3000/bookmark`, { board_seq: seq })
-                .then(response => {
-                    return axios.get(`${serverUrl}:3000/bookmark/${seq}`);
-                })
-                .then(resp => {
+                .then(() => {
                     setIsBookmarked(true);
                 })
                 .catch(error => {
@@ -191,8 +165,10 @@ const Detail = ({category = {}} ) => {
                 });
         }
     };
-    
-    
+
+    const handleDropdownToggle = (commentId) => {
+        setDropdownId(prevId => prevId === commentId ? null : commentId);
+    };
 
     if (!board) {
         return <div>Loading...</div>;
@@ -215,94 +191,124 @@ const Detail = ({category = {}} ) => {
                             icon={faBookmark}
                             className={styles.bookmarkIcon}
                             style={{ color: isBookmarked ? 'blue' : '#f0a500' }}
-                            onClick={handleBookmarkClick} // 북마크 클릭 핸들러 연결
+                            onClick={handleBookmarkClick}
                         />
                     </div>
                 )}
-                <div>
+                <div className={styles.headerButtons}>
                     {!isEditing ? (
                         <>
                             <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
                             <button onClick={handleDeleteBoard} className={styles.button}>삭제하기</button>
                         </>
                     ) : (
-                        <div className={styles.button_container}>
-                            <form onSubmit={handleUpdate} className={styles.editForm}>
-                                <button type="submit" className={styles.button}>수정완료</button>
-                                <button type="button" onClick={toggleEditMode} className={styles.button}>취소하기</button>
-                            </form>
-                        </div>
+                        <form onSubmit={handleUpdate} className={styles.editForm}>
+                            <button type="submit" className={styles.button}>수정완료</button>
+                            <button type="button" onClick={toggleEditMode} className={styles.button}>수정취소</button>
+                        </form>
                     )}
                     <button onClick={() => navigate("/Board")} className={styles.button}>뒤로가기</button>
                 </div>
             </div>
             <div className={styles.body}>
-                <div><strong>글쓴이:</strong> {board.board_userName || sessionUserName}</div>
-                <div><strong>작성일자:</strong> {new Date(board.board_write_date).toLocaleString()}</div>
-                <div><strong>조회수:</strong> {board.board_view_count}</div>
+                <div><strong>글쓴이:</strong> {board.users_name} / 작성일자 : {new Date(board.board_write_date).toLocaleString()} / 조회수 : {board.board_view_count}</div>
                 <div className={styles.content}>
                     {isEditing ? (
-                        <form onSubmit={handleUpdate} className={styles.editForm}>
-                            <div>
-                                <label>
-                                    내용:
-                                    <textarea
-                                        value={updatedContents}
-                                        onChange={(e) => setUpdatedContents(e.target.value)}
-                                        className={styles.textarea}
-                                    />
-                                </label>
-                            </div>
-                        </form>
-                    ) : (
-                        <div
-                            dangerouslySetInnerHTML={{ __html: board.board_contents }}
+                        <textarea
+                            value={updatedContents}
+                            onChange={(e) => setUpdatedContents(e.target.value)}
+                            className={styles.textarea_edit}
                         />
+                    ) : (
+                        <div dangerouslySetInnerHTML={{ __html: board.board_contents }} />
                     )}
                 </div>
 
-                <div className={styles.comments_Section}>
-                    <h3>댓글</h3>
-                    {comments.length > 0 ? (
-                        comments.map((comment) => (
-                            <div key={comment.reply_seq} className={styles.comment}>
-                                <div><strong>{comment.reply_userName || sessionUserName}</strong></div>
-                                <div>
-                                    {editingCommentId === comment.reply_seq ? (
-                                        <div>
+                <div className='abc'>
+                    <div className={styles.commentsSection}>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <h3>댓글</h3>
+                        {comments.length > 0 ? (
+                            comments.map((comment) => (
+                                <div key={comment.reply_seq} className={styles.comment}>
+                                    <div className={styles.commentHeader}>
+                                        <strong>{comment.reply_userName || sessionUserName}</strong>
+                                        <p style={{margin : "0px"}}>{new Date(comment.reply_reg_date).toLocaleString()}</p>
+                                        {comment.reply_userName === (usersName || sessionUserName) && (
+                                            <div className={styles.dropdownMenu}>
+                                                {editingCommentId === comment.reply_seq ? (
+                                                    <div>
+                                                        <button onClick={() => handleUpdateReply(comment.reply_seq)} className={styles.dropdownItem}><FontAwesomeIcon icon={faCheck} /></button>
+                                                        <button onClick={() => setEditingCommentId(null)} className={styles.dropdownItem}><FontAwesomeIcon icon={faX} /></button>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <button
+                                                        onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)}
+                                                        className={styles.dropdownItem}
+                                                        >
+                                                            <FontAwesomeIcon icon={faTrash} />
+                                                        </button>
+                                                        <button
+                                                        onClick={() => handleDeleteComment(comment.reply_seq)}
+                                                        className={styles.dropdownItem}
+                                                        >
+                                                        <FontAwesomeIcon icon={faX} />
+                                                        </button>
+                                                    </>
+                                                )}
+                                                
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        {editingCommentId === comment.reply_seq ? (
                                             <textarea
                                                 value={editedCommentText}
                                                 onChange={(e) => setEditedCommentText(e.target.value)}
                                                 className={styles.textarea}
                                             />
-                                            <button onClick={() => handleUpdateReply(comment.reply_seq)} className={styles.button}>수정 완료</button>
-                                            <button onClick={() => setEditingCommentId(null)} className={styles.button}>취소</button>
-                                        </div>
-                                    ) : (
-                                        <div>{comment.reply_contents}</div>
-                                    )}
+                                        ) : (
+                                            <div>{comment.reply_contents}</div>
+                                        )}
+                                    </div>
                                 </div>
-                                <div>{new Date(comment.reply_reg_date).toLocaleString()}</div>
-                                {comment.reply_userName === (usersName || sessionUserName) && (
-                                    <>
-                                        <button onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)} className={styles.button}>수정</button>
-                                        <button onClick={() => handleDeleteComment(comment.reply_seq)} className={styles.button}>삭제</button>
-                                    </>
-                                )}
-                            </div>
-                        ))
-                    ) : (
-                        <div>댓글이 없습니다.</div>
-                    )}
-                    <form onSubmit={handleCommentSubmit} className={styles.comment_Form}>
-                        <textarea
-                            className={styles.textarea}
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            placeholder="댓글을 작성하세요"
-                        />
-                        <button type="submit" className={styles.button}>댓글 작성</button>
-                    </form>
+                            ))
+                        ) : (
+                            <div>댓글이 없습니다.</div>
+                        )}
+                        <form onSubmit={handleCommentSubmit} className={styles.commentForm}>
+                            <textarea
+                                className={styles.textarea}
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                placeholder="댓글을 작성하세요"
+                            />
+                            <button type="submit" className={styles.replyButton}>댓글 작성</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

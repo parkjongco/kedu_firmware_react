@@ -13,9 +13,12 @@ import Admin from './components/LoginIk/Admin/Admin';
 import DeleteUser from './components/LoginIk/Admin/DeleteUser'; 
 import axios from 'axios';
 import Mypage from './components/Mypage/Mypage';
+import Calendar from './components/Calendar/Calendar';
 import Attendance from './components/Attendance/Attendance';
 import Approval from './components/Apporoval/ApprovalMain';
+
 axios.defaults.withCredentials = true
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -31,6 +34,7 @@ root.render(
         <Route path="/admin/deleteuser" element={<DeleteUser />} /> 
         <Route path="/users/login" element={<Login />} /> 
         <Route path="/mypage" element={<Mypage />} />
+        <Route path="/calendar" element={<Calendar />} /> 
         <Route path="/approval" element={<Approval/>} />
       </Routes>
     </BrowserRouter>

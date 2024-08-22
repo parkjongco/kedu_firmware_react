@@ -148,8 +148,8 @@
     align-items: center;
     padding: 10px;
     background-color: #f9f9f9;
-    border-top: 1px solid #ddd;
-
+    border-top: 1px solid #f7f9fc;
+    margin-top : 40px;
   }
   
   .messageBox input {
@@ -181,12 +181,31 @@
 
   .emojiPickerPopup {
     position: absolute;
-    top: 350px; /* 상단에 고정 */
-    left: 100px; /* 왼쪽 기준 위치 설정 */
+    top: 400px; /* 상단에 고정 */
+    left: 5px; /* 왼쪽 기준 위치 설정 */
     z-index: 1000; /* 다른 요소 위로 출력되도록 설정 */
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     background-color: white;
     padding: 10px;
+  }
+
+  .editableDiv:empty:before {
+    content: attr(placeholder);
+    color: #aaa;
+  }
+  
+  .editableDiv {
+    flex: 1;
+    padding: 10px;
+    min-height: 50px; /* 기본 높이를 설정하여 입력 상자가 작아 보이지 않도록 설정 */
+    max-height: 100px; /* 최대 높이 설정, 이 높이 이상으로 늘어나면 스크롤 */
+    overflow-y: auto; /* 내용이 많아지면 스크롤 활성화 */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff;
+    font-size: 1rem;
+    line-height: 1.5;
+    height:100px;
   }
   

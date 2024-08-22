@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Mypage.module.css';
 import AddressModal from './Address/Address';
 import ApprovalListModal from './Approval/Approval_List';
-import SideBar from './SideBar/SideBar';
+import SideBar from '../../components/Sidebar/Sidebar'; // 수정된 경로
 import profileImagePlaceholder from '../../assets/image.png';
 
 axios.defaults.withCredentials = true;
@@ -34,8 +34,11 @@ const Mypage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isApprovalListOpen, setIsApprovalListOpen] = useState(false);
   const [approvalList, setApprovalList] = useState([]);
-  const [profileImagePreview, setProfileImagePreview] = useState(profileImagePlaceholder);
+  const [profileImagePreview, setProfileImagePreview] = useState(profileImagePlaceholder); // 프로필 이미지 프리뷰
   const [isLoading, setIsLoading] = useState(true);
+
+  // 주소 필드 클릭 여부 상태
+  const [isAddressClicked, setIsAddressClicked] = useState(false);
 
   // 환경 변수에서 서버 URL을 가져옵니다
   const serverUrl = process.env.REACT_APP_SERVER_URL;
@@ -80,7 +83,7 @@ const Mypage = () => {
           joinDate: latestRequest.joinDate ? formatDateToString(new Date(latestRequest.joinDate)) : '',
           name: usersName || latestRequest.userName,
         }));
-        setProfileImagePreview(latestRequest.profileImage || profileImagePlaceholder);
+        setProfileImagePreview(latestRequest.profileImage || profileImagePlaceholder); // 프로필 이미지 설정
         
         if (latestRequest.requestStatus === '승인됨') {
           sessionStorage.setItem('approvedUserInfo', JSON.stringify({
@@ -119,7 +122,7 @@ const Mypage = () => {
           name: data.name || '', 
         });
 
-        setProfileImagePreview(data.profilePictureUrl || profileImagePlaceholder);
+        setProfileImagePreview(data.profilePictureUrl || profileImagePlaceholder); // 프로필 이미지 설정
 
         sessionStorage.setItem('approvedUserInfo', JSON.stringify({
           phone: data.phoneNumber,
@@ -171,6 +174,23 @@ const Mypage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // 전화번호 입력 검사
+    if (name === 'phone') {
+      if (value.length > 15) {
+        alert('전화번호는 15글자 이하로 입력해 주세요.');
+        return;
+      }
+      if (!/^[\d-]*$/.test(value)) {
+        alert('전화번호는 숫자와 하이픈(-)만 입력 가능합니다.');
+        return;
+      }
+      if (!value.includes('-')) {
+        alert('전화번호에는 하이픈(-)이 포함되어야 합니다.');
+        return;
+      }
+    }
+    
     setUserInfo(prevState => ({
       ...prevState,
       [name]: value
@@ -198,8 +218,35 @@ const Mypage = () => {
     setIsAddressOpen(false);
   };
 
+  const handleAddressClick = () => {
+    setIsAddressClicked(true); // 주소 필드를 클릭했을 때 상태 업데이트
+    setIsAddressOpen(true); // 주소 모달 열기
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 필수 입력 항목 유효성 검사
+    if (!userInfo.phone) {
+      alert('전화번호를 입력해 주세요.');
+      return;
+    }
+    if (!isAddressClicked) {
+      alert('주소를 선택해 주세요.');
+      return;
+    }
+    if (!userInfo.zipCode) {
+      alert('우편 번호를 입력해 주세요.');
+      return;
+    }
+    if (!userInfo.detailedAddress) {
+      alert('상세 주소를 입력해 주세요.');
+      return;
+    }
+    if (!userInfo.reason) {
+      alert('변경 사유를 입력해 주세요.');
+      return;
+    }
 
     if (userInfo.applicationStatus === '대기 중') {
       alert('이미 "대기 중" 상태인 수정 요청이 존재합니다. 승인이 완료된 후에 다시 시도해 주세요.');
@@ -214,7 +261,7 @@ const Mypage = () => {
 
     try {
       const currentDate = formatDateToString(new Date());
-
+  
       const previousUserInfo = {
         phone: userInfo.phone,
         email: userInfo.email,
@@ -226,9 +273,9 @@ const Mypage = () => {
         employeeId: userInfo.employeeId,
         joinDate: userInfo.joinDate,
       };
-
+  
       sessionStorage.setItem('previousUserInfo', JSON.stringify(previousUserInfo));
-
+  
       const updatedUserInfo = {
         usersSeq: userInfo.usersSeq,
         phoneNumber: userInfo.phone,
@@ -245,10 +292,10 @@ const Mypage = () => {
         joinDate: userInfo.joinDate,
         approver: sessionStorage.getItem('loginID'),
       };
-
+  
       await axios.post(`${serverUrl}/user-update-request`, updatedUserInfo);
       alert('수정 요청이 성공적으로 제출되었습니다.');
-
+  
       setUserInfo(prevState => ({
         ...prevState,
         approver: sessionStorage.getItem('loginID'),
@@ -318,7 +365,7 @@ const Mypage = () => {
   
         const profileImageUrl = uploadResponse.data;
         
-        setProfileImagePreview(profileImageUrl);
+        setProfileImagePreview(profileImageUrl); // 프로필 이미지 업데이트
         setUserInfo(prevState => ({
           ...prevState,
           profileImage: profileImageUrl
@@ -330,21 +377,23 @@ const Mypage = () => {
     }
   };
 
-  const loadApprovalList = () => {
+  const loadApprovalList = useCallback(() => {
     axios.get(`${serverUrl}/user-update-request/approval-list`)
       .then(response => {
         const pendingRequests = response.data.filter(item => item.requestStatus === '대기 중');
         setApprovalList(pendingRequests);
       })
       .catch(error => console.error('Error fetching approval list:', error));
-  };
-
+  }, [serverUrl]); // 서버 URL이 변경될 경우에만 다시 호출
+  
+  // useEffect에서 loadApprovalList가 변경되지 않도록 useCallback으로 묶었으므로 안전하게 호출 가능
   useEffect(() => {
     if (isAdmin && isApprovalListOpen) {
       loadApprovalList();
     }
-  }, [isAdmin, isApprovalListOpen]);
+  }, [isAdmin, isApprovalListOpen, loadApprovalList]);
 
+  
   if (isLoading) {
     return <div>로딩 중...</div>;
   }
@@ -365,7 +414,7 @@ const Mypage = () => {
               </form>
             ) : (
               <div className={styles.profileInfo}>
-                <img src={userInfo.profileImage} alt="프로필 이미지" className={styles.profileImage} />
+                <img src={profileImagePreview} alt="프로필 이미지" className={styles.profileImage} /> {/* 사이드바와 동일한 방식으로 프로필 이미지 표시 */}
                 <div>
                   <h2>{userInfo.name || '이름 없음'}</h2>  
                   <p>직책: {userInfo.rank || ''}</p>  
@@ -376,26 +425,22 @@ const Mypage = () => {
               </div>
             )}
           </section>
-          <div className={styles.bookmark}>
-            bookmark
-          </div>
-
         </div>
         <div className={styles.content}>
           <section className={styles.details}>
             <h2>개인 정보 수정</h2>
             <form onSubmit={handleSubmit}>
               <div className={styles.formGroup}>
-                <label htmlFor="phone">전화번호</label>
+                <label htmlFor="phone">전화번호 - 를 추가해서 작성해주세요</label>
                 <input type="tel" id="phone" name="phone" value={userInfo.phone || ''} onChange={handleInputChange} />
               </div>
               <div className={styles.formGroup}>
                 <label htmlFor="email">이메일</label>
-                <input type="email" id="email" name="email" value={userInfo.email || ''} onChange={handleInputChange} readOnly />
+                <input type="email" id="email" name="email" value={userInfo.email || ''} readOnly />
               </div>
               <div className={styles.formGroup}>
                 <label htmlFor="address">주소</label>
-                <input type="text" id="address" name="address" value={userInfo.address || ''} onClick={() => setIsAddressOpen(true)} readOnly />
+                <input type="text" id="address" name="address" value={userInfo.address || ''} onClick={handleAddressClick} readOnly />
               </div>
               <div className={styles.formGroup}>
                 <label htmlFor="zipCode">우편 번호</label>
@@ -423,7 +468,7 @@ const Mypage = () => {
                 <label htmlFor="applicationStatus">처리 결과</label>
                 <input type="text" id="applicationStatus" name="applicationStatus" value={userInfo.applicationStatus || ''} readOnly />
               </div>
-              <button type="submit"className={styles['mypage-button']} disabled={userInfo.applicationStatus === '대기 중'}> 수정 신청 </button>
+              <button type="submit" className={styles['mypage-button']} disabled={userInfo.applicationStatus === '대기 중'}> 수정 신청 </button>
             </form>
             {isAdmin && (
               <div className={styles.adminActions}>
