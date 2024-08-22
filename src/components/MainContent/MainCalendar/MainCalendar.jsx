@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useCalendarStore, useAuthStore } from '../../../store/store';
 import axios from 'axios';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import ko from 'date-fns/locale/ko'; // 한국어 로케일 임포트
+import 'react-datepicker/dist/react-datepicker.css';
 import styles from './MainCalendar.module.css';
 
 const serverUrl = process.env.REACT_APP_SERVER_URL;
 
 axios.defaults.withCredentials = true;
+
+// 한국어 로케일 등록
+registerLocale('ko', ko);
 
 const MainCalendar = () => {
   const events = useCalendarStore((state) => state.events);
@@ -14,8 +20,7 @@ const MainCalendar = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; // 페이지 당 항목 수
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [selectedDate, setSelectedDate] = useState(new Date()); // 선택된 날짜
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -40,29 +45,17 @@ const MainCalendar = () => {
     return new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const handlePrevMonth = () => {
-    if (currentMonth === 1) {
-      setCurrentMonth(12);
-      setCurrentYear(currentYear - 1);
-    } else {
-      setCurrentMonth(currentMonth - 1);
-    }
-    setCurrentPage(1); // 페이지를 1로 리셋
-  };
-
-  const handleNextMonth = () => {
-    if (currentMonth === 12) {
-      setCurrentMonth(1);
-      setCurrentYear(currentYear + 1);
-    } else {
-      setCurrentMonth(currentMonth + 1);
-    }
+  const handleMonthChange = (date) => {
+    setSelectedDate(date);
     setCurrentPage(1); // 페이지를 1로 리셋
   };
 
   const filteredEvents = events.filter(event => {
     const eventDate = new Date(event.eventsStartDate);
-    return eventDate.getMonth() + 1 === currentMonth && eventDate.getFullYear() === currentYear;
+    return (
+      eventDate.getMonth() === selectedDate.getMonth() &&
+      eventDate.getFullYear() === selectedDate.getFullYear()
+    );
   });
 
   // 페이지별로 항목을 나누는 로직
@@ -87,10 +80,17 @@ const MainCalendar = () => {
   return (
     <div className={styles.calendar}>
       <div className={styles.header}>
-        <h2>{currentYear}년 {currentMonth}월 일정</h2>
+        <h2>{selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월 일정</h2>
         <div className={styles.actions}>
-          <button onClick={handlePrevMonth} className={styles.navButton}>◀</button>
-          <button onClick={handleNextMonth} className={styles.navButton}>▶</button>
+          <DatePicker
+            selected={selectedDate}
+            onChange={handleMonthChange}
+            dateFormat="yyyy년 MM월"
+            showMonthYearPicker
+            showFullMonthYearPicker
+            className={styles.datePicker} // 스타일을 추가하려면 클래스 지정
+            locale="ko" // 한국어 로케일 설정
+          />
         </div>
       </div>
       <div className={styles.eventsList}>
