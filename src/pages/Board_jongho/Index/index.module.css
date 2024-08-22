@@ -53,6 +53,8 @@
     box-sizing: border-box; 
     display : flex;
     flex-direction: column;
+    height: 100%;
+    overflow-y: scroll;
 }
 
 .sidebar_container {
