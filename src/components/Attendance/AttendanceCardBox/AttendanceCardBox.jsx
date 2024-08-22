@@ -7,6 +7,19 @@ import { useAttendanceStore } from '../../../store/attendance_store';
 const serverUrl = process.env.REACT_APP_SERVER_URL;
 
 const AttendanceCardBox = () => {
+
+    // Bootstrap 스타일을 컴포넌트에서만 적용
+    useEffect(() => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css';
+        document.head.appendChild(link);
+
+        return () => {
+            document.head.removeChild(link);
+        };
+    }, []);
+    
     // 현재 선택된 월을 관리하는 state, 초기값은 현재 년-월로 설정
     const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
 
