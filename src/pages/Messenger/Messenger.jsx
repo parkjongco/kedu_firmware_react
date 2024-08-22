@@ -19,6 +19,9 @@ const Messenger = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); // 이모티콘 창 표시 상태
   const unreadCountsRef = useRef({});
   const messagesEndRef = useRef(null);
+  const messageInputRef = useRef(null); // contenteditable 영역을 참조하는 Ref
+
+  const maxLength = 1000; // 글자 수 제한
 
   const serverUrl = process.env.REACT_APP_SERVER_URL;
 
@@ -111,7 +114,6 @@ const Messenger = () => {
     };
   }, [serverUrl, username, showMessage]);
 
-  // 선택된 유저와의 메시지를 읽으면 알람을 제거하는 함수
   const selectUser = async (user) => {
     setSelectedUser(user);
 
@@ -138,7 +140,8 @@ const Messenger = () => {
   }, [currentChat]);
 
   const sendMessage = useCallback(() => {
-    if (inputMessage.trim() === '') {
+    const content = messageInputRef.current.innerText.trim();
+    if (content === '') {
       console.error('Cannot send an empty message');
       return;
     }
@@ -152,25 +155,25 @@ const Messenger = () => {
       const message = {
         sender_username: username,
         receiver_username: selectedUser.users_name,
-        content: inputMessage.trim(),
+        content: content,
         send_date: new Date().toISOString(),
       };
 
       socket.send(JSON.stringify(message));
-      setInputMessage(''); // 메시지 전송 후 입력창 초기화
+      messageInputRef.current.innerText = ''; // 메시지 전송 후 입력창 초기화
     } else {
       console.error('WebSocket is not connected');
     }
-  }, [inputMessage, username, selectedUser, socket]);
+  }, [username, selectedUser, socket]);
 
   const handleKeyDown = useCallback(
     (e) => {
-      if (e.key === 'Enter' && inputMessage.trim()) {
+      if (e.key === 'Enter') {
         e.preventDefault();
         sendMessage();
       }
     },
-    [sendMessage, inputMessage]
+    [sendMessage]
   );
 
   useEffect(() => {
@@ -180,8 +183,20 @@ const Messenger = () => {
     };
   }, [handleKeyDown]);
 
+  const handleInputChange = (e) => {
+    const input = messageInputRef.current.innerText;
+    if (input.length > maxLength) {
+      alert(`메시지는 최대 ${maxLength}자까지 입력 가능합니다.`);
+      messageInputRef.current.innerText = input.slice(0, maxLength);
+    }
+  };
+
   const onEmojiClick = (emojiObject) => {
-    setInputMessage((prevInputMessage) => prevInputMessage + emojiObject.emoji); // 이모티콘 추가
+    if (messageInputRef.current.innerText.length + emojiObject.emoji.length <= maxLength) {
+      messageInputRef.current.innerText += emojiObject.emoji; // 이모티콘 추가
+    } else {
+      alert(`이모티콘을 추가하면 ${maxLength}자를 초과합니다.`);
+    }
   };
 
   return (
@@ -195,7 +210,6 @@ const Messenger = () => {
             <ul>
               {users.map((user) => (
                 <li key={user.users_code} onClick={() => selectUser(user)}>
-                  {/* 유저명 옆에 직급과 부서명 출력 */}
                   {user.users_name} ({user.rank_title} / {user.unit_title})
                   {unreadCountsRef.current[user.users_name] > 0 && (
                     <span className={styles.unreadBadge}>
@@ -207,7 +221,6 @@ const Messenger = () => {
             </ul>
           </div>
 
-          {/* 이모티콘 창을 유저 목록 위에 팝업처럼 고정 */}
           {showEmojiPicker && (
             <div className={styles.emojiPickerPopup}>
               <EmojiPicker onEmojiClick={onEmojiClick} />
@@ -254,12 +267,13 @@ const Messenger = () => {
               >
                 <FaSmile />
               </button>
-              <input
-                type="text"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
+              <div
+                className={styles.editableDiv}
+                contentEditable="true"
+                ref={messageInputRef}
+                onInput={handleInputChange}
                 placeholder="메시지를 입력하세요..."
-              />
+              ></div>
             </div>
           </div>
         </div>
