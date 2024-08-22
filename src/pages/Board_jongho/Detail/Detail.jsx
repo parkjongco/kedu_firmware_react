@@ -5,6 +5,7 @@ import styles from './Detail.module.css';
 import { useAuthStore } from '../../../store/store';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookmark } from '@fortawesome/free-solid-svg-icons';
+import { useBookmarks } from '../Bookmark/bookmark';
 
 axios.defaults.withCredentials = true;
 
@@ -61,7 +62,6 @@ const Detail = ({category = {}} ) => {
     }, [seq, serverUrl]);
 
     const handleUpdate = (e) => {
-        e.preventDefault();
 
         const updatedData = {
             board_title: updatedTitle,
@@ -207,7 +207,7 @@ const Detail = ({category = {}} ) => {
                         />
                     </div>
                 )}
-                <div>
+                <div style={{"display" : "flex"}}>
                     {!isEditing ? (
                         <>
                             <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
@@ -215,7 +215,7 @@ const Detail = ({category = {}} ) => {
                         </>
                     ) : (
                         <div className={styles.button_container}>
-                            <form onSubmit={handleUpdate} className={styles.editForm}>
+                            <form onSubmit={handleUpdate} className={styles.editForm} style={{flexDirection : "row"}}>
                                 <button type="submit" className={styles.button}>수정완료</button>
                                 <button type="button" onClick={toggleEditMode} className={styles.button}>취소하기</button>
                             </form>
@@ -229,18 +229,14 @@ const Detail = ({category = {}} ) => {
                 <div className={styles.content}>
                     {isEditing ? (
                         <form onSubmit={handleUpdate} className={styles.editForm}>
+                            <p>내용</p>
                             <div>
-                                <label>
-                                    내용:
                                     <textarea
                                         value={updatedContents}
                                         onChange={(e) => setUpdatedContents(e.target.value)}
-                                        className={styles.textarea}
+                                        className={styles.textarea_edit}
                                     />
-                                </label>
                             </div>
-                            <button type="submit" className={styles.button}>수정완료</button>
-                            <button type="button" onClick={toggleEditMode} className={styles.button}>취소하기</button>
                         </form>
                     ) : (
                         <div
