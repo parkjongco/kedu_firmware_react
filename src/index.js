@@ -15,7 +15,7 @@ import axios from 'axios';
 import Mypage from './components/Mypage/Mypage';
 import Calendar from './components/Calendar/Calendar';
 import Attendance from './components/Attendance/Attendance';
-// import Approval from './components/Apporoval/ApprovalMain';
+import Approval from './components/Apporoval/ApprovalMain';
 axios.defaults.withCredentials = true
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -33,7 +33,7 @@ root.render(
         <Route path="/users/login" element={<Login />} /> 
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/calendar" element={<Calendar />} /> 
-        {/* <Route path="/approval" element={<Approval/>} /> */}
+        <Route path="/approval" element={<Approval/>} />
       </Routes>
     </BrowserRouter>
 )
