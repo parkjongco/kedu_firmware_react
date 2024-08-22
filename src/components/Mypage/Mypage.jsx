@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Mypage.module.css';
 import AddressModal from './Address/Address';
 import ApprovalListModal from './Approval/Approval_List';
-import SideBar from './SideBar/SideBar';
+import SideBar from '../../components/Sidebar/Sidebar'; // 수정된 경로
 import profileImagePlaceholder from '../../assets/image.png';
 
 axios.defaults.withCredentials = true;
@@ -34,7 +34,7 @@ const Mypage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isApprovalListOpen, setIsApprovalListOpen] = useState(false);
   const [approvalList, setApprovalList] = useState([]);
-  const [profileImagePreview, setProfileImagePreview] = useState(profileImagePlaceholder);
+  const [profileImagePreview, setProfileImagePreview] = useState(profileImagePlaceholder); // 프로필 이미지 프리뷰
   const [isLoading, setIsLoading] = useState(true);
 
   // 주소 필드 클릭 여부 상태
@@ -83,7 +83,7 @@ const Mypage = () => {
           joinDate: latestRequest.joinDate ? formatDateToString(new Date(latestRequest.joinDate)) : '',
           name: usersName || latestRequest.userName,
         }));
-        setProfileImagePreview(latestRequest.profileImage || profileImagePlaceholder);
+        setProfileImagePreview(latestRequest.profileImage || profileImagePlaceholder); // 프로필 이미지 설정
         
         if (latestRequest.requestStatus === '승인됨') {
           sessionStorage.setItem('approvedUserInfo', JSON.stringify({
@@ -122,7 +122,7 @@ const Mypage = () => {
           name: data.name || '', 
         });
 
-        setProfileImagePreview(data.profilePictureUrl || profileImagePlaceholder);
+        setProfileImagePreview(data.profilePictureUrl || profileImagePlaceholder); // 프로필 이미지 설정
 
         sessionStorage.setItem('approvedUserInfo', JSON.stringify({
           phone: data.phoneNumber,
@@ -365,7 +365,7 @@ const Mypage = () => {
   
         const profileImageUrl = uploadResponse.data;
         
-        setProfileImagePreview(profileImageUrl);
+        setProfileImagePreview(profileImageUrl); // 프로필 이미지 업데이트
         setUserInfo(prevState => ({
           ...prevState,
           profileImage: profileImageUrl
@@ -414,7 +414,7 @@ const Mypage = () => {
               </form>
             ) : (
               <div className={styles.profileInfo}>
-                <img src={userInfo.profileImage} alt="프로필 이미지" className={styles.profileImage} />
+                <img src={profileImagePreview} alt="프로필 이미지" className={styles.profileImage} /> {/* 사이드바와 동일한 방식으로 프로필 이미지 표시 */}
                 <div>
                   <h2>{userInfo.name || '이름 없음'}</h2>  
                   <p>직책: {userInfo.rank || ''}</p>  
