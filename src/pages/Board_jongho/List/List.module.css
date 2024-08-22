@@ -61,10 +61,11 @@
 }
 
 #write:hover {
-    /* background-color: var(--primary-color);  */
-    /* color: var(--background-color);   */
+    background-color: var(--primary-color);
+    color: var(--background-color);
 }
 
+/* 버튼 스타일 */
 button {
     padding: var(--padding);
     border: 1px solid var(--primary-color);
@@ -173,12 +174,43 @@ button.active {
     display: flex;
     justify-content: center;
     margin-top: 20px;
-    padding: 10px 0;
+    padding: var(--padding);
     box-sizing: border-box;
 }
 
-.pagination button {
-    margin: 0 5px;
+.pagination a, .pagination button {
+    display: inline-block;
+    padding: var(--padding);
+    margin: 0 4px;
+    font-size: var(--font-size);
+    color: var(--text-color);
+    text-decoration: none;
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    transition: background-color 0.3s, color 0.3s;
+    text-align: center;
+}
+
+.pagination a:hover, .pagination button:hover {
+    background-color: var(--hover-background-color);
+    color: var(--primary-color);
+}
+
+.pagination .active {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.pagination .disabled {
+    color: #ccc;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.pagination .ellipsis {
+    pointer-events: none;
+    color: var(--text-color);
 }
 
 /* 드롭다운 컨테이너 */
@@ -243,27 +275,3 @@ button.active {
     color: #ccc;
     cursor: not-allowed;
 }
-
-.searchContainer {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.searchContainer input {
-    padding: var(--padding);
-    border: 1px solid #ccc;
-    border-radius: var(--border-radius);
-    font-size: var(--font-size);
-}
-
-.searchContainer button {
-    padding: var(--padding);
-    border: 1px solid var(--secondary-color);
-    border-radius: var(--border-radius);
-    background-color: var(--background-color);
-    color: var(--secondary-color);
-    font-size: var(--font-size);
-    cursor: pointer;
-}
-
