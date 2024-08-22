@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCalendarStore, useAuthStore } from '../../../store/store';
 import axios from 'axios';
 import styles from './MainCalendar.module.css';
 
-// 서버 URL을 환경 변수로 설정
 const serverUrl = process.env.REACT_APP_SERVER_URL;
 
 axios.defaults.withCredentials = true;
@@ -11,13 +10,19 @@ axios.defaults.withCredentials = true;
 const MainCalendar = () => {
   const events = useCalendarStore((state) => state.events);
   const setEvents = useCalendarStore((state) => state.setEvents);
-  const usersName = useAuthStore((state) => state.usersName); // 로그인한 사용자 이름 가져오기
+  const usersName = useAuthStore((state) => state.usersName);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // 페이지 당 항목 수
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     const loadEvents = async () => {
       try {
         const response = await axios.get(`${serverUrl}/events`);
-        setEvents(response.data); // 응답 데이터를 상태에 저장
+        const sortedEvents = response.data.sort((a, b) => new Date(a.eventsStartDate) - new Date(b.eventsStartDate));
+        setEvents(sortedEvents);
       } catch (error) {
         console.error('Error loading events:', error);
       }
@@ -35,31 +40,84 @@ const MainCalendar = () => {
     return new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const handlePrevMonth = () => {
+    if (currentMonth === 1) {
+      setCurrentMonth(12);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+    setCurrentPage(1); // 페이지를 1로 리셋
+  };
+
+  const handleNextMonth = () => {
+    if (currentMonth === 12) {
+      setCurrentMonth(1);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+    setCurrentPage(1); // 페이지를 1로 리셋
+  };
+
+  const filteredEvents = events.filter(event => {
+    const eventDate = new Date(event.eventsStartDate);
+    return eventDate.getMonth() + 1 === currentMonth && eventDate.getFullYear() === currentYear;
+  });
+
+  // 페이지별로 항목을 나누는 로직
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentEvents = filteredEvents.slice(indexOfFirstItem, indexOfFirstItem + itemsPerPage);
+
+  const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
   return (
     <div className={styles.calendar}>
       <div className={styles.header}>
-        <h2>내 캘린더 일정</h2>
+        <h2>{currentYear}년 {currentMonth}월 일정</h2>
         <div className={styles.actions}>
-          <span>오늘부터 7일간</span>
-          <button className={styles.refreshButton}>⟳</button>
-          <button className={styles.navButton}>◀</button>
-          <button className={styles.navButton}>▶</button>
+          <button onClick={handlePrevMonth} className={styles.navButton}>◀</button>
+          <button onClick={handleNextMonth} className={styles.navButton}>▶</button>
         </div>
       </div>
-      {events.length === 0 ? (
-        <p>일정이 없습니다.</p>
-      ) : (
-        events.map((event) => (
-          <div key={event.eventsSeq} className={styles.calendar_item}>
-            <div className={styles.date}>{formatDate(event.eventsStartDate)}</div>
-            <div className={styles.event}>{event.eventsTitle}</div>
-            <div className={styles.location}>{usersName}</div>
-            <div className={styles.time}>
-              {formatTime(event.eventsStartDate)} - {formatTime(event.eventsEndDate)}
+      <div className={styles.eventsList}>
+        {currentEvents.length === 0 ? (
+          <p>일정이 없습니다.</p>
+        ) : (
+          currentEvents.map((event) => (
+            <div key={event.eventsSeq} className={styles.calendar_item}>
+              <div className={styles.date}>{formatDate(event.eventsStartDate)}</div>
+              <div className={styles.event}>{event.eventsTitle}</div>
+              <div className={styles.location}>{usersName}</div>
+              <div className={styles.time}>
+                {formatTime(event.eventsStartDate)} - {formatTime(event.eventsEndDate)}
+              </div>
             </div>
-          </div>
-        ))
-      )}
+          ))
+        )}
+      </div>
+      <div className={styles.pagination}>
+        <button onClick={handlePrevPage} className={styles.navButton} disabled={currentPage === 1}>
+          ◀
+        </button>
+        <span>Page {currentPage} of {totalPages}</span>
+        <button onClick={handleNextPage} className={styles.navButton} disabled={currentPage === totalPages}>
+          ▶
+        </button>
+      </div>
     </div>
   );
 };
