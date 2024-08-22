@@ -1,7 +1,10 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faUser, faHome, faCalendar, faImagePortrait, faRightFromBracket, faEnvelope, faBarsStaggered, faFileInvoice, faMessage, faHardDrive, faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faList, faHome, faCalendarCheck, faEnvelope,
+    faBarsStaggered, faCalendar, faFileInvoice,
+    faMessage, faHardDrive, faImagePortrait, faRightFromBracket
+} from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import profileImagePlaceholder from '../../assets/image.png'; // 기본 프로필 이미지 경로
@@ -12,33 +15,33 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
     const serverUrl = process.env.REACT_APP_SERVER_URL;
 
     // 세션 스토리지에서 사용자 정보 불러오기
-    const [profileImage, setProfileImage] = useState(profileImagePlaceholder);
+    const [profileImage, setProfileImage] = useState(profileImagePlaceholder); // 기본 이미지로 초기화
     const [userInfo, setUserInfo] = useState({ username: '', email: '' });
 
     useEffect(() => {
-        // 세션 스토리지에서 approvedUserInfo를 가져오기
+        // 세션 스토리지에서 approvedUserInfo 가져오기
         const approvedUserInfo = sessionStorage.getItem('approvedUserInfo');
         if (approvedUserInfo) {
+            // JSON 파싱하여 필요한 정보 가져오기
             const parsedUserInfo = JSON.parse(approvedUserInfo);
-            if (parsedUserInfo.profileImage && parsedUserInfo.profileImage !== "null") {
-                setProfileImage(parsedUserInfo.profileImage); // 세션에서 프로필 이미지가 있으면 설정
-            } else if (profile_src && profile_src !== "null") {
-                setProfileImage(profile_src); // 제공된 프로필 이미지가 있으면 설정
+            const storedProfileImage = parsedUserInfo.profileImage || profileImagePlaceholder;
+            const storedEmail = parsedUserInfo.email || '이메일 없음';
+            const storedUsername = parsedUserInfo.employeeId || 'No Name';
+
+            // 상태 업데이트
+            // 백엔드에서 받아온 경로와 기본 경로를 확인
+            if (storedProfileImage.includes('/images/default.png')) {
+                setProfileImage(profileImagePlaceholder); // 기본 경로가 포함되어 있으면 기본 이미지로 설정
             } else {
-                setProfileImage(profileImagePlaceholder); // 기본 프로필 이미지 사용
+                setProfileImage(storedProfileImage || profileImagePlaceholder); // 유효한 이미지가 있으면 설정
             }
 
-            // 사용자 이름과 이메일 설정
             setUserInfo({
-                username: parsedUserInfo.employeeId,  // `usersName` 필드가 없다면 `employeeId`를 사용
-                email: parsedUserInfo.email || '이메일 없음',
+                username: storedUsername,
+                email: storedEmail,
             });
-        } else if (profile_src && profile_src !== "null") {
-            setProfileImage(profile_src); // 제공된 프로필 이미지가 있으면 설정
-        } else {
-            setProfileImage(profileImagePlaceholder); // 기본 프로필 이미지 사용
         }
-    }, [profile_src]);
+    }, [profile_src]); // profile_src가 변경될 때마다 다시 렌더링
 
     const handleProfileImageClick = () => {
         fileInputRef.current.click();
@@ -59,7 +62,7 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
 
                 if (response.ok) {
                     const imageUrl = await response.json(); // 서버에서 제공하는 이미지 URL을 받아옴
-                    setProfileImage(imageUrl); // 받아온 이미지 URL을 상태에 저장
+                    setProfileImage(imageUrl || profileImagePlaceholder); // 받아온 이미지 URL을 상태에 저장 (없으면 기본 이미지)
                     sessionStorage.setItem('profileImage', imageUrl); // 세션 스토리지에 저장
 
                     // 상위 컴포넌트에도 알림 (onProfileImageChange 콜백 실행)
@@ -86,7 +89,7 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
                 {/* 사용자 정보 영역 */}
                 <div className={styles.user_info} style={!toggle ? { paddingLeft: "0px" } : {}}>
                     <img
-                        src={profileImage}
+                        src={profileImage || profileImagePlaceholder} // 이미지가 없으면 기본 이미지
                         alt="profile"
                         className={styles.user_img_box}
                         style={!toggle ? { width: "50px", height: "50px" } : { width: "100px", height: "100px" }} // 이미지 크기 증가
@@ -137,9 +140,7 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faCalendar} />
                             {toggle && (
-
                                 <Link to={`${serverUrl}:3000/Calendar`} className={styles.link}>캘린더</Link>
-
                             )}
                         </div>
                         <div className={styles.list_item}>
