@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import styles from './Calendar.module.css';
-import SideBar from './SideBar/SideBar';
+import SideBar from '../../components/Sidebar/Sidebar';
 import Category from './Category/Category';
 import profileImagePlaceholder from '../../assets/image.png';
 import { useCalendarStore } from '../../store/store';
