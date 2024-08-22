@@ -1,28 +1,12 @@
 import styles from './MainContent.module.css';
+import MainCalendar from './MainCalendar/MainCalendar';  // 새로 추가된 컴포넌트 임포트
 
 const MainContent = () => {
   return (
     <main className={styles.main_content}>
       <section className={styles.content}>
         <div className={styles.left_column}>
-          <div className={styles.calendar}>
-            <h2>내 캘린더 일정</h2>
-            <div className={styles.calendar_item}>
-              <div className={styles.date}>2024-08-23</div>
-              <div className={styles.event}>팀 회의</div>
-              <div className={styles.time}>14:00 - 16:00</div>
-            </div>
-            <div className={styles.calendar_item}>
-              <div className={styles.date}>2024-08-24</div>
-              <div className={styles.event}>클라이언트 미팅</div>
-              <div className={styles.time}>11:00 - 12:00</div>
-            </div>
-            <div className={styles.calendar_item}>
-              <div className={styles.date}>2024-08-25</div>
-              <div className={styles.event}>연차 휴가</div>
-              <div className={styles.time}>종일</div>
-            </div>
-          </div>
+          <MainCalendar />  {/* 기존 캘린더 코드를 이 컴포넌트로 대체 */}
           <div className={styles.notice}>
             <h2>공지사항</h2>
             <div className={styles.notice_item}>
