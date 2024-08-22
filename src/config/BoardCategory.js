@@ -27,7 +27,6 @@ const BoardPostComponent = ({ category }) => {
 
     useEffect(() => {
         if (category) {
-            console.log(category);
             axios.get(`${serverUrl}/board/${category.category_seq}`)
                 .then(resp => {
                     setPosts(resp.data);

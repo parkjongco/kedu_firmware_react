@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styles from './index.module.css';
-import SideBar from '../../../components/Jongho/SideBar';
+// import SideBar from '../../../components/Jongho/SideBar';
+import SideBar from '../../../components/Sidebar/Sidebar';
+
 import BoardPage from '../../../config/BoardCategory';
 import { Link, Route, Routes, useNavigate } from 'react-router-dom';
 import List from '../List/List';
@@ -21,7 +23,6 @@ const BoardIndex = (host) => {
                     <div className={styles.category_content}>
                         <h1>게시판</h1>
                         <BoardPage onChangeCategory={(e)=>{setSelectedCategory(e); navigate('./')}}  />
-                        {/* {1. 카테고리 선택할때마다 setSelectedCategory로 현재 선택한 카테고리가 업데이트 됨.} */}
                     </div>
                 </div>
                 <div className={styles.content}>

@@ -62,27 +62,28 @@ const Login = ({ setIsMypage }) => {
 
   const handleLogin = () => {
     console.log('로그인 시도 중:', auth);
+    
     axios.post(`${serverUrl}/auth`, auth)
-      .then((resp) => {
+      .then(async (resp) => {
         console.log('서버 응답:', resp.data);
         const { users_code, users_name, users_is_admin, users_seq } = resp.data;
-
+  
         sessionStorage.setItem('loginID', users_code);
         sessionStorage.setItem('usersName', users_name); 
         sessionStorage.setItem('usersSeq', users_seq);
-
+  
         setLoginID(users_code);
         const isAdmin = users_is_admin === 1;
         setIsAdmin(isAdmin);
-
+  
         // 프로필 정보 가져오기
-        fetchUserProfile(users_code);
-
+        await fetchUserProfile(users_code); 
+  
         // 로그인 성공 후 휴가 상태 확인
         checkVacationStatus(users_seq);
-
+  
         alert('로그인 성공');
-
+  
         if (isAdmin) {
           navigate('/users/login');
         } else {
@@ -98,6 +99,7 @@ const Login = ({ setIsMypage }) => {
         }
       });
   };
+  
 
   const handleLogout = () => {
     axios.post(`${serverUrl}/auth/logout`)

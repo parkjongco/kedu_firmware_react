@@ -150,6 +150,8 @@ export const useAttendanceStore = create((set, get) => ({
             console.log('Fetched events:', response.data); // 서버에서 받은 데이터 확인
         
             const events = response.data.map(event => {
+                // 지각 여부 확인: 출근 시간이 9시 이후면 지각으로 처리
+            const isLate = event.check_in_time && new Date(event.check_in_time).getHours() >= 9;
                 // 퇴근 시간이 18시 이전이면 조퇴로 처리
                 const isEarlyLeave = event.check_out_time && new Date(event.check_out_time).getHours() < 18;
     
@@ -157,6 +159,8 @@ export const useAttendanceStore = create((set, get) => ({
                     ...event,
                     title: event.status === '출근' 
                         ? '출근' 
+                        : isLate && isEarlyLeave
+                        ? '지각 및 조퇴' // 지각과 조퇴 모두 발생한 경우
                         : isEarlyLeave 
                         ? '조퇴' 
                         : event.status === '지각' 
@@ -169,7 +173,9 @@ export const useAttendanceStore = create((set, get) => ({
                     startTime: new Date(event.check_in_time).getHours(),
                     endTime: event.check_out_time ? new Date(event.check_out_time).getHours() : 18,
                     date: event.attendance_date.split('T')[0],
-                    vacation_application_status: event.vacation_application_status
+                    vacation_application_status: event.vacation_application_status,
+                    isLate, // 지각 여부 저장
+                    isEarlyLeave // 조퇴 여부 저장
                 };
             });
         
