@@ -5,11 +5,10 @@ import styles from './Detail.module.css';
 import { useAuthStore } from '../../../store/store';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookmark } from '@fortawesome/free-solid-svg-icons';
-import { useBookmarks } from '../Bookmark/bookmark';
 
 axios.defaults.withCredentials = true;
 
-const Detail = ({category = {}} ) => {
+const Detail = ({ category = {} }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { usersName } = useAuthStore();
@@ -22,14 +21,14 @@ const Detail = ({category = {}} ) => {
     const [newComment, setNewComment] = useState('');
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editedCommentText, setEditedCommentText] = useState('');
-    const [isBookmarked, setIsBookmarked] = useState(false);  // 북마크 상태를 관리하는 상태
+    const [isBookmarked, setIsBookmarked] = useState(false);
+    const [dropdownId, setDropdownId] = useState(null);
 
     const seq = location.pathname.split('/').pop();
     const serverUrl = process.env.REACT_APP_SERVER_URL;
     const sessionUserName = sessionStorage.getItem("usersName") || "Unknown User";
 
     useEffect(() => {
-        // Board 데이터 로드
         axios.get(`${serverUrl}:3000/board/detail/${seq}`)
             .then(resp => {
                 setBoard(resp.data);
@@ -39,8 +38,7 @@ const Detail = ({category = {}} ) => {
             .catch(error => {
                 console.error('Error fetching board data:', error);
             });
-    
-        // Comments 데이터 로드
+
         axios.get(`${serverUrl}:3000/board_reply/${seq}`)
             .then(resp => {
                 setComments(resp.data || []);
@@ -48,12 +46,10 @@ const Detail = ({category = {}} ) => {
             .catch(error => {
                 console.error('Error fetching comments data:', error);
             });
-    
-        // 북마크 상태 확인
+
         axios.get(`${serverUrl}:3000/bookmark/${seq}`)
             .then(resp => {
                 setIsBookmarked(resp.data);
-                console.log("bookmarks : " + resp.data);
             })
             .catch(error => {
                 console.error('Error checking bookmark status:', error);
@@ -153,33 +149,27 @@ const Detail = ({category = {}} ) => {
     };
 
     const handleBookmarkClick = () => {
-        console.log(`Current bookmark state: ${isBookmarked}`);
-
         if (isBookmarked) {
-            // 북마크 해제 요청
             axios.delete(`${serverUrl}:3000/bookmark/${seq}`)
-                .then(response => {
-                    return axios.get(`${serverUrl}:3000/bookmark/${seq}`);
-                })
-                .then(resp => {
+                .then(() => {
                     setIsBookmarked(false);
                 })
                 .catch(error => {
                     console.error('Error removing bookmark:', error);
                 });
         } else {
-            // 북마크 추가 요청
             axios.post(`${serverUrl}:3000/bookmark`, { board_seq: seq })
-                .then(response => {
-                    return axios.get(`${serverUrl}:3000/bookmark/${seq}`);
-                })
-                .then(resp => {
+                .then(() => {
                     setIsBookmarked(true);
                 })
                 .catch(error => {
                     console.error('Error adding bookmark:', error);
                 });
         }
+    };
+
+    const handleDropdownToggle = (commentId) => {
+        setDropdownId(prevId => prevId === commentId ? null : commentId);
     };
 
     if (!board) {
@@ -203,11 +193,11 @@ const Detail = ({category = {}} ) => {
                             icon={faBookmark}
                             className={styles.bookmarkIcon}
                             style={{ color: isBookmarked ? 'blue' : '#f0a500' }}
-                            onClick={handleBookmarkClick} // 북마크 클릭 핸들러 연결
+                            onClick={handleBookmarkClick}
                         />
                     </div>
                 )}
-                <div style={{"display" : "flex"}}>
+                <div style={{ "display": "flex" }}>
                     {!isEditing ? (
                         <>
                             <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
@@ -215,9 +205,9 @@ const Detail = ({category = {}} ) => {
                         </>
                     ) : (
                         <div className={styles.button_container}>
-                            <form onSubmit={handleUpdate} className={styles.editForm} style={{flexDirection : "row"}}>
+                            <form onSubmit={handleUpdate} className={styles.editForm} style={{ flexDirection: "row" }}>
                                 <button type="submit" className={styles.button}>수정완료</button>
-                                <button type="button" onClick={toggleEditMode} className={styles.button}>취소하기</button>
+                                <button type="button" onClick={toggleEditMode} className={styles.button}>수정취소</button>
                             </form>
                         </div>
                     )}
@@ -231,11 +221,11 @@ const Detail = ({category = {}} ) => {
                         <form onSubmit={handleUpdate} className={styles.editForm}>
                             <p>내용</p>
                             <div>
-                                    <textarea
-                                        value={updatedContents}
-                                        onChange={(e) => setUpdatedContents(e.target.value)}
-                                        className={styles.textarea_edit}
-                                    />
+                                <textarea
+                                    value={updatedContents}
+                                    onChange={(e) => setUpdatedContents(e.target.value)}
+                                    className={styles.textarea_edit}
+                                />
                             </div>
                         </form>
                     ) : (
@@ -250,7 +240,36 @@ const Detail = ({category = {}} ) => {
                     {comments.length > 0 ? (
                         comments.map((comment) => (
                             <div key={comment.reply_seq} className={styles.comment}>
-                                <div><strong>{comment.reply_userName || sessionUserName}</strong></div>
+                                <div className={styles.commentHeader}>
+                                    <strong>{comment.reply_userName || sessionUserName}</strong>
+                                    {comment.reply_userName === (usersName || sessionUserName) && (
+                                        <div className={styles.dropdownContainer}>
+                                            <button
+                                                className={styles.dropdownToggle}
+                                                onClick={() => handleDropdownToggle(comment.reply_seq)}
+                                            >
+                                                ...
+                                            </button>
+                                            {dropdownId === comment.reply_seq && (
+                                                <div className={styles.dropdownMenu}>
+                                                    <button
+                                                        onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)}
+                                                        className={styles.dropdownItem}
+                                                    >
+                                                        수정
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteComment(comment.reply_seq)}
+                                                        className={styles.dropdownItem}
+                                                    >
+                                                        삭제
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                               
                                 <div>
                                     {editingCommentId === comment.reply_seq ? (
                                         <div>
@@ -263,16 +282,12 @@ const Detail = ({category = {}} ) => {
                                             <button onClick={() => setEditingCommentId(null)} className={styles.button}>취소</button>
                                         </div>
                                     ) : (
-                                        <div>{comment.reply_contents}</div>
+                                        <div>
+                                            {comment.reply_contents}
+                                        </div>
                                     )}
                                 </div>
                                 <div>{new Date(comment.reply_reg_date).toLocaleString()}</div>
-                                {comment.reply_userName === (usersName || sessionUserName) && (
-                                    <>
-                                        <button onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)} className={styles.button}>수정</button>
-                                        <button onClick={() => handleDeleteComment(comment.reply_seq)} className={styles.button}>삭제</button>
-                                    </>
-                                )}
                             </div>
                         ))
                     ) : (

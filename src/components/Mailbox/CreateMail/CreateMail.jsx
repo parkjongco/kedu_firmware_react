@@ -83,26 +83,31 @@ const CreateMail = () => {
 
 
 
-  //
   const handleAddAttachment = () => {
-    // '파일 첨부 버튼'을 클릭하면 첨부 리스트에 빈 항목을 추가한다.
-    setAttachments([...attachments, '']);
+    // 현재 첨부 파일의 수가 10개 미만일 때만 첨부 항목을 추가
+    if (attachments.length < 10) {
+      setAttachments([...attachments, '']);
+    } else {
+      alert('최대 10개의 파일만 첨부할 수 있습니다.');
+    }
   };
+  
 
   const handleFileChange = (e, index) => {
-    // 파일이 변경되면 해당 파일을 첨부 리스트의 특정 인덱스에 업데이트
-
-    //파일 크기 제한
     const file = e.target.files[0];
+  
+    // 파일 크기 제한
     if (file.size > MAX_FILE_SIZE) {
       alert('파일 크기는 5MB를 초과할 수 없습니다.');
+      e.target.value = '';  // 파일 input을 초기화하여 첨부되지 않도록 함
       return;
     }
-
+  
     const files = [...attachments];
-    files[index] = e.target.files[0];
+    files[index] = file;
     setAttachments(files);
   };
+  
 
   // 제목 길이 제어 로직
   // 제목 길이가 100자가 넘어가면 제한에 걸리고, 초과된 부분은 잘라내어 저장함
