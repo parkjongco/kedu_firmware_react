@@ -133,9 +133,12 @@ const Category = ({ openScheduleDialog = () => {}, onSelectCalendar = () => {}, 
   };
 
   const handleAddDragEvent = () => {
+    const currentDate = new Date();
     const newDragEvent = {
       title: dragEventTitle,
       color: dragEventColor,
+      start: currentDate.toISOString(), // 현재 날짜로 시작
+      end: currentDate.toISOString(),   // 종료 날짜를 시작 날짜와 동일하게 설정하여 1일 이벤트로 설정
       id: String(Date.now()),
     };
     setDragEvents([...dragEvents, newDragEvent]);
@@ -284,27 +287,27 @@ const Category = ({ openScheduleDialog = () => {}, onSelectCalendar = () => {}, 
   };
 
   return (
-    <div className={styles.sidebarContainer}>
+    <div className={styles['C-sidebarContainer']}>
       <h2>Category</h2>
       <button 
-        className={styles.addButton} 
+        className={styles['C-addButton']} 
         onClick={() => setModalIsOpen(true)}
         inert={modalIsOpen ? 'true' : undefined}
       >
         일정등록
       </button>
       <button 
-        className={styles.addButton} 
+        className={styles['C-addButton']} 
         onClick={() => setDragEventModalOpen(true)}
         inert={dragEventModalOpen ? 'true' : undefined}
       >
         드래그 이벤트 추가
       </button>
 
-      <div className={styles.section}>
-        <h3 className={styles.h3}>내 캘린더</h3>
+      <div className={styles['C-section']}>
+        <h3 className={styles['C-h3']}>내 캘린더</h3>
         {calendars.map((calendar, index) => (
-          <div key={calendar.calendarsSeq} className={styles.calendarItem}>
+          <div key={calendar.calendarsSeq} className={styles['C-calendarItem']}>
             <Checkbox
               checked={interestCalendars.some((c) => c.calendarsSeq === calendar.calendarsSeq)}
               onChange={() => {
@@ -318,11 +321,11 @@ const Category = ({ openScheduleDialog = () => {}, onSelectCalendar = () => {}, 
               size="small"
               sx={{ padding: '0 5px 0 0' }}
             />
-            <div className={styles.labelContainer} onClick={() => handleSelectCalendar(calendar)}>
-              <span className={styles.label}>{calendar.calendarsName}</span>
-              <span className={styles.colorDot} style={{ backgroundColor: calendar.calendarsColor }}></span>
+            <div className={styles['C-labelContainer']} onClick={() => handleSelectCalendar(calendar)}>
+              <span className={styles['C-label']}>{calendar.calendarsName}</span>
+              <span className={styles['C-colorDot']} style={{ backgroundColor: calendar.calendarsColor }}></span>
             </div>
-            <div className={styles.buttonGroup}>
+            <div className={styles['C-buttonGroup']}>
               <button 
                 onClick={() => handleEditCalendar(calendar)} 
                 style={{ 
@@ -400,11 +403,11 @@ const Category = ({ openScheduleDialog = () => {}, onSelectCalendar = () => {}, 
         )}
       </div>
 
-      <div className={styles.section}>
-        <h3 className={styles.h3}>관심 캘린더</h3>
-        <ul className={styles.ul}>
+      <div className={styles['C-section']}>
+        <h3 className={styles['C-h3']}>관심 캘린더</h3>
+        <ul className={styles['C-ul']}>
           {interestCalendars.map((calendar, index) => (
-            <li className={styles.li} key={index}>
+            <li className={styles['C-li']} key={index}>
               <Checkbox
                 checked={interestCalendars.some((c) => c.calendarsSeq === calendar.calendarsSeq)}
                 onChange={() => {
@@ -419,30 +422,30 @@ const Category = ({ openScheduleDialog = () => {}, onSelectCalendar = () => {}, 
                 sx={{ padding: '0 5px 0 0' }}
               />
               <div 
-                className={styles.labelContainer} 
+                className={styles['C-labelContainer']} 
                 onClick={() => handleInterestCalendarClick(calendar)}
               >
-                <span className={styles.label}>{calendar.calendarsName}</span>
-                <span className={styles.colorDot} style={{ backgroundColor: calendar.calendarsColor, marginLeft: 8 }}></span>
+                <span className={styles['C-label']}>{calendar.calendarsName}</span>
+                <span className={styles['C-colorDot']} style={{ backgroundColor: calendar.calendarsColor, marginLeft: 8 }}></span>
               </div>
             </li>
           ))}
         </ul>
       </div>
 
-      <div className={styles.draggableEventsContainer} id="external-events">
-        <div className={styles.draggableEventTitle}>드래그 가능한 이벤트:</div>
+      <div className={styles['C-draggableEventsContainer']} id="external-events">
+        <div className={styles['C-draggableEventTitle']}>드래그 가능한 이벤트:</div>
         {dragEvents.map((event, index) => (
           <div
             key={index}
-            className={`${styles.draggableEventItem} fc-event`}
+            className={`${styles['C-draggableEventItem']} fc-event`}
             style={{
               backgroundColor: event.color,
               color: '#fff',
             }}
           >
             <span>{event.title}</span>
-            <div className={styles.eventColorIndicator} style={{ backgroundColor: event.color }}></div>
+            <div className={styles['C-eventColorIndicator']} style={{ backgroundColor: event.color }}></div>
           </div>
         ))}
       </div>
@@ -651,7 +654,6 @@ const Category = ({ openScheduleDialog = () => {}, onSelectCalendar = () => {}, 
                 <div>
                   종료: {new Date(event.eventsEndDate).toLocaleString()}
                 </div>
-                <button onClick={handleDeleteEvent}>삭제</button> {/* 이벤트 삭제 버튼 */}
               </li>
             ))}
           </ul>
