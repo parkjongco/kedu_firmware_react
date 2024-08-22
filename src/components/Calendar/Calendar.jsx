@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { Draggable } from '@fullcalendar/interaction';
-import { Box } from '@mui/material';
+import { Box, TextField, Button, IconButton } from '@mui/material';
 import { format } from 'date-fns';
+import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import styles from './Calendar.module.css';
 import SideBar from './SideBar/SideBar';
@@ -11,7 +12,6 @@ import Category from './Category/Category';
 import profileImagePlaceholder from '../../assets/image.png';
 import { useCalendarStore } from '../../store/store';
 
-// 서버 URL을 환경 변수로 설정
 const serverUrl = process.env.REACT_APP_SERVER_URL;
 
 axios.defaults.withCredentials = true;
@@ -75,6 +75,16 @@ const deleteCalendarEvent = async (eventId) => {
   }
 };
 
+const updateCalendarEvent = async (eventId, eventData) => {
+  try {
+    const response = await apiClient.put(`/events/${eventId}`, eventData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating event:', error);
+    throw error;
+  }
+};
+
 const Calendar = () => {
   const calendarRef = useRef(null);
   const handleEventReceiveRef = useRef(false);
@@ -94,6 +104,10 @@ const Calendar = () => {
   const [period, setPeriod] = useState({ startDate: null, endDate: null });
   const [mouseX, setMouseX] = useState(undefined);
   const [mouseY, setMouseY] = useState(undefined);
+  
+  const [location, setLocation] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
 
   const userInfo = {
     username: usersName,
@@ -185,45 +199,55 @@ const Calendar = () => {
     const event = clickInfo.event;
     setSelectedEvent(event);
 
-    const startDate = event.start ? format(event.start, 'HH:mm', { timeZone: 'Asia/Seoul' }) : 'Invalid start time';
-    const endDate = event.end ? format(event.end, 'HH:mm', { timeZone: 'Asia/Seoul' }) : 'Invalid end time';
-
     setMouseX(clickInfo.jsEvent.clientX);
     setMouseY(clickInfo.jsEvent.clientY - 90);
   
-    setSelectedEvent({
-        id: event.id,
-        ...event,
-        formattedStart: startDate,
-        formattedEnd: endDate,
-        location: event.extendedProps?.location || 'No Location',
-    });
+    setLocation(event.extendedProps?.location || 'No Location');
+    setStartTime(event.start ? format(event.start, "yyyy-MM-dd'T'HH:mm") : '');
+    setEndTime(event.end ? format(event.end, "yyyy-MM-dd'T'HH:mm") : '');
   };
 
-  const showEventDetails = () => {
-    if (selectedEvent && mouseX !== undefined && mouseY !== undefined) {
-      return (
-        <div className="event-details" style={{ position: 'absolute', left: mouseX, top: mouseY, backgroundColor: '#d4e6f1', padding: '10px', borderRadius: '10px', zIndex: 1000 }}>
-          <h2>{selectedEvent.title}</h2>
-          <div className='time_place'>
-            <p>장소: {selectedEvent.location}</p>
-            <p>시간: {selectedEvent.formattedStart} ~ {selectedEvent.formattedEnd}</p>
-          </div>
-          <button onClick={() => handleDeleteEvent(selectedEvent.id)}>삭제</button>
-          <button onClick={() => setSelectedEvent(null)}>닫기</button>
-        </div>
-      );
-    }
-    return null;
-  };
+  const handleUpdateEvent = async () => {
+    if (!selectedEvent) return;
 
-  const handleDeleteEvent = async (eventId) => {
+    const updatedEvent = {
+      eventsTitle: selectedEvent.title,
+      eventsStartDate: new Date(startTime).toISOString(),
+      eventsEndDate: new Date(endTime).toISOString(),
+      eventsLocation: location,
+      eventsDescription: selectedEvent.extendedProps?.description || 'No Description',
+      eventsColor: selectedEvent.backgroundColor,
+      textColor: '#ffffff',
+      eventsIsDraggable: selectedEvent.allDay ? 'Y' : 'N',
+      calendarsSeq: selectedEvent.extendedProps?.calendarsSeq || selectedCalendarId,
+    };
+
     try {
-      await deleteCalendarEvent(eventId);
+      await updateCalendarEvent(selectedEvent.id, updatedEvent);
+      setEvents((prevEvents) =>
+        prevEvents.map(event =>
+          event.id === selectedEvent.id
+            ? { ...event, ...updatedEvent, start: new Date(startTime), end: new Date(endTime) }
+            : event
+        )
+      );
+      setSelectedEvent(null);
+      alert('이벤트가 성공적으로 수정되었습니다.');
+    } catch (error) {
+      console.error('Error updating event:', error);
+      alert('이벤트 수정 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleDeleteEvent = async () => {
+    if (!selectedEvent) return;
+
+    try {
+      await deleteCalendarEvent(selectedEvent.id);
 
       setEvents((prevEvents) => {
         if (Array.isArray(prevEvents)) {
-          return prevEvents.filter(event => event.id !== eventId);
+          return prevEvents.filter(event => event.id !== selectedEvent.id);
         } else {
           return [];
         }
@@ -235,6 +259,92 @@ const Calendar = () => {
       console.error('Error deleting event:', error);
       alert('이벤트 삭제 중 오류가 발생했습니다.');
     }
+  };
+
+  const showEventDetails = () => {
+    if (selectedEvent && mouseX !== undefined && mouseY !== undefined) {
+      return (
+        <div 
+          className="event-details" 
+          style={{ 
+            position: 'absolute', 
+            left: mouseX, 
+            top: mouseY, 
+            backgroundColor: '#d4e6f1', 
+            padding: '10px', 
+            borderRadius: '10px', 
+            zIndex: 1000, 
+            width: '300px' // 모달 창 너비 조정
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ margin: 0 }}>이벤트 정보</h3>
+            <IconButton size="small" onClick={() => setSelectedEvent(null)} style={{ marginRight: '-8px', marginTop: '-8px' }}>
+              <CloseIcon />
+            </IconButton>
+          </div>
+          <TextField
+            label="장소"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            sx={{
+              '& input': {
+                padding: '10px 14px', // 패딩 추가
+              },
+            }}
+          />
+          <TextField
+            label="시작 시간"
+            type="datetime-local"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            sx={{
+              '& input': {
+                padding: '10px 14px', // 패딩 추가
+              },
+            }}
+          />
+          <TextField
+            label="종료 시간"
+            type="datetime-local"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            sx={{
+              '& input': {
+                padding: '10px 14px', // 패딩 추가
+              },
+            }}
+          />
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+            <Button 
+              onClick={handleUpdateEvent} 
+              color="primary" 
+              variant="contained" 
+              style={{ marginRight: '10px' }}
+            >
+              수정
+            </Button>
+            <Button 
+              onClick={handleDeleteEvent} 
+              variant="contained" 
+              style={{ backgroundColor: 'red', color: 'white' }}
+            >
+              삭제
+            </Button>
+          </div>
+        </div>
+      );
+    }
+    return null;
   };
 
   const onChangeDate = ({ startStr, endStr }) => {
@@ -266,8 +376,8 @@ const Calendar = () => {
     const newEventToAdd = {
       usersSeq: userSeq,
       eventsTitle: `${eventData.title || 'Untitled Event'}`,
-      eventsStartDate: eventData.start,
-      eventsEndDate: eventData.end,
+      eventsStartDate: eventData.start.toISOString(),
+      eventsEndDate: eventData.end.toISOString(),
       eventsIsDraggable: eventData.allDay ? 'Y' : 'N',
       eventsColor: eventData.color || '#000000',
       eventsLocation: eventData.location || 'No Location',
@@ -318,19 +428,24 @@ const Calendar = () => {
       return;
     }
 
+    if (!info.event.start || !info.event.end) {
+      alert("시작 날짜와 종료 날짜는 필수입니다.");
+      return;
+    }
+
     try {
       const updatedEvent = {
         usersSeq: userSeq,
         eventsTitle: info.event.title,
-        eventsStartDate: info.event.start,
-        eventsEndDate: info.event.end,
+        eventsStartDate: info.event.start.toISOString(), // 날짜를 ISO 포맷으로 변환
+        eventsEndDate: info.event.end.toISOString(), // 날짜를 ISO 포맷으로 변환
         eventsColor: info.event.backgroundColor.slice(0, 7) || '#00a9ff',
         textColor: '#ffffff',
         eventsIsDraggable: info.event.allDay ? 'Y' : 'N',
         calendarsSeq: selectedCalendarId,
       };
 
-      await createCalendarEvent(updatedEvent);
+      await apiClient.put(`/events/${info.event.id}`, updatedEvent);
 
       setEvents((prevEvents) => {
         if (Array.isArray(prevEvents)) {
@@ -344,6 +459,7 @@ const Calendar = () => {
 
     } catch (error) {
       console.error('Error updating event:', error);
+      alert('이벤트 업데이트 중 오류가 발생했습니다.');
     }
   };
 
@@ -368,8 +484,8 @@ const Calendar = () => {
       const eventData = {
         usersSeq: userSeq,
         eventsTitle: newEventTitle,
-        eventsStartDate: info.event.start,
-        eventsEndDate: info.event.end || info.event.start,
+        eventsStartDate: info.event.start ? info.event.start.toISOString() : new Date().toISOString(),
+        eventsEndDate: info.event.start ? info.event.start.toISOString() : new Date().toISOString(),  // End date = start date
         eventsColor: color,
         textColor: '#ffffff',
         eventsIsDraggable: info.event.allDay ? 'Y' : 'N',
