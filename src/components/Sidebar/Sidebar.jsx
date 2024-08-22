@@ -19,28 +19,20 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
     const [userInfo, setUserInfo] = useState({ username: '', email: '' });
 
     useEffect(() => {
-        // 세션 스토리지에서 approvedUserInfo 가져오기
-        const approvedUserInfo = sessionStorage.getItem('approvedUserInfo');
-        if (approvedUserInfo) {
-            // JSON 파싱하여 필요한 정보 가져오기
-            const parsedUserInfo = JSON.parse(approvedUserInfo);
-            const storedProfileImage = parsedUserInfo.profileImage || profileImagePlaceholder;
-            const storedEmail = parsedUserInfo.email || '이메일 없음';
-            const storedUsername = parsedUserInfo.employeeId || 'No Name';
+        // 세션 스토리지에서 username 가져오기
+        const sessionUserName = sessionStorage.getItem('usersName') || '이름 없음';
+        
+        // approvedUserInfo에서 프로필 이미지와 이메일 정보 가져오기
+        const approvedUserInfo = JSON.parse(sessionStorage.getItem('approvedUserInfo') || '{}');
+        const storedProfileImage = approvedUserInfo.profileImage || profileImagePlaceholder;
+        const storedEmail = approvedUserInfo.email || '이메일 없음';
 
-            // 상태 업데이트
-            // 백엔드에서 받아온 경로와 기본 경로를 확인
-            if (storedProfileImage.includes('/images/default.png')) {
-                setProfileImage(profileImagePlaceholder); // 기본 경로가 포함되어 있으면 기본 이미지로 설정
-            } else {
-                setProfileImage(storedProfileImage || profileImagePlaceholder); // 유효한 이미지가 있으면 설정
-            }
-
-            setUserInfo({
-                username: storedUsername,
-                email: storedEmail,
-            });
-        }
+        // 상태 업데이트
+        setProfileImage(storedProfileImage); // 프로필 이미지 설정
+        setUserInfo({
+            username: sessionUserName, // 세션에서 username 가져오기
+            email: storedEmail,
+        });
     }, [profile_src]); // profile_src가 변경될 때마다 다시 렌더링
 
     const handleProfileImageClick = () => {
@@ -97,8 +89,8 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
                     />
                     {toggle && (
                         <>
-                            <h1>{userInfo.username}</h1>
-                            <p>{userInfo.email}</p>
+                            <h1>{userInfo.username}</h1> {/* 세션에서 가져온 username 출력 */}
+                            <p>{userInfo.email}</p> {/* approvedUserInfo에서 가져온 이메일 출력 */}
                         </>
                     )}
                     <input

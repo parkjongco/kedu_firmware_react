@@ -15,7 +15,8 @@ import axios from 'axios';
 import Mypage from './components/Mypage/Mypage';
 import Calendar from './components/Calendar/Calendar';
 import Attendance from './components/Attendance/Attendance';
- import Approval from './components/Apporoval/ApprovalMain';
+import Approval from './components/Apporoval/ApprovalMain';
+
 axios.defaults.withCredentials = true
 
 

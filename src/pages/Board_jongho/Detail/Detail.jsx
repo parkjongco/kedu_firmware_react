@@ -22,15 +22,12 @@ const Detail = ({category = {}} ) => {
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editedCommentText, setEditedCommentText] = useState('');
     const [isBookmarked, setIsBookmarked] = useState(false);  // 북마크 상태를 관리하는 상태
-    const [data, setData] = useState([]);
 
     const seq = location.pathname.split('/').pop();
     const serverUrl = process.env.REACT_APP_SERVER_URL;
     const sessionUserName = sessionStorage.getItem("usersName") || "Unknown User";
 
     useEffect(() => {
-
-
         // Board 데이터 로드
         axios.get(`${serverUrl}:3000/board/detail/${seq}`)
             .then(resp => {
@@ -61,20 +58,10 @@ const Detail = ({category = {}} ) => {
                 console.error('Error checking bookmark status:', error);
             });
 
-
-            // axios.get(`${serverUrl}/board/${category.category_seq}`)
-            // .then(resp => {
-            //     setData(resp.data);
-            // })
-            // .catch(error => {
-            //     console.error('Error fetching data:', error);
-            // });
-    
-    
-    }, [seq, serverUrl, setIsBookmarked , category.category_seq]);
-    
+    }, [seq, serverUrl]);
 
     const handleUpdate = (e) => {
+        e.preventDefault();
 
         const updatedData = {
             board_title: updatedTitle,
@@ -93,7 +80,7 @@ const Detail = ({category = {}} ) => {
 
     const handleDeleteBoard = () => {
         const isConfirmed = window.confirm('정말로 이 게시물을 삭제하시겠습니까?');
-    
+
         if (isConfirmed) {
             axios.delete(`${serverUrl}:3000/board/${seq}`)
                 .then(() => {
@@ -104,7 +91,6 @@ const Detail = ({category = {}} ) => {
                 });
         }
     };
-    
 
     const toggleEditMode = () => {
         setIsEditing(prev => !prev);
@@ -148,13 +134,17 @@ const Detail = ({category = {}} ) => {
     };
 
     const handleDeleteComment = (commentId) => {
-        axios.delete(`${serverUrl}:3000/board_reply/${seq}/${commentId}`)
-            .then(() => {
-                setComments(prevComments => prevComments.filter(comment => comment.reply_seq !== commentId));
-            })
-            .catch(error => {
-                console.error('Error deleting comment:', error);
-            });
+        const isConfirmed = window.confirm('정말로 이 댓글을 삭제하시겠습니까?');
+
+        if (isConfirmed) {
+            axios.delete(`${serverUrl}:3000/board_reply/${seq}/${commentId}`)
+                .then(() => {
+                    setComments(prevComments => prevComments.filter(comment => comment.reply_seq !== commentId));
+                })
+                .catch(error => {
+                    console.error('Error deleting comment:', error);
+                });
+        }
     };
 
     const handleCommentEdit = (commentId, commentText) => {
@@ -164,7 +154,7 @@ const Detail = ({category = {}} ) => {
 
     const handleBookmarkClick = () => {
         console.log(`Current bookmark state: ${isBookmarked}`);
-    
+
         if (isBookmarked) {
             // 북마크 해제 요청
             axios.delete(`${serverUrl}:3000/bookmark/${seq}`)
@@ -191,8 +181,6 @@ const Detail = ({category = {}} ) => {
                 });
         }
     };
-    
-    
 
     if (!board) {
         return <div>Loading...</div>;
@@ -237,9 +225,7 @@ const Detail = ({category = {}} ) => {
                 </div>
             </div>
             <div className={styles.body}>
-                <div><strong>글쓴이:</strong> {board.board_userName || sessionUserName}</div>
-                <div><strong>작성일자:</strong> {new Date(board.board_write_date).toLocaleString()}</div>
-                <div><strong>조회수:</strong> {board.board_view_count}</div>
+                <div><strong>글쓴이:</strong> {board.board_userName || sessionUserName} / 작성일자 : {new Date(board.board_write_date).toLocaleString()} / 조회수 : {board.board_view_count}</div>
                 <div className={styles.content}>
                     {isEditing ? (
                         <form onSubmit={handleUpdate} className={styles.editForm}>
@@ -253,6 +239,8 @@ const Detail = ({category = {}} ) => {
                                     />
                                 </label>
                             </div>
+                            <button type="submit" className={styles.button}>수정완료</button>
+                            <button type="button" onClick={toggleEditMode} className={styles.button}>취소하기</button>
                         </form>
                     ) : (
                         <div
@@ -301,7 +289,7 @@ const Detail = ({category = {}} ) => {
                             onChange={(e) => setNewComment(e.target.value)}
                             placeholder="댓글을 작성하세요"
                         />
-                        <button type="submit" className={styles.button}>댓글 작성</button>
+                        <button type="submit" className={styles.reply_button}>댓글 작성</button>
                     </form>
                 </div>
             </div>
@@ -310,4 +298,3 @@ const Detail = ({category = {}} ) => {
 };
 
 export default Detail;
-
