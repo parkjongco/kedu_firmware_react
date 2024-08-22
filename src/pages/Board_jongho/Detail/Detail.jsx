@@ -58,7 +58,6 @@ const Detail = ({ category = {} }) => {
     }, [seq, serverUrl]);
 
     const handleUpdate = (e) => {
-
         const updatedData = {
             board_title: updatedTitle,
             board_contents: updatedContents,
@@ -93,7 +92,6 @@ const Detail = ({ category = {} }) => {
     };
 
     const handleCommentSubmit = (e) => {
-
         const commentData = {
             reply_userName: usersName || sessionUserName,
             reply_contents: newComment,
@@ -197,19 +195,17 @@ const Detail = ({ category = {} }) => {
                         />
                     </div>
                 )}
-                <div style={{ "display": "flex" }}>
+                <div className={styles.headerButtons}>
                     {!isEditing ? (
                         <>
                             <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
                             <button onClick={handleDeleteBoard} className={styles.button}>삭제하기</button>
                         </>
                     ) : (
-                        <div className={styles.button_container}>
-                            <form onSubmit={handleUpdate} className={styles.editForm} style={{ flexDirection: "row" }}>
-                                <button type="submit" className={styles.button}>수정완료</button>
-                                <button type="button" onClick={toggleEditMode} className={styles.button}>수정취소</button>
-                            </form>
-                        </div>
+                        <form onSubmit={handleUpdate} className={styles.editForm}>
+                            <button type="submit" className={styles.button}>수정완료</button>
+                            <button type="button" onClick={toggleEditMode} className={styles.button}>수정취소</button>
+                        </form>
                     )}
                     <button onClick={() => navigate("/Board")} className={styles.button}>뒤로가기</button>
                 </div>
@@ -218,90 +214,83 @@ const Detail = ({ category = {} }) => {
                 <div><strong>글쓴이:</strong> {board.board_userName || sessionUserName} / 작성일자 : {new Date(board.board_write_date).toLocaleString()} / 조회수 : {board.board_view_count}</div>
                 <div className={styles.content}>
                     {isEditing ? (
-                        <form onSubmit={handleUpdate} className={styles.editForm}>
-                            <p>내용</p>
-                            <div>
-                                <textarea
-                                    value={updatedContents}
-                                    onChange={(e) => setUpdatedContents(e.target.value)}
-                                    className={styles.textarea_edit}
-                                />
-                            </div>
-                        </form>
-                    ) : (
-                        <div
-                            dangerouslySetInnerHTML={{ __html: board.board_contents }}
+                        <textarea
+                            value={updatedContents}
+                            onChange={(e) => setUpdatedContents(e.target.value)}
+                            className={styles.textarea_edit}
                         />
+                    ) : (
+                        <div dangerouslySetInnerHTML={{ __html: board.board_contents }} />
                     )}
                 </div>
 
-                <div className={styles.comments_Section}>
-                    <h3>댓글</h3>
-                    {comments.length > 0 ? (
-                        comments.map((comment) => (
-                            <div key={comment.reply_seq} className={styles.comment}>
-                                <div className={styles.commentHeader}>
-                                    <strong>{comment.reply_userName || sessionUserName}</strong>
-                                    {comment.reply_userName === (usersName || sessionUserName) && (
-                                        <div className={styles.dropdownContainer}>
-                                            <button
-                                                className={styles.dropdownToggle}
-                                                onClick={() => handleDropdownToggle(comment.reply_seq)}
-                                            >
-                                                ...
-                                            </button>
-                                            {dropdownId === comment.reply_seq && (
-                                                <div className={styles.dropdownMenu}>
-                                                    <button
-                                                        onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)}
-                                                        className={styles.dropdownItem}
-                                                    >
-                                                        수정
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteComment(comment.reply_seq)}
-                                                        className={styles.dropdownItem}
-                                                    >
-                                                        삭제
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
+                <div className='abc'>
+                    <div className={styles.commentsSection}>
+                        <h3>댓글</h3>
+                        {comments.length > 0 ? (
+                            comments.map((comment) => (
+                                <div key={comment.reply_seq} className={styles.comment}>
+                                    <div className={styles.commentHeader}>
+                                        <strong>{comment.reply_userName || sessionUserName}</strong>
+                                        {comment.reply_userName === (usersName || sessionUserName) && (
+                                            <div className={styles.dropdownContainer}>
+                                                <button
+                                                    className={styles.dropdownToggle}
+                                                    onClick={() => handleDropdownToggle(comment.reply_seq)}
+                                                >
+                                                    ...
+                                                </button>
+                                                {dropdownId === comment.reply_seq && (
+                                                    <div className={styles.dropdownMenu}>
+                                                        <button
+                                                            onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)}
+                                                            className={styles.dropdownItem}
+                                                        >
+                                                            수정
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteComment(comment.reply_seq)}
+                                                            className={styles.dropdownItem}
+                                                        >
+                                                            삭제
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        {editingCommentId === comment.reply_seq ? (
+                                            <div>
+                                                <textarea
+                                                    value={editedCommentText}
+                                                    onChange={(e) => setEditedCommentText(e.target.value)}
+                                                    className={styles.textarea}
+                                                />
+                                                <button onClick={() => handleUpdateReply(comment.reply_seq)} className={styles.button}>수정 완료</button>
+                                                <button onClick={() => setEditingCommentId(null)} className={styles.button}>취소</button>
+                                            </div>
+                                        ) : (
+                                            <div>{comment.reply_contents}</div>
+                                        )}
+                                    </div>
+                                    <div>{new Date(comment.reply_reg_date).toLocaleString()}</div>
                                 </div>
-                               
-                                <div>
-                                    {editingCommentId === comment.reply_seq ? (
-                                        <div>
-                                            <textarea
-                                                value={editedCommentText}
-                                                onChange={(e) => setEditedCommentText(e.target.value)}
-                                                className={styles.textarea}
-                                            />
-                                            <button onClick={() => handleUpdateReply(comment.reply_seq)} className={styles.button}>수정 완료</button>
-                                            <button onClick={() => setEditingCommentId(null)} className={styles.button}>취소</button>
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            {comment.reply_contents}
-                                        </div>
-                                    )}
-                                </div>
-                                <div>{new Date(comment.reply_reg_date).toLocaleString()}</div>
-                            </div>
-                        ))
-                    ) : (
-                        <div>댓글이 없습니다.</div>
-                    )}
-                    <form onSubmit={handleCommentSubmit} className={styles.comment_Form}>
-                        <textarea
-                            className={styles.textarea}
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            placeholder="댓글을 작성하세요"
-                        />
-                        <button type="submit" className={styles.reply_button}>댓글 작성</button>
-                    </form>
+                            ))
+                        ) : (
+                            <div>댓글이 없습니다.</div>
+                        )}
+                        <form onSubmit={handleCommentSubmit} className={styles.commentForm}>
+                            <textarea
+                                className={styles.textarea}
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                placeholder="댓글을 작성하세요"
+                            />
+                            <button type="submit" className={styles.replyButton}>댓글 작성</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -309,3 +298,4 @@ const Detail = ({ category = {} }) => {
 };
 
 export default Detail;
+
