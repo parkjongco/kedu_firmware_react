@@ -189,4 +189,9 @@
     background-color: white;
     padding: 10px;
   }
+
+  .editableDiv:empty:before {
+    content: attr(placeholder);
+    color: #aaa;
+  }
   
