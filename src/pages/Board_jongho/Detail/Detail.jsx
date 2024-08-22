@@ -4,7 +4,7 @@ import axios from 'axios';
 import styles from './Detail.module.css';
 import { useAuthStore } from '../../../store/store';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookmark } from '@fortawesome/free-solid-svg-icons';
+import { faBookmark, faCheck, faPenToSquare, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
 
 axios.defaults.withCredentials = true;
 
@@ -226,56 +226,74 @@ const Detail = ({ category = {} }) => {
 
                 <div className='abc'>
                     <div className={styles.commentsSection}>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
                         <h3>댓글</h3>
                         {comments.length > 0 ? (
                             comments.map((comment) => (
                                 <div key={comment.reply_seq} className={styles.comment}>
                                     <div className={styles.commentHeader}>
                                         <strong>{comment.reply_userName || sessionUserName}</strong>
+                                        <p style={{margin : "0px"}}>{new Date(comment.reply_reg_date).toLocaleString()}</p>
                                         {comment.reply_userName === (usersName || sessionUserName) && (
-                                            <div className={styles.dropdownContainer}>
-                                                <button
-                                                    className={styles.dropdownToggle}
-                                                    onClick={() => handleDropdownToggle(comment.reply_seq)}
-                                                >
-                                                    ...
-                                                </button>
-                                                {dropdownId === comment.reply_seq && (
-                                                    <div className={styles.dropdownMenu}>
-                                                        <button
-                                                            onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)}
-                                                            className={styles.dropdownItem}
-                                                        >
-                                                            수정
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDeleteComment(comment.reply_seq)}
-                                                            className={styles.dropdownItem}
-                                                        >
-                                                            삭제
-                                                        </button>
+                                            <div className={styles.dropdownMenu}>
+                                                {editingCommentId === comment.reply_seq ? (
+                                                    <div>
+                                                        <button onClick={() => handleUpdateReply(comment.reply_seq)} className={styles.dropdownItem}><FontAwesomeIcon icon={faCheck} /></button>
+                                                        <button onClick={() => setEditingCommentId(null)} className={styles.dropdownItem}><FontAwesomeIcon icon={faX} /></button>
                                                     </div>
+                                                ) : (
+                                                    <>
+                                                        <button
+                                                        onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)}
+                                                        className={styles.dropdownItem}
+                                                        >
+                                                            <FontAwesomeIcon icon={faTrash} />
+                                                        </button>
+                                                        <button
+                                                        onClick={() => handleDeleteComment(comment.reply_seq)}
+                                                        className={styles.dropdownItem}
+                                                        >
+                                                        <FontAwesomeIcon icon={faX} />
+                                                        </button>
+                                                    </>
                                                 )}
+                                                
                                             </div>
                                         )}
                                     </div>
 
                                     <div>
                                         {editingCommentId === comment.reply_seq ? (
-                                            <div>
-                                                <textarea
-                                                    value={editedCommentText}
-                                                    onChange={(e) => setEditedCommentText(e.target.value)}
-                                                    className={styles.textarea}
-                                                />
-                                                <button onClick={() => handleUpdateReply(comment.reply_seq)} className={styles.button}>수정 완료</button>
-                                                <button onClick={() => setEditingCommentId(null)} className={styles.button}>취소</button>
-                                            </div>
+                                            <textarea
+                                                value={editedCommentText}
+                                                onChange={(e) => setEditedCommentText(e.target.value)}
+                                                className={styles.textarea}
+                                            />
                                         ) : (
                                             <div>{comment.reply_contents}</div>
                                         )}
                                     </div>
-                                    <div>{new Date(comment.reply_reg_date).toLocaleString()}</div>
                                 </div>
                             ))
                         ) : (

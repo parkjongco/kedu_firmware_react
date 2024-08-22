@@ -21,10 +21,15 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
     useEffect(() => {
         // 세션 스토리지에서 username 가져오기
         const sessionUserName = sessionStorage.getItem('usersName') || '이름 없음';
-        
+
         // approvedUserInfo에서 프로필 이미지와 이메일 정보 가져오기
         const approvedUserInfo = JSON.parse(sessionStorage.getItem('approvedUserInfo') || '{}');
-        const storedProfileImage = approvedUserInfo.profileImage || profileImagePlaceholder;
+        
+        // 프로필 이미지가 기본 이미지 경로와 동일할 경우 profileImagePlaceholder를 사용
+        const storedProfileImage = approvedUserInfo.profileImage === `${serverUrl}/images/default.png`
+            ? profileImagePlaceholder
+            : approvedUserInfo.profileImage;
+
         const storedEmail = approvedUserInfo.email || '이메일 없음';
 
         // 상태 업데이트
@@ -33,7 +38,7 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
             username: sessionUserName, // 세션에서 username 가져오기
             email: storedEmail,
         });
-    }, [profile_src]); // profile_src가 변경될 때마다 다시 렌더링
+    }, [profile_src, serverUrl]); // profile_src가 변경될 때마다 다시 렌더링
 
     const handleProfileImageClick = () => {
         fileInputRef.current.click();
@@ -79,12 +84,12 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
                 </div>
 
                 {/* 사용자 정보 영역 */}
-                <div className={styles.user_info} style={!toggle ? { paddingLeft: "0px" } : {}}>
+                <div className={`${styles.user_info} ${!toggle ? styles.centered : ''}`}>
                     <img
                         src={profileImage || profileImagePlaceholder} // 이미지가 없으면 기본 이미지
                         alt="profile"
                         className={styles.user_img_box}
-                        style={!toggle ? { width: "50px", height: "50px" } : { width: "100px", height: "100px" }} // 이미지 크기 증가
+                        style={!toggle ? { width: "30px", height: "30px" } : { width: "100px", height: "100px" }} // 사이드바가 접힐 때 이미지 크기 줄임
                         onClick={handleProfileImageClick}
                     />
                     {toggle && (
