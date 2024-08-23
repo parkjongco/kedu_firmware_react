@@ -1,0 +1,46 @@
+/* MainBoard.module.css */
+
+.mainBoard {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mainBoard h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.mainBoard table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.mainBoard th, .mainBoard td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.mainBoard th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+    color: #333;
+}
+
+.mainBoard td a {
+    color: black;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.mainBoard td a:hover {
+    color: #0056b3;
+}
