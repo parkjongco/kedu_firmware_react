@@ -27,6 +27,8 @@ const Detail = ({ category = {} }) => {
     const seq = location.pathname.split('/').pop();
     const serverUrl = process.env.REACT_APP_SERVER_URL;
     const sessionUserName = sessionStorage.getItem("usersName") || "Unknown User";
+    const isAdmin = sessionStorage.getItem("isAdmin") || false;
+    const user_seq = sessionStorage.getItem("usersSeq");
 
     useEffect(() => {
         axios.get(`${serverUrl}:3000/board/detail/${seq}`)
@@ -174,6 +176,11 @@ const Detail = ({ category = {} }) => {
         return <div>Loading...</div>;
     }
 
+    console.log("isAdmin : " + isAdmin, typeof isAdmin);
+    console.log("user_seq : " + user_seq, typeof user_seq);
+    console.log("board_user_seq : " + board.user_seq, typeof board.user_seq);
+    console.log("test : " + user_seq === (board.user_seq).toString());
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -196,22 +203,25 @@ const Detail = ({ category = {} }) => {
                     </div>
                 )}
                 <div className={styles.headerButtons}>
-                    {!isEditing ? (
-                        <>
-                            <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
-                            <button onClick={handleDeleteBoard} className={styles.button}>삭제하기</button>
-                        </>
-                    ) : (
-                        <form onSubmit={handleUpdate} className={styles.editForm}>
-                            <button type="submit" className={styles.button}>수정완료</button>
-                            <button type="button" onClick={toggleEditMode} className={styles.button}>수정취소</button>
-                        </form>
-                    )}
+                    { (isAdmin === "true" || user_seq === (board.user_seq).toString() ) && <>
+                        {!isEditing ? (
+                            <>
+                                <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
+                                <button onClick={handleDeleteBoard} className={styles.button}>삭제하기</button>
+                            </>
+                        ) : (
+                            <form onSubmit={handleUpdate} className={styles.editForm}>
+                                <button type="submit" className={styles.button}>수정완료</button>
+                                <button type="button" onClick={toggleEditMode} className={styles.button}>수정취소</button>
+                            </form>
+                        )}
+                    </>
+                    }
                     <button onClick={() => navigate("/Board")} className={styles.button}>뒤로가기</button>
                 </div>
             </div>
             <div className={styles.body}>
-                <div><strong>글쓴이:</strong> {board.board_userName || sessionUserName} / 작성일자 : {new Date(board.board_write_date).toLocaleString()} / 조회수 : {board.board_view_count}</div>
+                <div><strong>글쓴이:</strong> {board.users_name} / 작성일자 : {new Date(board.board_write_date).toLocaleString()} / 조회수 : {board.board_view_count}</div>
                 <div className={styles.content}>
                     {isEditing ? (
                         <textarea
@@ -224,7 +234,6 @@ const Detail = ({ category = {} }) => {
                     )}
                 </div>
 
-                <div className='abc'>
                     <div className={styles.commentsSection}>
                         <br></br>
                         <br></br>
@@ -257,6 +266,7 @@ const Detail = ({ category = {} }) => {
                                         <p style={{margin : "0px"}}>{new Date(comment.reply_reg_date).toLocaleString()}</p>
                                         {comment.reply_userName === (usersName || sessionUserName) && (
                                             <div className={styles.dropdownMenu}>
+                                                 { (isAdmin === "true" || user_seq === (board.user_seq).toString() ) && <>
                                                 {editingCommentId === comment.reply_seq ? (
                                                     <div>
                                                         <button onClick={() => handleUpdateReply(comment.reply_seq)} className={styles.dropdownItem}><FontAwesomeIcon icon={faCheck} /></button>
@@ -278,6 +288,8 @@ const Detail = ({ category = {} }) => {
                                                         </button>
                                                     </>
                                                 )}
+                                                </>
+}   
                                                 
                                             </div>
                                         )}
@@ -309,7 +321,6 @@ const Detail = ({ category = {} }) => {
                             <button type="submit" className={styles.replyButton}>댓글 작성</button>
                         </form>
                     </div>
-                </div>
             </div>
         </div>
     );
