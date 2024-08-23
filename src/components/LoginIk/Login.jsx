@@ -114,11 +114,12 @@ const Login = ({ setIsMypage }) => {
       });
   };
   
-
+  // 로그아웃 핸들러
   const handleLogout = () => {
     axios.post(`${serverUrl}/auth/logout`)
       .then(() => {
         console.log('로그아웃 성공');
+        // 세션 및 상태 초기화
         sessionStorage.removeItem('loginID');
         sessionStorage.removeItem('usersName');
         sessionStorage.removeItem('usersSeq');
@@ -128,7 +129,6 @@ const Login = ({ setIsMypage }) => {
         sessionStorage.removeItem('isAdmin');
         sessionStorage.removeItem('approvedUserInfo');
         sessionStorage.removeItem('previousUserInfo');
-
 
         setLoginID('');
         setAuth({ users_code: '', users_password: '' });

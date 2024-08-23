@@ -76,7 +76,7 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
     };
 
     return (
-        <div className={styles.sidebar} style={!toggle ? { width: "50px" } : {}}>
+        <div className={styles.sidebar} style={!toggle ? { width: "70px" } : {}}>
             <div className={styles.sidebar_container} style={!toggle ? { alignItems: "center" } : {}} >
                 {/* 사이드바 토글 버튼 */}
                 <div className={styles.icon} onClick={() => setToggle(!toggle)}>
