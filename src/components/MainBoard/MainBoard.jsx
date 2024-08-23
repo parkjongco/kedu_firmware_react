@@ -9,7 +9,7 @@ const MainBoard = () => {
     useLayoutEffect(() => {
         // 서버에서 데이터 가져오기
         axios.get(`${serverUrl}:3000/board/0`)
-            .then(response => {
+            .then(response => { 
                 console.log(response.data)
                 setData(response.data);
             })
