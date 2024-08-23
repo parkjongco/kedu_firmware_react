@@ -3,7 +3,7 @@ import styles from './MainContent.module.css';
 import MainVacation from './MainVacation/MainVacation';
 import MainCalendar from './MainCalendar/MainCalendar';  // 새로 추가된 컴포넌트 임포트
 import React, { useEffect, useState } from 'react';
-import MainBoard from '../MainBoard/MainBoard';
+import MainBoard from '../MainContent/MainBoard/MainBoard';
 
 
 const MainContent = (category) => {
