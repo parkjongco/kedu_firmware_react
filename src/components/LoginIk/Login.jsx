@@ -88,6 +88,7 @@ const Login = ({ setIsMypage }) => {
         setLoginID(users_code);
         const isAdmin = users_is_admin === 1;
         setIsAdmin(isAdmin);
+        sessionStorage.setItem('isAdmin', isAdmin);
 
         // 프로필 정보 가져오기 및 세션에 저장
         fetchUserProfile(users_code, users_seq);
