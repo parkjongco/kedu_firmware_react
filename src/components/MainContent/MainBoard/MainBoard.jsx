@@ -43,19 +43,19 @@ const MainBoard = () => {
                     </tr>
                 </thead>
                 <tbody>
-    {currentItems.map(item => (
-        <tr
-            key={item.board_seq}
-            onClick={() => window.location.href = `/Board/Detail/${item.board_seq}`}
-            style={{ cursor: 'pointer' }} // 클릭 가능한 커서 모양으로 변경
-        >
-            <td className={styles.notice}>[공지]</td> {/* 공지 텍스트에 스타일 적용 */}
-            <td className={styles.title}>{item.board_title}</td> {/* 제목 셀에 스타일 적용 */}
-            <td>{new Date(item.board_write_date).toLocaleString()}</td>
-            <td>{item.board_view_count}</td>
-        </tr>
-    ))}
-</tbody>
+                    {currentItems.map(item => (
+                        <tr
+                            key={item.board_seq}
+                            onClick={() => window.location.href = `/Board/Detail/${item.board_seq}`}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <td className={styles.notice}>[공지]</td>
+                            <td className={styles.title}>{item.board_title}</td>
+                            <td>{new Date(item.board_write_date).toLocaleString()}</td>
+                            <td>{item.board_view_count}</td>
+                        </tr>
+                    ))}
+                </tbody>
 
 
 
