@@ -16,71 +16,76 @@ const MainAttendance = () => {
     clearDepartmentMembers
   } = useAttendanceStore();
 
-  // 부서원 정보를 먼저 로드한 후 출근 현황을 불러오는 함수
-  const loadInitialData = async () => {
-    setIsLoading(true);
-    try {
-      clearDepartmentMembers();  // 부서원 상태 초기화
-      await fetchDepartmentMembers();  // 부서원 정보 불러오기
-    } catch (error) {
-      console.error('Error fetching department members:', error);
-    } finally {
-      setIsLoading(false);  // 로딩 상태 해제
-    }
-  };
+  const usersSeq = sessionStorage.getItem("usersSeq");
 
-  // 출근 현황 데이터를 로드하는 함수
+  // 부서원 정보를 먼저 로드한 후 출근 현황을 불러오는 함수
   const loadAttendanceData = async () => {
-    if (departmentMembers.length === 0) return;  // 부서원 정보가 없으면 실행하지 않음
-    setIsLoading(true);
+    if (departmentMembers.length === 0) return; // 부서원 정보가 없으면 실행하지 않음
+  
     try {
-      const usersSeq = sessionStorage.getItem("usersSeq");
       if (usersSeq) {
         const formattedDate = currentDate.toLocaleDateString('en-CA');
         const response = await axios.get(`${serverUrl}/attendance/departmentEvents`, {
           params: { users_seq: usersSeq, date: formattedDate }
         });
-
-        // console.log('Department events response:', response.data);
-
+  
+        // 서버로부터 받은 데이터 확인
+        console.log('Department events response:', response.data);
+  
+        // 응답 데이터가 배열인지 확인
+        const attendanceEvents = Array.isArray(response.data) ? response.data : [];
+  
         // 부서원 정보와 출근 기록을 결합
         const updatedAttendanceData = departmentMembers.map((member) => {
-          const attendanceRecord = response.data.find(event => event.users_seq === member.USERSSEQ);
-          // console.log(`Attendance record for ${member.USERSNAME}:`, attendanceRecord);
-
-          return attendanceRecord ? {
+          // 부서원의 출근 기록을 전체 부서 출근 현황과 매칭
+          const attendanceRecord = attendanceEvents.find(event => {
+            return String(event.users_seq) === String(member.USERSSEQ);
+          });
+  
+          // 출근 기록이 있는 경우 '출근 완료', 없으면 '미출석'으로 상태 설정
+          return {
             ...member,
-            ...attendanceRecord
-          } : {
-            ...member,
-            status: '미출석',
-            check_in_time: null,
-            check_out_time: null
+            status: attendanceRecord ? '출근 완료' : '미출석',
+            check_in_time: attendanceRecord ? attendanceRecord.check_in_time : null,
+            check_out_time: attendanceRecord ? attendanceRecord.check_out_time : null
           };
         });
-
-        // console.log('Updated attendance data:', updatedAttendanceData);
+  
+        console.log('Updated attendance data:', updatedAttendanceData);
         setAttendanceData(updatedAttendanceData);
       }
     } catch (error) {
       console.error('Error fetching department events:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  // 부서원 정보가 로드된 후 출근 현황 데이터를 불러옴
   useEffect(() => {
-    loadInitialData();
-  }, [currentDate]);
+    // 컴포넌트가 처음 마운트될 때 또는 usersSeq가 변경될 때 상태를 초기화하고 데이터를 불러옴
+    const initializeData = async () => {
+      setIsLoading(true);
+      try {
+        clearDepartmentMembers(); // 부서원 상태 초기화
+        await fetchDepartmentMembers(); // 부서원 정보 불러오기
+        await loadAttendanceData(); // 출근 현황 데이터 불러오기
+      } catch (error) {
+        console.error('Error loading initial data:', error);
+      } finally {
+        setIsLoading(false); // 로딩 상태 해제
+      }
+    };
 
-  // 부서원 정보가 성공적으로 로드된 후 출근 현황을 불러옴
+    if (usersSeq) {
+      initializeData(); // 초기 데이터 로드
+    }
+  }, [usersSeq]); // usersSeq가 변경될 때만 실행
+
   useEffect(() => {
+    // departmentMembers 상태가 변경될 때마다 출근 현황 데이터를 불러옴
     if (departmentMembers.length > 0) {
       loadAttendanceData();
     }
-  }, [departmentMembers]);  // departmentMembers 상태가 변경될 때마다 실행
-
+  }, [departmentMembers]); // departmentMembers 상태가 변경될 때만 실행
+  
   const formatTime = (dateTime) => {
     if (!dateTime) return '-';
     const date = new Date(dateTime);
@@ -100,7 +105,7 @@ const MainAttendance = () => {
             <div key={index} className={styles.attendance_item}>
               <div className={styles.attendance_label}>{employee.USERSNAME}</div>
               <div className={styles.attendance_status}>
-                {employee.check_in_time ? '출근 완료' : '미출석'}
+                {employee.status} {/* 상태를 표시 */}
               </div>
               <div className={styles.attendance_time}>
                 {employee.check_in_time ? formatTime(employee.check_in_time) : '-'}
