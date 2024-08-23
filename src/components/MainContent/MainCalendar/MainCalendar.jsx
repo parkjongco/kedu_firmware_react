@@ -5,6 +5,7 @@ import DatePicker, { registerLocale } from 'react-datepicker';
 import ko from 'date-fns/locale/ko'; // 한국어 로케일 임포트
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './MainCalendar.module.css';
+import Pagination from '../../Pagination/Pagination';
 
 const serverUrl = process.env.REACT_APP_SERVER_URL;
 
@@ -61,21 +62,9 @@ const MainCalendar = () => {
   // 페이지별로 항목을 나누는 로직
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentEvents = filteredEvents.slice(indexOfFirstItem, indexOfFirstItem + itemsPerPage);
+  const currentEvents = filteredEvents.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
 
   return (
     <div className={styles.calendar}>
@@ -109,15 +98,11 @@ const MainCalendar = () => {
           ))
         )}
       </div>
-      <div className={styles.pagination}>
-        <button onClick={handlePrevPage} className={styles.navButton} disabled={currentPage === 1}>
-          ◀
-        </button>
-        <span>Page {currentPage} of {totalPages}</span>
-        <button onClick={handleNextPage} className={styles.navButton} disabled={currentPage === totalPages}>
-          ▶
-        </button>
-      </div>
+      <Pagination 
+        currentPage={currentPage} 
+        totalPages={totalPages} 
+        handlePageChange={(page) => setCurrentPage(page)} 
+      />
     </div>
   );
 };
