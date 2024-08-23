@@ -198,8 +198,44 @@ const Mypage = () => {
     setIsAddressOpen(false);
   };
 
+  const validateForm = () => {
+    const phoneRegex = /^[0-9-]{1,15}$/;
+    const zipCodeRegex = /^[0-9]*$/;
+
+    if (!userInfo.phone || !phoneRegex.test(userInfo.phone)) {
+      alert('전화번호는 15글자 이하의 숫자와 하이픈(-)만 입력 가능합니다.');
+      return false;
+    }
+
+    if (!userInfo.address) {
+      alert('주소를 입력해 주세요.');
+      return false;
+    }
+
+    if (!userInfo.zipCode || !zipCodeRegex.test(userInfo.zipCode)) {
+      alert('우편 번호는 숫자만 입력 가능합니다.');
+      return false;
+    }
+
+    if (!userInfo.detailedAddress) {
+      alert('상세 주소를 입력해 주세요.');
+      return false;
+    }
+
+    if (!userInfo.reason) {
+      alert('변경 사유를 입력해 주세요.');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     if (userInfo.applicationStatus === '대기 중') {
       alert('이미 "대기 중" 상태인 수정 요청이 존재합니다. 승인이 완료된 후에 다시 시도해 주세요.');
@@ -292,7 +328,7 @@ const Mypage = () => {
     } catch (error) {
         console.error('Error rejecting request:', error);
     }
-};
+  };
 
 
   const handleProfileImageChange = async (e) => {
@@ -367,7 +403,7 @@ const Mypage = () => {
               <div className={styles.profileInfo}>
                 <img src={userInfo.profileImage} alt="프로필 이미지" className={styles.profileImage} />
                 <div>
-                  <h2>{userInfo.name || '이름 없음'}</h2>  
+                  <h2>{userInfo.approver || '이름 없음'}</h2>  
                   <p>직책: {userInfo.rank || ''}</p>  
                   <p>사번: {userInfo.employeeId || ''}</p>  
                   <p>입사일: {userInfo.joinDate || ''}</p> 
@@ -384,7 +420,7 @@ const Mypage = () => {
             <h2>개인 정보 수정</h2>
             <form onSubmit={handleSubmit}>
               <div className={styles.formGroup}>
-                <label htmlFor="phone">전화번호</label>
+                <label htmlFor="phone">전화번호 -를 넣어서 작성해주세요</label>
                 <input type="tel" id="phone" name="phone" value={userInfo.phone || ''} onChange={handleInputChange} />
               </div>
               <div className={styles.formGroup}>
