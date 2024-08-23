@@ -19,13 +19,8 @@ const MainContent = (category) => {
         </div>
         <div className={styles.right_column}>
           <div className={styles.attendance}>
-            {/* 출근 현황 */}
+            {/* 출근 현황 및 부서 */}
             <MainAttendance/>
-            {/*  */}
-          </div>
-          <div className={styles.vacation}>
-            {/* 휴가 현황 */}
-            <MainVacation/>
             {/*  */}
           </div>
         </div>
