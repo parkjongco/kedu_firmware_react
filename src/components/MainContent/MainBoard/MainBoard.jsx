@@ -57,7 +57,6 @@ const MainBoard = () => {
                     ))}
                 </tbody>
             </table>
-
             {/* 페이지네이션 컴포넌트 */}
             <Pagination
                 currentPage={currentPage}
