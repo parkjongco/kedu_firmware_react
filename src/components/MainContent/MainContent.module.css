@@ -25,9 +25,11 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  flex-grow: 1;  /* 높이 균형 조정 */
+  justify-content: space-between;
 }
 
-.notice, .attendance, .vacation {
+.notice {
   background-color: #fafafa;
   padding: 20px;
   border-radius: 8px;
@@ -74,54 +76,5 @@
   color: #888;
 }
 
-/* 출근 현황 항목 스타일 */
-.attendance_item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #ddd;
-}
 
-.attendance_item:last-child {
-  border-bottom: none;
-}
 
-.attendance_label {
-  flex-basis: 40%;
-  font-weight: bold;
-}
-
-.attendance_status {
-  flex-basis: 30%;
-  text-align: center;
-  color: #28a745; /* 출근 완료 상태를 나타내는 초록색 */
-}
-
-.attendance_time {
-  flex-basis: 30%;
-  text-align: right;
-  color: #888;
-}
-
-/* 휴가 현황 항목 스타일 */
-.vacation_item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #ddd;
-}
-
-.vacation_item:last-child {
-  border-bottom: none;
-}
-
-.vacation_label {
-  flex-basis: 50%;
-  font-weight: bold;
-}
-
-.vacation_days {
-  flex-basis: 50%;
-  text-align: right;
-  color: #888;
-}
