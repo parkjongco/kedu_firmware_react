@@ -37,7 +37,6 @@ const Mypage = () => {
   const [profileImagePreview, setProfileImagePreview] = useState(profileImagePlaceholder);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 환경 변수에서 서버 URL을 가져옵니다
   const serverUrl = process.env.REACT_APP_SERVER_URL;
 
   const formatDateToString = (date) => {
@@ -177,6 +176,15 @@ const Mypage = () => {
     }));
   };
 
+  const handlePhoneInputChange = (e) => {
+    const { name, value } = e.target;
+    const formattedValue = value.replace(/[^0-9-]/g, '').slice(0, 15); // 최대 15자
+    setUserInfo(prevState => ({
+      ...prevState,
+      [name]: formattedValue,
+    }));
+  };
+
   const handleAddressComplete = (data) => {
     let fullAddress = data.address;
     let extraAddress = '';
@@ -203,7 +211,7 @@ const Mypage = () => {
     const zipCodeRegex = /^[0-9]*$/;
 
     if (!userInfo.phone || !phoneRegex.test(userInfo.phone)) {
-      alert('전화번호는 15글자 이하의 숫자와 하이픈(-)만 입력 가능합니다.');
+      alert('전화번호는 하이픈(-)을 포함한 15글자 이하의 숫자만 입력 가능합니다.');
       return false;
     }
 
@@ -330,7 +338,6 @@ const Mypage = () => {
     }
   };
 
-
   const handleProfileImageChange = async (e) => {
     const file = e.target.files[0];
     
@@ -421,7 +428,7 @@ const Mypage = () => {
             <form onSubmit={handleSubmit}>
               <div className={styles.formGroup}>
                 <label htmlFor="phone">전화번호 -를 넣어서 작성해주세요</label>
-                <input type="tel" id="phone" name="phone" value={userInfo.phone || ''} onChange={handleInputChange} />
+                <input type="tel" id="phone" name="phone" value={userInfo.phone || ''} onChange={handlePhoneInputChange} />
               </div>
               <div className={styles.formGroup}>
                 <label htmlFor="email">이메일</label>
