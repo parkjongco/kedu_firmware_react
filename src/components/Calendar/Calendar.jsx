@@ -11,6 +11,7 @@ import SideBar from '../../components/Sidebar/Sidebar';
 import Category from './Category/Category';
 import profileImagePlaceholder from '../../assets/image.png';
 import { useCalendarStore } from '../../store/store';
+import C_Header from './C_Header/C_Header';  // C_Header import
 
 const serverUrl = process.env.REACT_APP_SERVER_URL;
 
@@ -558,50 +559,54 @@ const Calendar = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.sub_container}>
-        <SideBar profile_src={userInfo.profileImage} username={userInfo.username} useremail={userInfo.email} />
-        <div className={styles.category}>
-          <Category 
-            openScheduleDialog={handleSaveEvent} 
-            calendars={calendars} 
-            onSelectCalendar={handleSelectCalendar}  
-            selectedCalendarId={selectedCalendarId}
-            fetchCalendars={handleCalendarUpdate} 
-            setNewlyAddedCalendarId={setNewlyAddedCalendarId} 
-          />
-        </div>
-        <div className={styles.content}>
-          <section className={styles.calendarSection}>
-            <h2>캘린더</h2>
-            <div className={styles.fullCalendar}>
-              <FullCalendar
-                ref={calendarRef}
-                locale="ko"
-                plugins={[dayGridPlugin, interactionPlugin]}
-                initialView="dayGridMonth"
-                editable={true}
-                droppable={true}
-                events={events}
-                eventDrop={handleEventDrop}
-                eventReceive={handleEventReceiveFunction}
-                eventClick={handleEventClick}
-                datesSet={onChangeDate}
-                eventContent={eventContent}
-                headerToolbar={{
-                  left: 'prev,next today',
-                  center: 'title',
-                  right: 'dayGridMonth,dayGridWeek,dayGridDay',
-                }}
-                aspectRatio={2}
-                height="100%"
-                contentHeight="100%"
-                expandRows={true}
-                fixedWeekCount={false}
-              />
-              {showEventDetails()}
-            </div>
-          </section>
+    <div>
+      {/* 캘린더 전용 헤더 추가 */}
+      <C_Header />
+      <div className={styles.container} style={{ marginTop: '60px' }}>
+        <div className={styles.sub_container}>
+          <SideBar profile_src={userInfo.profileImage} username={userInfo.username} useremail={userInfo.email} />
+          <div className={styles.category}>
+            <Category 
+              openScheduleDialog={handleSaveEvent} 
+              calendars={calendars} 
+              onSelectCalendar={handleSelectCalendar}  
+              selectedCalendarId={selectedCalendarId}
+              fetchCalendars={handleCalendarUpdate} 
+              setNewlyAddedCalendarId={setNewlyAddedCalendarId} 
+            />
+          </div>
+          <div className={styles.content}>
+            <section className={styles.calendarSection}>
+              <h2>캘린더</h2>
+              <div className={styles.fullCalendar}>
+                <FullCalendar
+                  ref={calendarRef}
+                  locale="ko"
+                  plugins={[dayGridPlugin, interactionPlugin]}
+                  initialView="dayGridMonth"
+                  editable={true}
+                  droppable={true}
+                  events={events}
+                  eventDrop={handleEventDrop}
+                  eventReceive={handleEventReceiveFunction}
+                  eventClick={handleEventClick}
+                  datesSet={onChangeDate}
+                  eventContent={eventContent}
+                  headerToolbar={{
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek,dayGridDay',
+                  }}
+                  aspectRatio={2}
+                  height="100%"
+                  contentHeight="100%"
+                  expandRows={true}
+                  fixedWeekCount={false}
+                />
+                {showEventDetails()}
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </div>
