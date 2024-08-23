@@ -560,9 +560,8 @@ const Calendar = () => {
 
   return (
     <div>
-      {/* 캘린더 전용 헤더 추가 */}
       <C_Header />
-      <div className={styles.container} style={{ marginTop: '60px' }}>
+      <div className={styles.container}>
         <div className={styles.sub_container}>
           <SideBar profile_src={userInfo.profileImage} username={userInfo.username} useremail={userInfo.email} />
           <div className={styles.category}>
@@ -610,7 +609,7 @@ const Calendar = () => {
         </div>
       </div>
     </div>
-  );
+  );  
 };
 
 export default Calendar;
