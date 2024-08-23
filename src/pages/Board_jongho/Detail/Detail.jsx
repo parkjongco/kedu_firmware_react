@@ -19,7 +19,7 @@ const Detail = ({ category = {} }) => {
     const [updatedContents, setUpdatedContents] = useState('');
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
-    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [editingCommentId, setEditingCommentId] = useState();
     const [editedCommentText, setEditedCommentText] = useState('');
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [dropdownId, setDropdownId] = useState(null);
@@ -203,22 +203,24 @@ const Detail = ({ category = {} }) => {
                     </div>
                 )}
                 <div className={styles.headerButtons}>
-                    { (isAdmin === "true" || user_seq === (board.user_seq).toString() ) && <>
-                        {!isEditing ? (
-                            <>
-                                <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
-                                <button onClick={handleDeleteBoard} className={styles.button}>삭제하기</button>
-                            </>
-                        ) : (
-                            <form onSubmit={handleUpdate} className={styles.editForm}>
-                                <button type="submit" className={styles.button}>수정완료</button>
-                                <button type="button" onClick={toggleEditMode} className={styles.button}>수정취소</button>
-                            </form>
-                        )}
-                    </>
-                    }
+                    {(isAdmin === "true" || user_seq === board.user_seq.toString()) && (
+                        <>
+                            {!isEditing ? (
+                                <>
+                                    <button onClick={toggleEditMode} className={styles.button}>수정하기</button>
+                                    <button onClick={handleDeleteBoard} className={styles.button}>삭제하기</button>
+                                </>
+                            ) : (
+                                <form onSubmit={handleUpdate} className={styles.editForm}>
+                                    <button type="submit" className={styles.button}>수정완료</button>
+                                    <button type="button" onClick={toggleEditMode} className={styles.button}>수정취소</button>
+                                </form>
+                            )}
+                        </>
+                    )}
                     <button onClick={() => navigate("/Board")} className={styles.button}>뒤로가기</button>
                 </div>
+
             </div>
             <div className={styles.body}>
                 <div><strong>글쓴이:</strong> {board.users_name} / 작성일자 : {new Date(board.board_write_date).toLocaleString()} / 조회수 : {board.board_view_count}</div>
@@ -234,93 +236,90 @@ const Detail = ({ category = {} }) => {
                     )}
                 </div>
 
-                    <div className={styles.commentsSection}>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <h3>댓글</h3>
-                        {comments.length > 0 ? (
-                            comments.map((comment) => (
-                                <div key={comment.reply_seq} className={styles.comment}>
-                                    <div className={styles.commentHeader}>
-                                        <strong>{comment.reply_userName || sessionUserName}</strong>
-                                        <p style={{margin : "0px"}}>{new Date(comment.reply_reg_date).toLocaleString()}</p>
-                                        {comment.reply_userName === (usersName || sessionUserName) && (
-                                            <div className={styles.dropdownMenu}>
-                                                 { (isAdmin === "true" || user_seq === (board.user_seq).toString() ) && <>
-                                                {editingCommentId === comment.reply_seq ? (
-                                                    <div>
-                                                        <button onClick={() => handleUpdateReply(comment.reply_seq)} className={styles.dropdownItem}><FontAwesomeIcon icon={faCheck} /></button>
-                                                        <button onClick={() => setEditingCommentId(null)} className={styles.dropdownItem}><FontAwesomeIcon icon={faX} /></button>
-                                                    </div>
-                                                ) : (
-                                                    <>
-                                                        <button
+                <div className={styles.commentsSection}>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <h3>댓글</h3>
+                    {comments.length > 0 ? (
+                        comments.map((comment) => (
+                            <div key={comment.reply_seq} className={styles.comment}>
+                                <div className={styles.commentHeader}>
+                                    <strong>{comment.reply_userName || sessionUserName}</strong>
+                                    <p style={{ margin: "0px" }}>{new Date(comment.reply_reg_date).toLocaleString()}</p>
+                                    {comment.reply_userName === (usersName || sessionUserName) && (
+                                        <div className={styles.dropdownMenu}>
+                                            {editingCommentId === comment.reply_seq ? (
+                                                <div>
+                                                    <button onClick={() => handleUpdateReply(comment.reply_seq)} className={styles.dropdownItem}><FontAwesomeIcon icon={faCheck} /></button>
+                                                    <button onClick={() => setEditingCommentId(null)} className={styles.dropdownItem}><FontAwesomeIcon icon={faX} /></button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <button
                                                         onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)}
                                                         className={styles.dropdownItem}
-                                                        >
-                                                            <FontAwesomeIcon icon={faTrash} />
-                                                        </button>
-                                                        <button
+                                                    >
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </button>
+                                                    <button
                                                         onClick={() => handleDeleteComment(comment.reply_seq)}
                                                         className={styles.dropdownItem}
-                                                        >
+                                                    >
                                                         <FontAwesomeIcon icon={faX} />
-                                                        </button>
-                                                    </>
-                                                )}
+                                                    </button>
                                                 </>
-}   
-                                                
-                                            </div>
-                                        )}
-                                    </div>
+                                            )}
 
-                                    <div>
-                                        {editingCommentId === comment.reply_seq ? (
-                                            <textarea
-                                                value={editedCommentText}
-                                                onChange={(e) => setEditedCommentText(e.target.value)}
-                                                className={styles.textarea}
-                                            />
-                                        ) : (
-                                            <div>{comment.reply_contents}</div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
                                 </div>
-                            ))
-                        ) : (
-                            <div>댓글이 없습니다.</div>
-                        )}
-                        <form onSubmit={handleCommentSubmit} className={styles.commentForm}>
-                            <textarea
-                                className={styles.textarea}
-                                value={newComment}
-                                onChange={(e) => setNewComment(e.target.value)}
-                                placeholder="댓글을 작성하세요"
-                            />
-                            <button type="submit" className={styles.replyButton}>댓글 작성</button>
-                        </form>
-                    </div>
+
+                                <div>
+                                    {editingCommentId === comment.reply_seq ? (
+                                        <textarea
+                                            value={editedCommentText}
+                                            onChange={(e) => setEditedCommentText(e.target.value)}
+                                            className={styles.textarea}
+                                        />
+                                    ) : (
+                                        <div>{comment.reply_contents}</div>
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div>댓글이 없습니다.</div>
+                    )}
+                    <form onSubmit={handleCommentSubmit} className={styles.commentForm}>
+                        <textarea
+                            className={styles.textarea}
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="댓글을 작성하세요"
+                        />
+                        <button type="submit" className={styles.replyButton}>댓글 작성</button>
+                    </form>
+                </div>
             </div>
         </div>
     );
