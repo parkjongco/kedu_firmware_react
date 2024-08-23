@@ -25,9 +25,9 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
         // approvedUserInfo에서 프로필 이미지와 이메일 정보 가져오기
         const approvedUserInfo = JSON.parse(sessionStorage.getItem('approvedUserInfo') || '{}');
         
-        // 프로필 이미지가 기본 이미지 경로와 동일할 경우 profileImagePlaceholder를 사용
-        const storedProfileImage = approvedUserInfo.profileImage === `${serverUrl}/images/default.png`
-            ? profileImagePlaceholder
+        // 프로필 이미지가 기본 이미지 경로일 경우, 기본 이미지를 사용
+        const storedProfileImage = approvedUserInfo.profileImage === '/images/image.png'
+            ? profileImagePlaceholder // 로컬 기본 이미지로 대체
             : approvedUserInfo.profileImage;
 
         const storedEmail = approvedUserInfo.email || '이메일 없음';

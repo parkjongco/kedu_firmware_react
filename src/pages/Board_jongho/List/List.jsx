@@ -34,7 +34,7 @@ export const List = ({ category = {} }) => {
                 setSelectedItems([]);
                 setCurrentPage(1);
             })
-            .catch(error => {
+            .catch(error => {http://192.168.1.10:3000/
                 console.error('Error fetching data:', error);
             });
 
