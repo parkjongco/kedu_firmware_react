@@ -1,29 +1,18 @@
 import styles from './MainContent.module.css';
 import MainCalendar from './MainCalendar/MainCalendar';  // 새로 추가된 컴포넌트 임포트
+import React, { useEffect, useState } from 'react';
+import MainBoard from '../MainBoard/MainBoard';
 
-const MainContent = () => {
+
+const MainContent = (category) => {
   return (
     <main className={styles.main_content}>
       <section className={styles.content}>
         <div className={styles.left_column}>
           <MainCalendar />  {/* 기존 캘린더 코드를 이 컴포넌트로 대체 */}
           <div className={styles.notice}>
-            <h2>공지사항</h2>
-            <div className={styles.notice_item}>
-              <div className={styles.category}>[공지]</div>
-              <div className={styles.title}>사내 교육 일정 안내</div>
-              <div className={styles.notice_date}>2024-08-22</div>
-            </div>
-            <div className={styles.notice_item}>
-              <div className={styles.category}>[공지]</div>
-              <div className={styles.title}>연말 행사 안내</div>
-              <div className={styles.notice_date}>2024-08-20</div>
-            </div>
-            <div className={styles.notice_item}>
-              <div className={styles.category}>[공지]</div>
-              <div className={styles.title}>휴가 계획 제출 요청</div>
-              <div className={styles.notice_date}>2024-08-18</div>
-            </div>
+            <MainBoard  category={category} />
+        
           </div>
         </div>
         <div className={styles.right_column}>
