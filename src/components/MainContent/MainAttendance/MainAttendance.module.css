@@ -1,0 +1,31 @@
+
+
+/* 출근 현황 항목 스타일 */
+.attendance_item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .attendance_item:last-child {
+    border-bottom: none;
+  }
+  
+  .attendance_label {
+    flex-basis: 40%;
+    font-weight: bold;
+  }
+  
+  .attendance_status {
+    flex-basis: 30%;
+    text-align: center;
+    color: #28a745; /* 출근 완료 상태를 나타내는 초록색 */
+  }
+  
+  .attendance_time {
+    flex-basis: 30%;
+    text-align: right;
+    color: #888;
+  }
+  
