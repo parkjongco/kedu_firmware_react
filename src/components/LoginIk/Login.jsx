@@ -126,6 +126,8 @@ const Login = ({ setIsMypage }) => {
         sessionStorage.removeItem('joinDate'); 
         sessionStorage.removeItem('isAdmin');
         sessionStorage.removeItem('approvedUserInfo');
+        sessionStorage.removeItem('previousUserInfo');
+
 
         setLoginID('');
         setAuth({ users_code: '', users_password: '' });
