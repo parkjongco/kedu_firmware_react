@@ -122,19 +122,22 @@
 
 .list_item {
   height: auto;
-  display : flex;
+  display: flex;
   flex-direction: row;
   align-items: center;
-  color : white;
+  color: white;
   font-weight: 800;
   gap: 10px;
-  padding : 10px 0;
+  padding: 10px 20px; /* 클릭할 수 있는 영역을 넓히기 위해 패딩 추가 */
+  cursor: pointer; /* 마우스를 올렸을 때 클릭 가능한 영역임을 나타냄 */
+  text-decoration: none; /* a 태그의 기본 밑줄 제거 */
 }
 
 .list_item > h3 {
   margin: 0;
   padding: 0;
 }
+
 
 .link {
   text-decoration: none;
@@ -148,12 +151,9 @@
 
 /* 사이드바가 접혔을 때 스타일 */
 .sidebar[style*="width: 50px"] .user_img_box {
-  width: 10px; /* 사이드바 접힘 상태에서 이미지 크기 */
-  height: 10px; /* 사이드바 접힘 상태에서 이미지 크기 */
+  width: 100px; /* 사이드바 접힘 상태에서 이미지 크기 */
+  height: 100px; /* 사이드바 접힘 상태에서 이미지 크기 */
   margin-right: 10px; /* 이미지 중앙 배치 */
   transition: width 0.3s, height 0.3s;
 }
 
-.sidebar[style*="width: 50px"] .sidebar_container {
-  align-items: center; /* 접힘 상태에서 중앙 정렬 */
-}
