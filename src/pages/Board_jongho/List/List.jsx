@@ -208,8 +208,7 @@ export const List = ({ category = {} }) => {
                     </thead>
                     <tbody>
                         {currentItems.map(e => (
-                            <tr
-                                key={e.board_seq}
+                            <tr key={e.board_seq}
                                 className={styles.row}
                                 onClick={() => handleRowClick(e.board_seq)}
                             >
