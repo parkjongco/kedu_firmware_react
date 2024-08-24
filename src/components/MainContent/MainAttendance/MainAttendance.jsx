@@ -9,6 +9,7 @@ const MainAttendance = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [forceUpdate, setForceUpdate] = useState(false);  // 강제 리렌더링을 위한 상태
 
   const {
     fetchDepartmentMembers,
@@ -16,71 +17,68 @@ const MainAttendance = () => {
     clearDepartmentMembers
   } = useAttendanceStore();
 
-  // 부서원 정보를 먼저 로드한 후 출근 현황을 불러오는 함수
-  const loadInitialData = async () => {
-    setIsLoading(true);
-    try {
-      clearDepartmentMembers();  // 부서원 상태 초기화
-      await fetchDepartmentMembers();  // 부서원 정보 불러오기
-    } catch (error) {
-      console.error('Error fetching department members:', error);
-    } finally {
-      setIsLoading(false);  // 로딩 상태 해제
-    }
-  };
+  const usersSeq = sessionStorage.getItem("usersSeq");
 
-  // 출근 현황 데이터를 로드하는 함수
+  // 출근 데이터를 불러오는 함수
   const loadAttendanceData = async () => {
-    if (departmentMembers.length === 0) return;  // 부서원 정보가 없으면 실행하지 않음
-    setIsLoading(true);
     try {
-      const usersSeq = sessionStorage.getItem("usersSeq");
-      if (usersSeq) {
+      if (usersSeq && departmentMembers.length > 0) {
         const formattedDate = currentDate.toLocaleDateString('en-CA');
         const response = await axios.get(`${serverUrl}/attendance/departmentEvents`, {
-          params: { users_seq: usersSeq, date: formattedDate }
+          params: { users_seq: usersSeq, date: formattedDate },
+          headers: {
+            'Cache-Control': 'no-cache', // 캐시 무효화 헤더 추가
+          }
         });
 
-        // console.log('Department events response:', response.data);
-
-        // 부서원 정보와 출근 기록을 결합
+        const attendanceEvents = Array.isArray(response.data) ? response.data : [];
         const updatedAttendanceData = departmentMembers.map((member) => {
-          const attendanceRecord = response.data.find(event => event.users_seq === member.USERSSEQ);
-          // console.log(`Attendance record for ${member.USERSNAME}:`, attendanceRecord);
-
-          return attendanceRecord ? {
-            ...member,
-            ...attendanceRecord
-          } : {
-            ...member,
-            status: '미출석',
-            check_in_time: null,
-            check_out_time: null
-          };
+          const attendanceRecord = attendanceEvents.find(event => String(event.users_seq) === String(member.USERSSEQ));
+          let status = '미출석';
+          if (attendanceRecord) {
+            if (attendanceRecord.status === '연차') {
+              status = '휴가';
+            } else if (attendanceRecord.check_in_time) {
+              status = '출근 완료';
+            }
+          }
+          return { ...member, status: status, check_in_time: attendanceRecord ? attendanceRecord.check_in_time : null };
         });
-
-        // console.log('Updated attendance data:', updatedAttendanceData);
         setAttendanceData(updatedAttendanceData);
       }
     } catch (error) {
       console.error('Error fetching department events:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  // 부서원 정보가 로드된 후 출근 현황 데이터를 불러옴
+  // 초기 데이터 로드
   useEffect(() => {
-    loadInitialData();
-  }, [currentDate]);
+    const initializeData = async () => {
+      setIsLoading(true);
+      try {
+        clearDepartmentMembers();  // 부서원 정보 초기화
+        await fetchDepartmentMembers();  // 부서원 정보 불러오기
+        setForceUpdate(prev => !prev);  // 강제 리렌더링을 트리거
+      } catch (error) {
+        console.error('Error loading initial data:', error);
+      } finally {
+        setIsLoading(false);  // 로딩 상태 해제
+      }
+    };
 
-  // 부서원 정보가 성공적으로 로드된 후 출근 현황을 불러옴
+    if (usersSeq) {
+      initializeData();  // usersSeq가 있을 때만 초기화
+    }
+  }, [usersSeq, currentDate]);  // usersSeq, currentDate 변경 시 실행
+
+  // 강제 리렌더링이 발생할 때 출근 현황 데이터를 새로 불러오기
   useEffect(() => {
     if (departmentMembers.length > 0) {
       loadAttendanceData();
     }
-  }, [departmentMembers]);  // departmentMembers 상태가 변경될 때마다 실행
+  }, [departmentMembers, forceUpdate]);  // departmentMembers 또는 forceUpdate 변경 시 실행
 
+  // 시간을 포맷하는 함수
   const formatTime = (dateTime) => {
     if (!dateTime) return '-';
     const date = new Date(dateTime);
@@ -99,12 +97,8 @@ const MainAttendance = () => {
           attendanceData.map((employee, index) => (
             <div key={index} className={styles.attendance_item}>
               <div className={styles.attendance_label}>{employee.USERSNAME}</div>
-              <div className={styles.attendance_status}>
-                {employee.check_in_time ? '출근 완료' : '미출석'}
-              </div>
-              <div className={styles.attendance_time}>
-                {employee.check_in_time ? formatTime(employee.check_in_time) : '-'}
-              </div>
+              <div className={styles.attendance_status}>{employee.status}</div>
+              <div className={styles.attendance_time}>{employee.check_in_time ? formatTime(employee.check_in_time) : '-'}</div>
             </div>
           ))
         ) : (

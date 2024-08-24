@@ -79,9 +79,8 @@
 .file {
     width: 100%; /* 컨테이너 너비에서 padding 제외 */
     display: flex;
-    margin-top: 10px;
     border: 0.5px dotted #d9d9d9;
-    padding: 10px;
+    padding: 12px;
     color: #8f8f8f;
     text-align: center;
     align-self: center;
@@ -90,4 +89,5 @@
     box-sizing: border-box; 
     overflow-y: auto;
     max-height: 100px; 
+    border-radius: 5px;
 }

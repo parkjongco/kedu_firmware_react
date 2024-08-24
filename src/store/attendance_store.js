@@ -86,7 +86,7 @@ export const useAttendanceStore = create((set, get) => ({
                     set({ departmentMembers: response.data });
                     // console.log(response.data);
                 } else {
-                    console.error("departmentMembers 데이터가 배열이 아닙니다:", response.data);
+                    // console.error("departmentMembers 데이터가 배열이 아닙니다:", response.data);
                     set({ departmentMembers: [] });  // 배열이 아닌 경우 빈 배열로 설정
                 }
             } catch (error) {
