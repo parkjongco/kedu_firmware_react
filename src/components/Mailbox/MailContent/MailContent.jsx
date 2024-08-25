@@ -26,10 +26,10 @@ const MailContent = () => {
     const confirmDelete = window.confirm("정말로 해당 메일을 삭제하시겠습니까?");
     if (confirmDelete) {
       console.log("현재 선택된 메일 Seq: " + mailId);
-      axios.delete(`${serverUrl}/mail/${mailId}`).then(() => {
+      axios.delete(`${serverUrl}:18000/mail/${mailId}`).then(() => {
         handleGetAll();
       }).then(() => {
-        axios.get(`${serverUrl}/mail`, {
+        axios.get(`${serverUrl}:18000/mail`, {
           params: { seq: selectedMailSeq }
         }).then((resp) => {
           setSelectedMailContent(resp.data);
@@ -47,10 +47,10 @@ const MailContent = () => {
 
   // 첨부파일 삭제 기능
   const handleDeleteAttachment = (attachmentId) => {
-    axios.delete(`${serverUrl}/mailattachment/${attachmentId}`)
+    axios.delete(`${serverUrl}:18000/mailattachment/${attachmentId}`)
       .then(() => {
         // 삭제 후 첨부파일 목록 업데이트
-        axios.get(`${serverUrl}/mail`, {
+        axios.get(`${serverUrl}:18000/mail`, {
           params: { seq: selectedMailSeq },
         }).then((resp) => {
           setSelectedMailContent(resp.data);
@@ -64,7 +64,7 @@ const MailContent = () => {
   // 첨부파일 다운로드 기능
   const handleDownloadAttachment = async (attachmentId, fileName) => {
     try {
-      const response = await axios.get(`${serverUrl}/mailattachment/${attachmentId}`, {
+      const response = await axios.get(`${serverUrl}:18000/mailattachment/${attachmentId}`, {
         responseType: 'blob', // 파일을 Blob 형식으로 받아옴
       });
 
@@ -88,7 +88,7 @@ const MailContent = () => {
   // 회신 이후에 바로 회신 메일을 확인해주기 위해 아래와 같은 처리를 해줌
   useEffect(() => {
     if (selectedMailSeq) { // selectedMailSeq가 있을 경우만 실행
-      axios.get(`${serverUrl}/mail`, {
+      axios.get(`${serverUrl}:18000/mail`, {
         params: { seq: selectedMailSeq }
       }).then((resp) => {
         setSelectedMailContent(resp.data); // 메일 내용 설정

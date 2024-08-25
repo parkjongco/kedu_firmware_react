@@ -46,7 +46,7 @@ const AttendanceCardBox = () => {
             try {
                 const usersSeq = sessionStorage.getItem("usersSeq"); // 사용자 ID를 세션에서 가져옴
                 // 기존 fetchAttendanceSummary 대신 axios로 직접 데이터 가져오기**
-                const response = await axios.get(`${serverUrl}/attendance/checkAttendanceSummary`, {
+                const response = await axios.get(`${serverUrl}:18000/attendance/checkAttendanceSummary`, {
                     params: { usersSeq, month: selectedMonth }
                 });
                 setAttendanceData(response.data); // 상태 업데이트 호출

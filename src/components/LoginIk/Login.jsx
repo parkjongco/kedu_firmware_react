@@ -27,7 +27,7 @@ const Login = ({ setIsMypage }) => {
 
   const fetchUserProfile = async (userCode, usersSeq) => {
     try {
-      const response = await axios.get(`${serverUrl}/user-profile`, {
+      const response = await axios.get(`${serverUrl}:18000/user-profile`, {
         params: { userCode: userCode },
       });
       const { rank, employeeId, joinDate, phoneNumber, email, address, zipCode, detailedAddress, profilePictureUrl } = response.data;
@@ -59,7 +59,7 @@ const Login = ({ setIsMypage }) => {
   const checkVacationStatus = (users_seq) => {
     const joinDate = sessionStorage.getItem('joinDate');  // 입사일 가져오기
 
-    axios.post(`${serverUrl}/vacation/check`, { users_seq, joinDate })  // 입사일 함께 전송
+    axios.post(`${serverUrl}:18000/vacation/check`, { users_seq, joinDate })  // 입사일 함께 전송
       .then((response) => {
         if (response.data.message === "휴가가 지급되었습니다") {
           console.log("최초 로그인 유저에게 휴가 지급 됌");
@@ -76,7 +76,7 @@ const Login = ({ setIsMypage }) => {
   const handleLogin = () => {
     console.log('로그인 시도 중:', auth);
     
-    axios.post(`${serverUrl}/auth`, auth)
+    axios.post(`${serverUrl}:18000/auth`, auth)
       .then(async (resp) => {
         console.log('서버 응답:', resp.data);
         const { users_code, users_name, users_is_admin, users_seq } = resp.data;
@@ -116,7 +116,7 @@ const Login = ({ setIsMypage }) => {
   
   // 로그아웃 핸들러
   const handleLogout = () => {
-    axios.post(`${serverUrl}/auth/logout`)
+    axios.post(`${serverUrl}:18000/auth/logout`)
       .then(() => {
         console.log('로그아웃 성공');
         // 세션 및 상태 초기화
@@ -146,7 +146,7 @@ const Login = ({ setIsMypage }) => {
     if (!window.confirm('정말 탈퇴하시겠습니까?')) {
       return;
     }
-    axios.delete(`${serverUrl}/users`)
+    axios.delete(`${serverUrl}:18000/users`)
       .then(() => {
         console.log('회원 탈퇴 성공');
         sessionStorage.removeItem('loginID');

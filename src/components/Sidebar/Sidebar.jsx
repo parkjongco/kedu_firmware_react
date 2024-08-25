@@ -110,35 +110,35 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
                 {/* 메뉴 리스트 */}
                 <div className={styles.side_group} style={!toggle ? { paddingLeft: "0px" } : {}}>
                     <div className={styles.side_list}>
-                        <Link to={`${serverUrl}:3000/`} className={styles.list_item}>
+                        <Link to={`${serverUrl}/`} className={styles.list_item}>
                             <FontAwesomeIcon icon={faHome} size="2x" />
                             {toggle && <span>홈</span>}
                         </Link>
-                        <Link to={`${serverUrl}:3000/attendance`} className={styles.list_item}>
+                        <Link to={`${serverUrl}/attendance`} className={styles.list_item}>
                             <FontAwesomeIcon icon={faCalendarCheck} size="2x" />
                             {toggle && <span>근태관리</span>}
                         </Link>
-                        <Link to={`${serverUrl}:3000/mailbox`} className={styles.list_item}>
+                        <Link to={`${serverUrl}/mailbox`} className={styles.list_item}>
                             <FontAwesomeIcon icon={faEnvelope} size="2x" />
                             {toggle && <span>메일함</span>}
                         </Link>
-                        <Link to={`${serverUrl}:3000/Board`} className={styles.list_item}>
+                        <Link to={`${serverUrl}/Board`} className={styles.list_item}>
                             <FontAwesomeIcon icon={faBarsStaggered} size="2x" />
                             {toggle && <span>게시판</span>}
                         </Link>
-                        <Link to={`${serverUrl}:3000/Calendar`} className={styles.list_item}>
+                        <Link to={`${serverUrl}/Calendar`} className={styles.list_item}>
                             <FontAwesomeIcon icon={faCalendar} size="2x" />
                             {toggle && <span>캘린더</span>}
                         </Link>
-                        <Link to={`${serverUrl}:3000/e-payment`} className={styles.list_item}>
+                        <Link to={`${serverUrl}/e-payment`} className={styles.list_item}>
                             <FontAwesomeIcon icon={faFileInvoice} size="2x" />
                             {toggle && <span>전자결제</span>}
                         </Link>
-                        <Link to={`${serverUrl}:3000/messenger`} className={styles.list_item}>
+                        <Link to={`${serverUrl}/messenger`} className={styles.list_item}>
                             <FontAwesomeIcon icon={faMessage} size="2x" />
                             {toggle && <span>메신저</span>}
                         </Link>
-                        <Link to={`${serverUrl}:3000/resources`} className={styles.list_item}>
+                        <Link to={`${serverUrl}/resources`} className={styles.list_item}>
                             <FontAwesomeIcon icon={faHardDrive} size="2x" />
                             {toggle && <span>자료실</span>}
                         </Link>
@@ -146,7 +146,7 @@ export default function SideBar({ profile_src = "", onProfileImageChange }) {
 
                     {/* 하단 사용자 메뉴 */}
                     <div>
-                        <Link to={`${serverUrl}:3000/mypage`} className={styles.list_item}>
+                        <Link to={`${serverUrl}/mypage`} className={styles.list_item}>
                             <FontAwesomeIcon icon={faImagePortrait} size="2x" />
                             {toggle && <span>마이페이지</span>}
                         </Link>

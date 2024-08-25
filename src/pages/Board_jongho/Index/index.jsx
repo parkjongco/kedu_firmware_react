@@ -4,12 +4,12 @@ import styles from './index.module.css';
 import SideBar from '../../../components/Sidebar/Sidebar';
 
 import BoardPage from '../../../config/BoardCategory';
-import { Link, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Link, Route, Routes, useNavigate } from 'react-router-dom';
 import List from '../List/List';
 import BoardEdit from '../Edit/Edit';
 import BoardDetail from '../Detail/Detail';
 
-const BoardIndex = (host) => {
+const Index = (host) => {
     const [selectedCategory, setSelectedCategory] = useState({});
     const navigate = useNavigate();
 
@@ -27,11 +27,11 @@ const BoardIndex = (host) => {
                 </div>
                 <div className={styles.content}>
                     <Routes>
-                        <Route path='' element={<List category={selectedCategory} />} />
+                        <Route path='/' element={<List category={selectedCategory} />} />
                         {/* {2. 그리고 여기에 선택한 카테고리가 입력됨.} */}
-                        <Route path='Edit' element={<BoardEdit category={selectedCategory} />} />
+                        <Route path='/Edit' element={<BoardEdit category={selectedCategory} />} />
                         {/* <Route path='Detail' element={<NoticeDetail />} /> */}
-                        <Route path='Detail/*' element={<BoardDetail />} /> 
+                        <Route path='/Detail/*' element={<BoardDetail />} /> 
                     </Routes>
                 </div>
             </div>
@@ -39,4 +39,4 @@ const BoardIndex = (host) => {
     );
 };
 
-export default BoardIndex;
+export default Index;

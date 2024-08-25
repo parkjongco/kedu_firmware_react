@@ -60,7 +60,7 @@ const Mypage = () => {
     }
 
     try {
-      const response = await axios.get(`${serverUrl}/user-update-request/approval-list`);
+      const response = await axios.get(`${serverUrl}:18000/user-update-request/approval-list`);
       const latestRequest = response.data.find(item => item.usersSeq === parseInt(usersSeq) && (item.requestStatus === '승인됨' || item.requestStatus === '거부됨'));
 
       if (latestRequest) {
@@ -97,7 +97,7 @@ const Mypage = () => {
           }));
         }
       } else {
-        const userProfileResponse = await axios.get(`${serverUrl}/user-profile`, {
+        const userProfileResponse = await axios.get(`${serverUrl}:18000/user-profile`, {
           params: { userCode: loginID }
         });
 
@@ -283,7 +283,7 @@ const Mypage = () => {
         approver: sessionStorage.getItem('loginID'),
       };
 
-      await axios.post(`${serverUrl}/user-update-request`, updatedUserInfo);
+      await axios.post(`${serverUrl}:18000/user-update-request`, updatedUserInfo);
       alert('수정 요청이 성공적으로 제출되었습니다.');
 
       setUserInfo(prevState => ({
@@ -300,7 +300,7 @@ const Mypage = () => {
 
   const handleApprove = async (id) => {
     try {
-      await axios.post(`${serverUrl}/user-update-request/approve/${id}`);
+      await axios.post(`${serverUrl}:18000/user-update-request/approve/${id}`);
       alert('승인되었습니다.');
       fetchUserProfile();
       setIsApprovalListOpen(false);
@@ -311,7 +311,7 @@ const Mypage = () => {
 
   const handleReject = async (id) => {
     try {
-        await axios.post(`${serverUrl}/user-update-request/reject/${id}`);
+        await axios.post(`${serverUrl}:18000/user-update-request/reject/${id}`);
 
         const approvedUserInfo = JSON.parse(sessionStorage.getItem('approvedUserInfo'));
         if (approvedUserInfo) {
@@ -347,7 +347,7 @@ const Mypage = () => {
       formData.append('file', file);
   
       try {
-        const uploadResponse = await axios.post(`${serverUrl}/user-update-request/upload-profile-image`, formData, {
+        const uploadResponse = await axios.post(`${serverUrl}:18000/user-update-request/upload-profile-image`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -368,7 +368,7 @@ const Mypage = () => {
   };
 
   const loadApprovalList = () => {
-    axios.get(`${serverUrl}/user-update-request/approval-list`)
+    axios.get(`${serverUrl}:18000/user-update-request/approval-list`)
       .then(response => {
         const pendingRequests = response.data.filter(item => item.requestStatus === '대기 중');
         setApprovalList(pendingRequests);

@@ -41,7 +41,7 @@ const MailList = () => {
     setSelectedMailSeq(mailSeq); // 선택된 메일의 Seq를 저장(삭제에서 사용)
     console.log("선택된 메일 Seq는" + mailSeq);
     // 메일 내용 가져오기 로직
-    axios.get(`${serverUrl}/mail`, {
+    axios.get(`${serverUrl}:18000/mail`, {
       params: { seq: mailSeq }
     }).then((resp) => {
       console.log("받은 메일 내용:", resp.data);

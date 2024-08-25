@@ -31,7 +31,7 @@ const Detail = ({ category = {} }) => {
     const user_seq = sessionStorage.getItem("usersSeq");
 
     useEffect(() => {
-        axios.get(`${serverUrl}:3000/board/detail/${seq}`)
+        axios.get(`${serverUrl}:18000/board/detail/${seq}`)
             .then(resp => {
                 setBoard(resp.data);
                 setUpdatedTitle(resp.data.board_title);
@@ -41,7 +41,7 @@ const Detail = ({ category = {} }) => {
                 console.error('Error fetching board data:', error);
             });
 
-        axios.get(`${serverUrl}:3000/board_reply/${seq}`)
+        axios.get(`${serverUrl}:18000/board_reply/${seq}`)
             .then(resp => {
                 setComments(resp.data || []);
             })
@@ -49,7 +49,7 @@ const Detail = ({ category = {} }) => {
                 console.error('Error fetching comments data:', error);
             });
 
-        axios.get(`${serverUrl}:3000/bookmark/${seq}`)
+        axios.get(`${serverUrl}:18000/bookmark/${seq}`)
             .then(resp => {
                 setIsBookmarked(resp.data);
             })
@@ -65,7 +65,7 @@ const Detail = ({ category = {} }) => {
             board_contents: updatedContents,
         };
 
-        axios.put(`${serverUrl}:3000/board/${seq}`, updatedData)
+        axios.put(`${serverUrl}:18000/board/${seq}`, updatedData)
             .then(resp => {
                 setBoard(resp.data);
                 setIsEditing(false);
@@ -79,7 +79,7 @@ const Detail = ({ category = {} }) => {
         const isConfirmed = window.confirm('정말로 이 게시물을 삭제하시겠습니까?');
 
         if (isConfirmed) {
-            axios.delete(`${serverUrl}:3000/board/${seq}`)
+            axios.delete(`${serverUrl}:18000/board/${seq}`)
                 .then(() => {
                     navigate("/Board");
                 })
@@ -100,7 +100,7 @@ const Detail = ({ category = {} }) => {
             board_seq: seq,
         };
 
-        axios.post(`${serverUrl}:3000/board_reply`, commentData)
+        axios.post(`${serverUrl}:18000/board_reply`, commentData)
             .then(resp => {
                 setComments(prevComments => [...prevComments, resp.data]);
                 setNewComment('');
@@ -116,7 +116,7 @@ const Detail = ({ category = {} }) => {
             reply_reg_date: new Date().toISOString(),
         };
 
-        axios.put(`${serverUrl}:3000/board_reply/${seq}/${commentId}`, updatedCommentData)
+        axios.put(`${serverUrl}:18000/board_reply/${seq}/${commentId}`, updatedCommentData)
             .then(() => {
                 setComments(prevComments => prevComments.map(comment =>
                     comment.reply_seq === commentId ? { ...comment, ...updatedCommentData } : comment
@@ -133,7 +133,7 @@ const Detail = ({ category = {} }) => {
         const isConfirmed = window.confirm('정말로 이 댓글을 삭제하시겠습니까?');
 
         if (isConfirmed) {
-            axios.delete(`${serverUrl}:3000/board_reply/${seq}/${commentId}`)
+            axios.delete(`${serverUrl}:18000/board_reply/${seq}/${commentId}`)
                 .then(() => {
                     setComments(prevComments => prevComments.filter(comment => comment.reply_seq !== commentId));
                 })
@@ -150,7 +150,7 @@ const Detail = ({ category = {} }) => {
 
     const handleBookmarkClick = () => {
         if (isBookmarked) {
-            axios.delete(`${serverUrl}:3000/bookmark/${seq}`)
+            axios.delete(`${serverUrl}:18000/bookmark/${seq}`)
                 .then(() => {
                     setIsBookmarked(false);
                 })
@@ -158,7 +158,7 @@ const Detail = ({ category = {} }) => {
                     console.error('Error removing bookmark:', error);
                 });
         } else {
-            axios.post(`${serverUrl}:3000/bookmark`, { board_seq: seq })
+            axios.post(`${serverUrl}:18000/bookmark`, { board_seq: seq })
                 .then(() => {
                     setIsBookmarked(true);
                 })

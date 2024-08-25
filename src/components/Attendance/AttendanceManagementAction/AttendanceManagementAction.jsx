@@ -49,7 +49,7 @@ const AttendanceManagementAction = () => {
     const openVacationModal = async () => {
         const usersSeq = sessionStorage.getItem('usersSeq');
         try {
-            const response = await axios.get(`/vacation/annual/${usersSeq}`);
+            const response = await axios.get(`http://3.36.53.159:18000/vacation/annual/${usersSeq}`);
             console.log('Fetched vacation info:', response.data); 
             setAnnualVacationInfo(response.data);  // 서버에서 가져온 연차 정보를 상태에 저장
         } catch (error) {

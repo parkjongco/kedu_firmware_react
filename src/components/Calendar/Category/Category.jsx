@@ -11,7 +11,7 @@ const serverUrl = process.env.REACT_APP_SERVER_URL;
 axios.defaults.withCredentials = true;
 
 const apiClient = axios.create({
-  baseURL: serverUrl,
+  baseURL: serverUrl + ":18000",
   withCredentials: true,
 });
 

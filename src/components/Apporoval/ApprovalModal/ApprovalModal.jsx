@@ -68,13 +68,13 @@ function ApprovalModal() {
         const parsedData = JSON.stringify(approvalData);
         const uploadResult = await handleFileUpload(e);
         if (uploadResult === true) {
-            axios.post(`${serverUrl}/approval`, {
+            axios.post(`${serverUrl}:18000/approval`, {
                 "data": parsedData,
                 "contentType": 'application/json'
             })
                 .then(response => {
                     console.log('Response:', response);
-                    axios.post(`${serverUrl}/approval/file/upload`, formData);
+                    axios.post(`${serverUrl}:18000/approval/file/upload`, formData);
                     //Swal(Sweet alert)로 변경 예정
                     alert('결재 상신에 성공했습니다.');
                 })
@@ -188,7 +188,7 @@ function ApprovalModal() {
         }
 
         try {
-            const response = await axios.post(`${serverUrl}/approval/file`, formData, {
+            const response = await axios.post(`${serverUrl}:18000/approval/file`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -289,7 +289,7 @@ function ApprovalModal() {
     useEffect(() => {
         const fetchUserList = async () => {
             try {
-                const response = await axios.get(`${serverUrl}/ApprovalTemplate`);
+                const response = await axios.get(`${serverUrl}:18000/ApprovalTemplate`);
                 setUserList(response.data);
             } catch (error) {
                 console.error('사용자 목록을 가져오는 중 오류 발생:', error);

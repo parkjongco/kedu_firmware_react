@@ -32,7 +32,7 @@ export const useAttendanceStore = create((set, get) => ({
      // 부서 일정 가져오기 - usersSeq와 날짜를 기반으로
      fetchDepartmentEvents: async (usersSeq, date) => {
         try {
-            const response = await axios.get(`${serverUrl}/attendance/departmentEvents`, {
+            const response = await axios.get(`${serverUrl}:18000/attendance/departmentEvents`, {
                 params: { users_seq: usersSeq, date: date }
             });
             // console.log(date);
@@ -81,7 +81,7 @@ export const useAttendanceStore = create((set, get) => ({
         const loginID = sessionStorage.getItem("loginID"); // loginID를 가져옴
         if (loginID) {
             try {
-                const response = await axios.get(`${serverUrl}/users/${loginID}/deptprofile`);
+                const response = await axios.get(`${serverUrl}:18000/users/${loginID}/deptprofile`);
                 if (Array.isArray(response.data)) {
                     set({ departmentMembers: response.data });
                     // console.log(response.data);
@@ -101,7 +101,7 @@ export const useAttendanceStore = create((set, get) => ({
 
     fetchAttendanceStatus: async (usersSeq) => {
         try {
-            const response = await axios.get(`${serverUrl}/attendance/check`, {
+            const response = await axios.get(`${serverUrl}:18000/attendance/check`, {
                 params: { users_seq: usersSeq }
             });
 
@@ -125,7 +125,7 @@ export const useAttendanceStore = create((set, get) => ({
 
     fetchAttendanceSummary: async (usersSeq, month) => {
         try {
-            const response = await axios.get(`${serverUrl}/attendance/checkAttendanceSummary`, {
+            const response = await axios.get(`${serverUrl}:18000/attendance/checkAttendanceSummary`, {
                 params: { usersSeq, month }
             });
 
@@ -146,7 +146,7 @@ export const useAttendanceStore = create((set, get) => ({
 
     fetchEvents: async (usersSeq, startDate, endDate) => {
         try {
-            const response = await axios.get(`${serverUrl}/attendance/events`, {
+            const response = await axios.get(`${serverUrl}:18000/attendance/events`, {
                 params: { users_seq: usersSeq, start_date: startDate, end_date: endDate }
             });
             
@@ -205,7 +205,7 @@ export const useAttendanceStore = create((set, get) => ({
             }));
 
             try {
-                await axios.post(`${serverUrl}/attendance`, {
+                await axios.post(`${serverUrl}:18000/attendance`, {
                     users_seq: usersSeq,
                     check_in_time: now.toISOString()  // ISO 8601 형식으로 전송
                 });
@@ -234,7 +234,7 @@ export const useAttendanceStore = create((set, get) => ({
             }));
 
             try {
-                await axios.post(`${serverUrl}/attendance`, {
+                await axios.post(`${serverUrl}:18000/attendance`, {
                     users_seq: usersSeq,
                     check_out_time: now.toISOString()  // ISO 8601 형식으로 전송
                 });

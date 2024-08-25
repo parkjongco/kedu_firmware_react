@@ -16,7 +16,7 @@ const DeleteUser = () => {
   const serverUrl = process.env.REACT_APP_SERVER_URL; // 환경 변수로부터 서버 URL 가져오기
 
   useEffect(() => {
-    axios.get(`${serverUrl}/users/all`)
+    axios.get(`${serverUrl}:18000/users/all`)
       .then(response => {
         const usersArray = Array.isArray(response.data) ? response.data : [response.data];
         console.log("Fetched Users:", usersArray);
@@ -61,7 +61,7 @@ const DeleteUser = () => {
 
     if (window.confirm(`정말 이 유저를 제명하시겠습니까?`)) {
       setIsDeleting(true);
-      axios.delete(`${serverUrl}/users/code/${selectedUserCode}`)
+      axios.delete(`${serverUrl}:18000/users/code/${selectedUserCode}`)
         .then(() => {
           alert("유저 제명 성공");
           setUsers(users.filter(user => user.users_code !== selectedUserCode));

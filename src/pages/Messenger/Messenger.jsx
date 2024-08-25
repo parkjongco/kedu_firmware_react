@@ -40,8 +40,8 @@ const Messenger = () => {
     const loginID = sessionStorage.getItem('loginID');
     if (loginID) {
       // 두 개의 API 호출을 병렬로 실행
-      const fetchUsers = axios.get(`${serverUrl}/users/all`);
-      const fetchEmployees = axios.get(`${serverUrl}/employees/all`);
+      const fetchUsers = axios.get(`${serverUrl}:18000/users/all`);
+      const fetchEmployees = axios.get(`${serverUrl}:18000/employees/all`);
 
       Promise.all([fetchUsers, fetchEmployees])
         .then(([usersResponse, employeesResponse]) => {
@@ -65,7 +65,7 @@ const Messenger = () => {
             setUsers(mergedUsers.filter((user) => user.users_name !== currentUser.users_name));
 
             axios
-              .get(`${serverUrl}/messages/unread/${currentUser.users_name}`)
+              .get(`${serverUrl}:18000/messages/unread/${currentUser.users_name}`)
               .then((res) => {
                 unreadCountsRef.current = res.data;
               })
@@ -81,7 +81,7 @@ const Messenger = () => {
         });
     }
 
-    const wsServerUrl = `${serverUrl.replace(/^http(s?):\/\//, 'ws://')}/ws/chat`;
+    const wsServerUrl = `${serverUrl.replace(/^http(s?):\/\//, 'ws://')}:18000/ws/chat`;
     const webSocket = new WebSocket(wsServerUrl);
 
     webSocket.onopen = () => {
@@ -118,10 +118,10 @@ const Messenger = () => {
     setSelectedUser(user);
 
     try {
-      const response = await axios.get(`${serverUrl}/messages/chat/${username}/${user.users_name}`);
+      const response = await axios.get(`${serverUrl}:18000/messages/chat/${username}/${user.users_name}`);
       setCurrentChat(response.data); // 선택된 유저와의 채팅만 불러옴
 
-      await axios.post(`${serverUrl}/messages/read/${username}/${user.users_name}`);
+      await axios.post(`${serverUrl}:18000/messages/read/${username}/${user.users_name}`);
 
       // 알람 카운트를 0으로 설정하고 상태를 업데이트
       unreadCountsRef.current[user.users_name] = 0;

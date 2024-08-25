@@ -32,7 +32,7 @@ const Admin = () => {
 
   // 부서 목록을 가져오는 useEffect
   useEffect(() => {
-    axios.get(`${serverUrl}/admin/departments`, {
+    axios.get(`${serverUrl}:18000/admin/departments`, {
       headers: {
         'Content-Type': 'application/json',
       }
@@ -54,7 +54,7 @@ const Admin = () => {
   // 부서 선택 시 유닛 코드를 가져와 input 필드에 표시하고 unit_seq도 가져오기
   useEffect(() => {
     if (form.department) {
-      axios.get(`${serverUrl}/admin/departments/${form.department}/units`, {
+      axios.get(`${serverUrl}:18000/admin/departments/${form.department}/units`, {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -79,7 +79,7 @@ const Admin = () => {
 
   // 직급 목록을 가져오는 useEffect
   useEffect(() => {
-    axios.get(`${serverUrl}/ranks`, {
+    axios.get(`${serverUrl}:18000/ranks`, {
       headers: {
         'Content-Type': 'application/json',
       }
@@ -126,7 +126,7 @@ const Admin = () => {
       return;
     }
 
-    axios.post(`${serverUrl}/users`, {
+    axios.post(`${serverUrl}:18000/users`, {
       users_code: form.employeeCode,
       users_name: form.users_name,
       users_password: form.tempPassword,
@@ -165,24 +165,24 @@ const Admin = () => {
     }
 
     axios.all([
-      axios.get(`${serverUrl}/admin/departments/${form.department}`, {
+      axios.get(`${serverUrl}:18000/admin/departments/${form.department}`, {
         headers: {
           'Content-Type': 'application/json',
         }
       }),
-      axios.get(`${serverUrl}/admin/units/${unitSeq}`, {
+      axios.get(`${serverUrl}:18000/admin/units/${unitSeq}`, {
         headers: {
           'Content-Type': 'application/json',
         }
       }),
-      axios.get(`${serverUrl}/ranks/${form.rank_seq}`, {
+      axios.get(`${serverUrl}:18000/ranks/${form.rank_seq}`, {
         headers: {
           'Content-Type': 'application/json',
         }
       })
     ])
     .then(axios.spread((departmentResponse, unitResponse, rankResponse) => {
-      return axios.post(`${serverUrl}/employees/register`, {
+      return axios.post(`${serverUrl}:18000/employees/register`, {
         user_seq: userSeq,
         users_name: form.users_name,
         department_seq: parseInt(form.department),

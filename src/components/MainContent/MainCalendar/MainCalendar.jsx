@@ -26,7 +26,7 @@ const MainCalendar = () => {
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        const response = await axios.get(`${serverUrl}/events`);
+        const response = await axios.get(`${serverUrl}:18000/events`);
         const sortedEvents = response.data.sort((a, b) => new Date(a.eventsStartDate) - new Date(b.eventsStartDate));
         setEvents(sortedEvents);
       } catch (error) {

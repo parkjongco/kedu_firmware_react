@@ -25,10 +25,10 @@ const MailListActions = () => {
   
         if (confirmDelete) {
         console.log("현재 선택된 메일 Seq: " + selectedMailSeq);
-        axios.delete(`${serverUrl}/mailbox/${selectedMailSeq}`).then(() => {
+        axios.delete(`${serverUrl}:18000/mailbox/${selectedMailSeq}`).then(() => {
           handleGetAll();
         }).then(() => {
-            axios.get(`${serverUrl}/mail`, {
+            axios.get(`${serverUrl}:18000/mail`, {
               params: { seq: selectedMailSeq }
             }).then((resp) => {
               setSelectedMailContent(resp.data);
@@ -51,7 +51,7 @@ const MailListActions = () => {
     };
 
     const handleSearch = () => {
-      axios.get(`${serverUrl}/mail`, {
+      axios.get(`${serverUrl}:18000/mail`, {
           params: { query: searchTerm }
       }).then((resp) => {
           const searchResults = resp.data.mails;
@@ -76,7 +76,7 @@ const MailListActions = () => {
 
   useEffect(() => {
     if (searchTerm) {
-        axios.get(`${serverUrl}/mail`, {
+        axios.get(`${serverUrl}:18000/mail`, {
             params: { query: searchTerm }
         }).then((resp) => {
             setPreviewResults(resp.data.mails);
@@ -90,7 +90,7 @@ const MailListActions = () => {
 
   const handlePreviewClick = (mailSeq) => {
     // 선택된 미리보기 항목의 메일 Seq를 이용해 메일 리스트를 갱신
-    axios.get(`${serverUrl}/mail`, {
+    axios.get(`${serverUrl}:18000/mail`, {
         params: { seq: mailSeq }
     }).then((resp) => {
         const searchResults = resp.data.mails;

@@ -48,7 +48,7 @@ const CreateMail = () => {
       console.log("토글 실행")
 
       const loginID = sessionStorage.getItem("loginID");
-      const response = await axios.get(`${serverUrl}/users/${loginID}/departmentmemberinfo`);
+      const response = await axios.get(`${serverUrl}:18000/users/${loginID}/departmentmemberinfo`);
       setDepartmentUsers(response.data);
       console.log(departmentUsers);
     } catch (error) {
@@ -74,7 +74,7 @@ const CreateMail = () => {
 
   const fetchReplyToEmail = async (mailId) => {
     try {
-      const response = await axios.get(`${serverUrl}/mail/${mailId}/replyemail`);
+      const response = await axios.get(`${serverUrl}:18000/mail/${mailId}/replyemail`);
       setTo(response.data); // 회신자의 이메일을 to 상태에 설정
     } catch (error) {
       console.error('회신자 이메일을 가져오는 중 오류가 발생했습니다.', error);
@@ -159,7 +159,7 @@ const CreateMail = () => {
     try {
       //await : axios.post가 처리될때까지 기다린 후 response 변수에 할당(디버깅 목적)
       console.log("보냅니다!!");
-      const response = await axios.post(`${serverUrl}/mail`, formData);        
+      const response = await axios.post(`${serverUrl}:18000/mail`, formData);        
       alert('메일이 성공적으로 전송되었습니다.');
       navigate('/mailbox');
     } catch (error) {

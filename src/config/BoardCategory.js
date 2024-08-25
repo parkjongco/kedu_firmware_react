@@ -27,7 +27,7 @@ const BoardPostComponent = ({ category }) => {
 
     useEffect(() => {
         if (category) {
-            axios.get(`${serverUrl}/board/${category.category_seq}`)
+            axios.get(`${serverUrl}:18000/board/${category.category_seq}`)
                 .then(resp => {
                     setPosts(resp.data);
                 })
@@ -55,7 +55,7 @@ const BoardPage = ({onChangeCategory}) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`${serverUrl}/board_category`)
+        axios.get(`${serverUrl}:18000/board_category`)
             .then(resp => {
                 setCategories(resp.data);
                 setSelectedCategory(resp.data[0]); // 초기 카테고리 선택

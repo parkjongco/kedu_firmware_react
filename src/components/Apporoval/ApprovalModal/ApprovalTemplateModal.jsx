@@ -34,7 +34,7 @@ function SecondModal({ show, onHide, listA }) {
     };
 
     const templateSave = () => {
-        axios.post(`${serverUrl}/ApprovalTemplate`, { listB })
+        axios.post(`${serverUrl}:18000/ApprovalTemplate`, { listB })
             .then(response => {
                 console.log('템플릿 저장 성공:', response.data);
             })

@@ -24,7 +24,7 @@ const MainAttendance = () => {
     try {
       if (usersSeq && departmentMembers.length > 0) {
         const formattedDate = currentDate.toLocaleDateString('en-CA');
-        const response = await axios.get(`${serverUrl}/attendance/departmentEvents`, {
+        const response = await axios.get(`${serverUrl}:18000/attendance/departmentEvents`, {
           params: { users_seq: usersSeq, date: formattedDate },
           headers: {
             'Cache-Control': 'no-cache', // 캐시 무효화 헤더 추가

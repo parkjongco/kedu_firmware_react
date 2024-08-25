@@ -59,13 +59,13 @@ export default function SideBar({ profile_src = "", username, useremail, onProfi
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faHome} />
                             {toggle && (
-                                <a href={`${serverUrl}:3000/`} className={styles.link}>홈</a>
+                                <a href={`${serverUrl}/`} className={styles.link}>홈</a>
                             )}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faEnvelope} />
                             {toggle && (
-                                <a href={`${serverUrl}:3000/mailbox`} className={styles.link}>메일함</a>
+                                <a href={`${serverUrl}/mailbox`} className={styles.link}>메일함</a>
                             )}
                         </div>
                         <div className={styles.list_item}>
@@ -77,25 +77,25 @@ export default function SideBar({ profile_src = "", username, useremail, onProfi
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faCalendar} />
                             {toggle && (
-                                <a href={`${serverUrl}:3000/calendar`} className={styles.link}>캘린더</a>
+                                <a href={`${serverUrl}/calendar`} className={styles.link}>캘린더</a>
                             )}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faFileInvoice} />
                             {toggle && (
-                                <a href={`${serverUrl}:3000/e-payment`} className={styles.link}>전자결제</a>
+                                <a href={`${serverUrl}/e-payment`} className={styles.link}>전자결제</a>
                             )}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faMessage} />
                             {toggle && (
-                                <Link to={`${serverUrl}:3000/messenger`} className={styles.link}>메신저</Link>
+                                <Link to={`${serverUrl}/messenger`} className={styles.link}>메신저</Link>
                             )}
                         </div>
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faHardDrive} />
                             {toggle && (
-                                <a href={`${serverUrl}:3000/resources`} className={styles.link}>자료실</a>
+                                <a href={`${serverUrl}/resources`} className={styles.link}>자료실</a>
                             )}
                         </div>
                     </div>
@@ -105,7 +105,7 @@ export default function SideBar({ profile_src = "", username, useremail, onProfi
                         <div className={styles.list_item}>
                             <FontAwesomeIcon icon={faImagePortrait} />
                             {toggle && (
-                                <Link to={`${serverUrl}:3000/mypage`} className={styles.link}>마이페이지</Link>
+                                <Link to={`${serverUrl}/mypage`} className={styles.link}>마이페이지</Link>
                             )}
                         </div>
                         <div className={styles.list_item}>
