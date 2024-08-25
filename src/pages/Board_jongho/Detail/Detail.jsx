@@ -266,7 +266,7 @@ const Detail = ({ category = {} }) => {
                                 <div className={styles.commentHeader}>
                                     <strong>{comment.reply_userName || sessionUserName}</strong>
                                     <p style={{ margin: "0px" }}>{new Date(comment.reply_reg_date).toLocaleString()}</p>
-                                    {comment.reply_userName === (usersName || sessionUserName) && (
+                                    {(comment.reply_userName === (usersName || sessionUserName) || isAdmin == "true") && (
                                         <div className={styles.dropdownMenu}>
                                             {editingCommentId === comment.reply_seq ? (
                                                 <div>
@@ -279,7 +279,7 @@ const Detail = ({ category = {} }) => {
                                                         onClick={() => handleCommentEdit(comment.reply_seq, comment.reply_contents)}
                                                         className={styles.dropdownItem}
                                                     >
-                                                        <FontAwesomeIcon icon={faTrash} />
+                                                        <FontAwesomeIcon icon={faPenToSquare} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDeleteComment(comment.reply_seq)}

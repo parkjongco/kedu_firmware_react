@@ -4,7 +4,7 @@ import { useNavigate, Route, Routes } from 'react-router-dom';
 import Header from './components/Header/Header';
 import Sidebar from './components/Sidebar/Sidebar';
 import MainContent from './components/MainContent/MainContent';
-import {BoardIndex, BoardEdit, BoardDetail} from './pages/Board_jongho';
+import {BoardIndex} from './pages/Board_jongho';
 import Mailbox from './components/Mailbox/Mailbox';
 import Messenger from './pages/Messenger/Messenger';
 import Login from './components/LoginIk/Login';
@@ -44,10 +44,10 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<AppLayout><MainContent /></AppLayout>} />
-      <Route path="/Attendance/*" element={<Attendance />} />
+      <Route path="/BoardDetail/:seq" element={<BoardIndex />} />
+      <Route path="/BoardEdit" element={<BoardIndex />} />
       <Route path="/Board" element={<BoardIndex />} />
-      <Route path="/BoardEdit" element={<BoardEdit />} />
-      <Route path="/BoardDetail" element={<BoardDetail />} />
+      <Route path="/Attendance/*" element={<Attendance />} />
       <Route path="/mailbox/*" element={<Mailbox />} />
       <Route path="/messenger" element={<Messenger />} />
       <Route path="/admin" element={<Admin />} />

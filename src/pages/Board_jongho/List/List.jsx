@@ -23,6 +23,7 @@ export const List = ({ category = {} }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const itemsPerPage = 10;
     const serverUrl = process.env.REACT_APP_SERVER_URL;
+    const isAdmin = sessionStorage.getItem("isAdmin") || "false";
 
     useEffect(() => {
         const fetchCategory = category.category_seq || category.category_seq === 0 ? category : currentCategory;
@@ -81,11 +82,11 @@ export const List = ({ category = {} }) => {
     const handleRowClick = (seq) => {
         axios.put(`${serverUrl}:18000/board/viewCount`, { board_Seq: seq })
             .then(() => {
-                navigate(`/Board/Detail/${seq}`);
+                navigate(`/BoardDetail/${seq}`);
             })
             .catch(error => {
                 console.error('Error increasing view count:', error);
-                navigate(`/Board/Detail/${seq}`);
+                navigate(`/BoardDetail/${seq}`);
             });
     };
 
@@ -171,9 +172,12 @@ export const List = ({ category = {} }) => {
                         </button>
                         {isDropdownOpen && (
                             <ul className={styles.dropdownMenu}>
-                                <li>
-                                    <Link id={styles.write} to="Edit" onClick={() => setIsDropdownOpen(false)}>등록하기</Link>
-                                </li>
+                                { currentCategory.category_seq == 0 &&
+                                        (isAdmin == "true" && <li><Link id={styles.write} to="/BoardEdit"  onClick={() => setIsDropdownOpen(false)}>등록하기</Link></li> || <></> )
+                                    ||
+                                    <li><Link id={styles.write} to="/BoardEdit"  onClick={() => setIsDropdownOpen(false)}>등록하기</Link></li> 
+                                }                                    
+                                    
                                 <li onClick={() => handleToggleSort('latest')}>
                                     최신순
                                 </li>
