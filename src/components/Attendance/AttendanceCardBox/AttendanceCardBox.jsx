@@ -71,7 +71,12 @@ const fetchVacationList = async () => {
             // 일반 유저의 경우 자신의 휴가 기록만 가져옴
             response = await axios.get(`/vacation/applications/${usersSeq}`);
         }
-        setVacationList(response.data);
+        if (Array.isArray(response.data)) {
+            setVacationList(response.data); // 상태 업데이트
+        } else {
+            console.error('Expected an array but got:', response.data);
+            setVacationList([]); // 기본 빈 배열로 설정
+        }
     } catch (error) {
         console.error('Error fetching vacation list:', error);
     }
@@ -246,7 +251,7 @@ const fetchVacationList = async () => {
                         <div className={styles.TableCell}>삭제</div>
                         {isAdmin && <div className={styles.TableCell}>승인</div>} {/* 관리자인 경우 승인 열 추가 */}
                     </div>
-                    {vacationList.map((vacation, index) => (
+                    {Array.isArray(vacationList) && vacationList.map((vacation, index) => (
                         <div className={styles.TableRow} key={vacation.vacation_application_seq}>
                             <div className={styles.TableCell}>{index + 1}</div>
                             <div className={styles.TableCell}>{formatDate(vacation.vacation_start_date)}</div>

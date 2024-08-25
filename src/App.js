@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, Route, Routes } from 'react-router-dom';
+import { useNavigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import Header from './components/Header/Header';
 import Sidebar from './components/Sidebar/Sidebar';
@@ -13,11 +13,13 @@ import DeleteUser from './components/LoginIk/Admin/DeleteUser';
 import Mypage from './components/Mypage/Mypage';
 import Calendar from './components/Calendar/Calendar';
 import Attendance from './components/Attendance/Attendance';
+import AuthTest from './pages/AuthTest/Index';
 
 import './App.css';
 import axios from 'axios';
 
 axios.defaults.withCredentials = true;
+
 
 const AppLayout = ({ children }) => (
   <div className="app">
@@ -55,6 +57,7 @@ const App = () => {
       <Route path="/users/login" element={<Login />} />
       <Route path="/mypage" element={<Mypage />} />
       <Route path="/Calendar" element={<Calendar />} />
+      <Route path="/AuthTest" element={<AuthTest />} />
     </Routes>
   );
 };

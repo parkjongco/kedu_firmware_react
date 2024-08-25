@@ -17,6 +17,17 @@ const DeptSchedule = () => {
         }
     }, [currentDate]);
 
+    useEffect(() => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css';
+        document.head.appendChild(link);
+
+        return () => {
+            document.head.removeChild(link);
+        };
+    }, []);
+
     const handlePrevDay = () => {
         const prevDay = new Date(currentDate);
         prevDay.setDate(prevDay.getDate() - 1);  // 이전 날짜로 설정
